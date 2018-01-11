@@ -1,1 +1,2 @@
-"# frc_powerup_2018" 
+
+Welcome to the repository for CircuitRunners' FRC 2018 Power Up robot code. 
