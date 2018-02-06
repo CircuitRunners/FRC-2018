@@ -25,7 +25,7 @@ public class Robot extends IterativeRobot {
 	public static XboxController driver = new XboxController(RobotMap.driverPort);
 	static MarioDrive drive;
 	// MyAutonomous auto;
-	gcbCameraSample cam;
+	CameraSample cam;
 	String gameData;
 
 	/**
@@ -36,7 +36,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void robotInit() {
 		drive = new MarioDrive();
-		cam = new gcbCameraSample();
+		cam = new CameraSample();
 		// auto = new MyAutonomous();
 		drive.gyro.reset();
 		cam.cameraInit();
