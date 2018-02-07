@@ -16,15 +16,26 @@ public class RobotData {
 	public static final int driverPort = 0;
 	public static final int operatorPort = 1;
 	
-	public static final int enc1PortA = 2;
-	public static final int enc1PortB = 3;
-	public static final int enc2PortA = 0;
-	public static final int enc2PortB = 1;
+	public static final int driveEnc1PortA = 2;
+	public static final int driveEnc1PortB = 3;
+	public static final int driveEnc2PortA = 0;
+	public static final int driveEnc2PortB = 1;
 	
 	public static final double driveDistancePerPulse = (1.0 / 90.0);
+	
+	//Constants used by the Elevator class. 
+	public static final int elevTalonPort = 3;
+	public static final int elevSlotIdx = 0;
+	public static final int elevPIDLoopIdx = 0;
+	public static final int elevTimeoutMs = 10;
+	public static final double elevClicksPerUnit = 895.99; 
+	public static final double elevHeightX = 0;
+	public static final double elevHeightY = 15;
+	public static final double elevHeightB = 30;
 	
 	/*
 	 * This is where all the data are. 
 	 */
+	
 	
 }

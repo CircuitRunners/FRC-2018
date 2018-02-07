@@ -34,8 +34,8 @@ public class MarioDrive {
 				RobotData.kBackRight);
 
 		gyro = new ADXRS450_Gyro();
-		encL = new Encoder(RobotData.enc1PortA, RobotData.enc1PortB, false, Encoder.EncodingType.k4X);
-		encR = new Encoder(RobotData.enc2PortA, RobotData.enc2PortB, false, Encoder.EncodingType.k4X);
+		encL = new Encoder(RobotData.driveEnc1PortA, RobotData.driveEnc1PortB, false, Encoder.EncodingType.k4X);
+		encR = new Encoder(RobotData.driveEnc2PortA, RobotData.driveEnc2PortB, false, Encoder.EncodingType.k4X);
 		encR.setDistancePerPulse(RobotData.driveDistancePerPulse);
 		encL.setDistancePerPulse(RobotData.driveDistancePerPulse);
 	}
