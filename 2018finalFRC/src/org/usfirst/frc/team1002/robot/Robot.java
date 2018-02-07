@@ -26,6 +26,7 @@ public class Robot extends IterativeRobot {
 	private SendableChooser<String> m_chooser = new SendableChooser<>();
 	public static XboxController driver = new XboxController(RobotData.driverPort);
 	public static XboxController operator = new XboxController(RobotData.operatorPort);
+	static MarioDrive drive = new MarioDrive();
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -78,6 +79,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
+		drive.teleOp();
 	}
 
 	/**
