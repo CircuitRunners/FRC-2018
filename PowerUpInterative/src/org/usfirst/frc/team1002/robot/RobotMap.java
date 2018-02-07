@@ -10,4 +10,9 @@ public class RobotMap {
 	public static final SpeedController kBackLeft = new VictorSP(6);
 	
 	public static final int driverPort = 0;
+	
+	public static final double elevP = 1;
+	public static final double elevI = 0.1;
+	public static final double elevD = 0.0;
+	public static final double elevF = 0.0;
 }
