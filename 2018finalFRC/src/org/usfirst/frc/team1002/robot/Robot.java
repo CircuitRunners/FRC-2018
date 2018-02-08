@@ -89,6 +89,22 @@ public class Robot extends IterativeRobot {
 	public void testPeriodic() {
 	}
 	public void getControllers() {
-		
+		if (Robot.driver.getXButton()) {
+			RobotData.elevDesiredPosition = RobotData.elevHeightX;
+		} else if (Robot.driver.getYButton()) {
+			RobotData.elevDesiredPosition = RobotData.elevHeightY;
+		} else if (Robot.driver.getBButton()) {
+			RobotData.elevDesiredPosition = RobotData.elevHeightB;
+		} else {
+			double pov = Robot.driver.getPOV(0);
+			if (pov != -1) {
+
+				if (Robot.driver.getPOV(0) > 270 || Robot.driver.getPOV(0) < 90) {
+					RobotData.elevDesiredPosition += 0.5;
+				} else {
+					RobotData.elevDesiredPosition -= 0.5;
+				}
+			}
+		}
 	}
 }

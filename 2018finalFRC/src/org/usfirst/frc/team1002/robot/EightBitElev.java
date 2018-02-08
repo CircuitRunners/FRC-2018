@@ -127,7 +127,6 @@ public class EightBitElev {
 	double currentPosition = 0;
 
 	void moveTalonTo(double position) {
-		RobotData.elevDesiredPosition = position;
 		targetPosition = position * clicksPerUnit;
 		/* Motion Magic - 4096 ticks/rev * 10 Rotations in either direction */
 		elevTalon.set(ControlMode.MotionMagic, targetPosition);
@@ -139,26 +138,7 @@ public class EightBitElev {
 	}
 
 	public void perform() {
-		double desiredPosition = 0;
-
-			if (Robot.driver.getXButton()) {
-				desiredPosition = RobotData.elevHeightX;
-			} else if (Robot.driver.getYButton()) {
-				desiredPosition = RobotData.elevHeightY;
-			} else if (Robot.driver.getBButton()) {
-				desiredPosition = RobotData.elevHeightB;
-			} else {
-				double pov = Robot.driver.getPOV(0);
-				if (pov != -1) {
-
-					if (Robot.driver.getPOV(0) > 270 || Robot.driver.getPOV(0) < 90) {
-						desiredPosition += 0.5;
-					} else {
-						desiredPosition -= 0.5;
-					}
-				}
-			}
-			moveTalonTo(desiredPosition);
+			moveTalonTo(RobotData.elevDesiredPosition);
 		}
 
 	}
