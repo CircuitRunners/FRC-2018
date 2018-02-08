@@ -30,8 +30,8 @@ public class MarioDrive {
 	
 	public MarioDrive() {
 
-		marioDrive = new MecanumDrive(RobotData.kFrontLeft, RobotData.kBackLeft, RobotData.kFrontRight,
-				RobotData.kBackRight);
+		marioDrive = new MecanumDrive(RobotData.driveFrontLeft, RobotData.driveBackLeft, RobotData.driveFrontRight,
+				RobotData.driveBackRight);
 
 		gyro = new ADXRS450_Gyro();
 		encL = new Encoder(RobotData.driveEnc1PortA, RobotData.driveEnc1PortB, false, Encoder.EncodingType.k4X);
