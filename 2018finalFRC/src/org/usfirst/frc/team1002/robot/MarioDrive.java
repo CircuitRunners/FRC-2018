@@ -27,18 +27,17 @@ public class MarioDrive {
 	ADXRS450_Gyro gyro;
 	Encoder encL;
 	Encoder encR;
-	private double distancePerPulse = (1.0 / 90.0);
-
+	
 	public MarioDrive() {
 
 		marioDrive = new MecanumDrive(RobotData.kFrontLeft, RobotData.kBackLeft, RobotData.kFrontRight,
 				RobotData.kBackRight);
 
 		gyro = new ADXRS450_Gyro();
-		encL = new Encoder(2,3, false, Encoder.EncodingType.k4X);
-		encR = new Encoder(0, 1, false, Encoder.EncodingType.k4X);
-		encR.setDistancePerPulse(distancePerPulse);
-		encL.setDistancePerPulse(distancePerPulse);
+		encL = new Encoder(RobotData.driveEnc1PortA, RobotData.driveEnc1PortB, false, Encoder.EncodingType.k4X);
+		encR = new Encoder(RobotData.driveEnc2PortA, RobotData.driveEnc2PortB, false, Encoder.EncodingType.k4X);
+		encR.setDistancePerPulse(RobotData.driveDistancePerPulse);
+		encL.setDistancePerPulse(RobotData.driveDistancePerPulse);
 	}
 
 	int count = 0;
@@ -105,11 +104,11 @@ public class MarioDrive {
 			SmartDashboard.putNumber("Left Encoder Count", encL.get());
 			SmartDashboard.putNumber("Left Encoder Distance", encL.getDistance());
 			SmartDashboard.putNumber("Right Encoder Count", encR.get());
-			SmartDashboard.putNumber("Right Encoder Distance", encR.getDistance());			
+			SmartDashboard.putNumber("Right Encoder Distance", encR.getDistance());
 			Timer.delay(0.05);
 			// wait 5ms to avoid hogging CPU cycles.
 		}
-		marioDrive.driveCartesian(0.0,0.0,0.0);
+		marioDrive.driveCartesian(0.0, 0.0, 0.0);
 	}
 
 	public void autoTurn(double turn, double time) {
