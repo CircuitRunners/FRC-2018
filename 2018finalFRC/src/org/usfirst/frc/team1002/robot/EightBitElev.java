@@ -37,49 +37,49 @@ public class EightBitElev {
 
 	public static final double clicksPerUnit = 895.99;
 
-	public void talonConfig() {
+	public void talonConfig(TalonSRX thisTalon) {
 		/* first choose the sensor */
-		elevTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, kPIDLoopIdx, kTimeoutMs);
-		elevTalon.setSensorPhase(true);
-		elevTalon.setInverted(false);
+		thisTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, kPIDLoopIdx, kTimeoutMs);
+		thisTalon.setSensorPhase(true);
+		thisTalon.setInverted(false);
 
 		/* Set relevant frame periods to be at least as fast as periodic rate */
-		elevTalon.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, kTimeoutMs);
-		elevTalon.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, kTimeoutMs);
+		thisTalon.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, kTimeoutMs);
+		thisTalon.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, kTimeoutMs);
 
 		/* set the peak and nominal outputs */
-		elevTalon.configNominalOutputForward(0, kTimeoutMs);
-		elevTalon.configNominalOutputReverse(0, kTimeoutMs);
-		elevTalon.configPeakOutputForward(1, kTimeoutMs);
-		elevTalon.configPeakOutputReverse(-1, kTimeoutMs);
+		thisTalon.configNominalOutputForward(0, kTimeoutMs);
+		thisTalon.configNominalOutputReverse(0, kTimeoutMs);
+		thisTalon.configPeakOutputForward(1, kTimeoutMs);
+		thisTalon.configPeakOutputReverse(-1, kTimeoutMs);
 
 		/* set closed loop gains in slot0 - see documentation */
-		elevTalon.selectProfileSlot(kSlotIdx, kPIDLoopIdx);
-		elevTalon.config_kF(0, 0.287, kTimeoutMs);
-		elevTalon.config_kP(0, 0.4, kTimeoutMs);
-		elevTalon.config_kI(0, 0, kTimeoutMs);
-		elevTalon.config_kD(0, 0, kTimeoutMs);
+		thisTalon.selectProfileSlot(kSlotIdx, kPIDLoopIdx);
+		thisTalon.config_kF(0, 0.287, kTimeoutMs);
+		thisTalon.config_kP(0, 0.4, kTimeoutMs);
+		thisTalon.config_kI(0, 0, kTimeoutMs);
+		thisTalon.config_kD(0, 0, kTimeoutMs);
 		/* set acceleration and vcruise velocity - see documentation */
-		elevTalon.configMotionCruiseVelocity(15000, kTimeoutMs);
-		elevTalon.configMotionAcceleration(6000, kTimeoutMs);
+		thisTalon.configMotionCruiseVelocity(15000, kTimeoutMs);
+		thisTalon.configMotionAcceleration(6000, kTimeoutMs);
 		/* zero the sensor */
-		elevTalon.setSelectedSensorPosition(0, kPIDLoopIdx, kTimeoutMs);
+		thisTalon.setSelectedSensorPosition(0, kPIDLoopIdx, kTimeoutMs);
 
-		elevTalon.configMotionCruiseVelocity((int) RobotData.elevCruiseVel, kTimeoutMs);
-		elevTalon.configMotionAcceleration((int) RobotData.elevCruiseAccel, kTimeoutMs);
+		thisTalon.configMotionCruiseVelocity((int) RobotData.elevCruiseVel, kTimeoutMs);
+		thisTalon.configMotionAcceleration((int) RobotData.elevCruiseAccel, kTimeoutMs);
 
 	}
 
-	public void displayTalonParms() {
+	public void displayTalonParms(TalonSRX thisTalon) {
 		boolean InMotionMagic = false;
 		/* smart dash plots */
-		SmartDashboard.putNumber("Elevator SensorVel", elevTalon.getSelectedSensorVelocity(kPIDLoopIdx));
-		SmartDashboard.putNumber("Eevator SensorPos", elevTalon.getSelectedSensorPosition(kPIDLoopIdx));
+		SmartDashboard.putNumber("Elevator SensorVel", thisTalon.getSelectedSensorVelocity(kPIDLoopIdx));
+		SmartDashboard.putNumber("Eevator SensorPos", thisTalon.getSelectedSensorPosition(kPIDLoopIdx));
 
-		SmartDashboard.putNumber("Elevator MotorOutputPercent", elevTalon.getMotorOutputPercent());
+		SmartDashboard.putNumber("Elevator MotorOutputPercent", thisTalon.getMotorOutputPercent());
 
-		SmartDashboard.putNumber("Elevator ClosedLoopError", elevTalon.getClosedLoopError(kPIDLoopIdx));
-		SmartDashboard.putNumber("Elevator ClosedLoopTarget", elevTalon.getClosedLoopError(kPIDLoopIdx));
+		SmartDashboard.putNumber("Elevator ClosedLoopError", thisTalon.getClosedLoopError(kPIDLoopIdx));
+		SmartDashboard.putNumber("Elevator ClosedLoopTarget", thisTalon.getClosedLoopError(kPIDLoopIdx));
 
 		SmartDashboard.putNumber("Elevator CruiseVelocity", 300);
 		SmartDashboard.putNumber("Elevator CruiseAcceleration", 300);
@@ -87,10 +87,10 @@ public class EightBitElev {
 		SmartDashboard.putNumber("Time", Timer.getFPGATimestamp());
 
 		SmartDashboard.putNumber("Elevator Remaining Distance", mttremainder / clicksPerUnit);
-		SmartDashboard.putNumber("Elevator Talon Current", elevTalon.getOutputCurrent());
+		SmartDashboard.putNumber("Elevator Talon Current", thisTalon.getOutputCurrent());
 		/* check if we are motion-magic-ing */
-		if (elevTalon.getControlMode() == ControlMode.MotionMagic) {
-			SmartDashboard.putString("COntrollerStatus", "MotionMagicMode");
+		if (thisTalon.getControlMode() == ControlMode.MotionMagic) {
+			SmartDashboard.putString("ControllerStatus", "MotionMagicMode");
 			InMotionMagic = true;
 		} else {
 			SmartDashboard.putString("COntrollerStatus", "Non-MM");
@@ -108,13 +108,13 @@ public class EightBitElev {
 
 		talonMax = Math.max(talonMax, elevTalon.getOutputCurrent());
 		SmartDashboard.putNumber("Elevator Talon Max Current", talonMax);
-		double elevcvMax = Math.max(cvMax, elevTalon.getSelectedSensorVelocity(kPIDLoopIdx));
+		double elevcvMax = Math.max(cvMax, thisTalon.getSelectedSensorVelocity(kPIDLoopIdx));
 		SmartDashboard.putNumber("Elevator Max Velocity", elevcvMax);
 
 		SmartDashboard.putNumber("DesiredPosition", RobotData.elevDesiredPosition);
 		SmartDashboard.putNumber("targetSensorPosition", targetPosition);
 		
-		double Abtn_cvMax = Math.max(cvMax, elevTalon.getSelectedSensorVelocity(kPIDLoopIdx));
+		double Abtn_cvMax = Math.max(cvMax, thisTalon.getSelectedSensorVelocity(kPIDLoopIdx));
 		SmartDashboard.putNumber("Max Velocity A Button", Abtn_cvMax);
 		Timer.delay(0.2);
 
@@ -134,7 +134,7 @@ public class EightBitElev {
 	}
 
 	public void Init() {
-		talonConfig();
+		talonConfig(elevTalon);
 	}
 
 	public void perform() {
