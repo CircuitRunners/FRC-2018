@@ -141,29 +141,12 @@ public class EightBitElev {
 	public void perform() {
 		double desiredPosition = 0;
 
-		/* if they hold the bumper, put it in motion mode */
-
-		if (Robot.driver.getAButton()) {
-			int LOOP = 0;
-			double cvMax = 0;
-
-			elevTalon.set(ControlMode.PercentOutput, 0.4);
-			displayTalonParms();
-			SmartDashboard.putString("ControllerStatus", "PercentageOutput");
-			SmartDashboard.putNumber("ControllerPercentage", 0.4);
-
-			while (LOOP++ < 10) {
-
-			}
-			elevTalon.set(ControlMode.PercentOutput, 0);
-		} else {
-			SmartDashboard.putString("ControllerStatus", "Button Input");
 			if (Robot.driver.getXButton()) {
-				desiredPosition = SmartDashboard.getNumber("X Button Position", 0.0);
+				desiredPosition = RobotData.elevHeightX;
 			} else if (Robot.driver.getYButton()) {
-				desiredPosition = SmartDashboard.getNumber("Y Button Position", 0.0);
+				desiredPosition = RobotData.elevHeightY;
 			} else if (Robot.driver.getBButton()) {
-				desiredPosition = SmartDashboard.getNumber("B Button Position", 0.0);
+				desiredPosition = RobotData.elevHeightB;
 			} else {
 				double pov = Robot.driver.getPOV(0);
 				if (pov != -1) {
@@ -177,11 +160,5 @@ public class EightBitElev {
 			}
 			moveTalonTo(desiredPosition);
 		}
-		Timer.delay(0.02); // wait for a bit
 
 	}
-
-	public void displayElev() {
-
-	}
-}

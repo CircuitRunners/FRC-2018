@@ -88,4 +88,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void testPeriodic() {
 	}
+	public void getControllers() {
+		
+	}
 }
