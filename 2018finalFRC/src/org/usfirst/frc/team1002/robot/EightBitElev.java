@@ -37,7 +37,7 @@ public class EightBitElev {
 
 	public static final double clicksPerUnit = 895.99;
 
-	public void talonInit() {
+	public void talonConfig() {
 		/* first choose the sensor */
 		elevTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, kPIDLoopIdx, kTimeoutMs);
 		elevTalon.setSensorPhase(true);
@@ -65,19 +65,29 @@ public class EightBitElev {
 		/* zero the sensor */
 		elevTalon.setSelectedSensorPosition(0, kPIDLoopIdx, kTimeoutMs);
 
-		SmartDashboard.putNumber("CruiseVelocity", 300);
-		SmartDashboard.putNumber("CruiseAcceleration", 300);
+		elevTalon.configMotionCruiseVelocity((int) RobotData.elevCruiseVel, kTimeoutMs);
+		elevTalon.configMotionAcceleration((int) RobotData.elevCruiseAccel, kTimeoutMs);
+
 	}
 
 	public void displayTalonParms() {
 		boolean InMotionMagic = false;
 		/* smart dash plots */
-		SmartDashboard.putNumber("SensorVel", elevTalon.getSelectedSensorVelocity(kPIDLoopIdx));
-		SmartDashboard.putNumber("SensorPos", elevTalon.getSelectedSensorPosition(kPIDLoopIdx));
-		SmartDashboard.putNumber("MotorOutputPercent", elevTalon.getMotorOutputPercent());
-		SmartDashboard.putNumber("ClosedLoopError", elevTalon.getClosedLoopError(kPIDLoopIdx));
-		SmartDashboard.putNumber("ClosedLoopTarget", elevTalon.getClosedLoopError(kPIDLoopIdx));
+		SmartDashboard.putNumber("Elevator SensorVel", elevTalon.getSelectedSensorVelocity(kPIDLoopIdx));
+		SmartDashboard.putNumber("Eevator SensorPos", elevTalon.getSelectedSensorPosition(kPIDLoopIdx));
 
+		SmartDashboard.putNumber("Elevator MotorOutputPercent", elevTalon.getMotorOutputPercent());
+
+		SmartDashboard.putNumber("Elevator ClosedLoopError", elevTalon.getClosedLoopError(kPIDLoopIdx));
+		SmartDashboard.putNumber("Elevator ClosedLoopTarget", elevTalon.getClosedLoopError(kPIDLoopIdx));
+
+		SmartDashboard.putNumber("Elevator CruiseVelocity", 300);
+		SmartDashboard.putNumber("Elevator CruiseAcceleration", 300);
+
+		SmartDashboard.putNumber("Time", Timer.getFPGATimestamp());
+
+		SmartDashboard.putNumber("Elevator Remaining Distance", mttremainder / clicksPerUnit);
+		SmartDashboard.putNumber("Elevator Talon Current", elevTalon.getOutputCurrent());
 		/* check if we are motion-magic-ing */
 		if (elevTalon.getControlMode() == ControlMode.MotionMagic) {
 			SmartDashboard.putString("COntrollerStatus", "MotionMagicMode");
@@ -88,123 +98,90 @@ public class EightBitElev {
 		}
 		if (InMotionMagic) {
 			/* print the Active Trajectory Point Motion Magic is servoing towards */
-			SmartDashboard.putNumber("ActTrajVelocity", elevTalon.getActiveTrajectoryVelocity());
-			SmartDashboard.putNumber("ActTrajPosition", elevTalon.getActiveTrajectoryPosition());
-			SmartDashboard.putNumber("ActTrajHeading", elevTalon.getActiveTrajectoryHeading());
+			SmartDashboard.putNumber("Elevator ActTrajVelocity", elevTalon.getActiveTrajectoryVelocity());
+			SmartDashboard.putNumber("Elevator ActTrajPosition", elevTalon.getActiveTrajectoryPosition());
+			SmartDashboard.putNumber("Elevator ActTrajHeading", elevTalon.getActiveTrajectoryHeading());
 		}
-	}
+		currentPosition = elevTalon.getSelectedSensorPosition(kPIDLoopIdx);
+		SmartDashboard.putNumber("currentPosition", currentPosition / clicksPerUnit);
+		mttremainder = targetPosition - currentPosition;
 
-	public void talonConfig() {
-		double cv = 0, ca = 0;
-		cv = SmartDashboard.getNumber("CruiseVelocity", 1000.0);
-		ca = SmartDashboard.getNumber("CruiseAcceleration", 100.0);
-		/* set acceleration and vcruise velocity - see documentation */
-		elevTalon.configMotionCruiseVelocity((int) cv, kTimeoutMs);
-		elevTalon.configMotionAcceleration((int) ca, kTimeoutMs);
+		talonMax = Math.max(talonMax, elevTalon.getOutputCurrent());
+		SmartDashboard.putNumber("Elevator Talon Max Current", talonMax);
+		double elevcvMax = Math.max(cvMax, elevTalon.getSelectedSensorVelocity(kPIDLoopIdx));
+		SmartDashboard.putNumber("Elevator Max Velocity", elevcvMax);
+
+		SmartDashboard.putNumber("DesiredPosition", RobotData.elevDesiredPosition);
+		SmartDashboard.putNumber("targetSensorPosition", targetPosition);
+		
+		double Abtn_cvMax = Math.max(cvMax, elevTalon.getSelectedSensorVelocity(kPIDLoopIdx));
+		SmartDashboard.putNumber("Max Velocity A Button", Abtn_cvMax);
+		Timer.delay(0.2);
 
 	}
 
 	double talonMax = 0.0;
 	double cvMax = 0.0;
+	double mttremainder = 0;
+	double targetPosition;
+	double currentPosition = 0;
 
 	void moveTalonTo(double position) {
-		double targetPosition = position * clicksPerUnit;
-		double currentPosition = 0;
-		double remainder = 0;
-		talonConfig();
+		RobotData.elevDesiredPosition = position;
+		targetPosition = position * clicksPerUnit;
 		/* Motion Magic - 4096 ticks/rev * 10 Rotations in either direction */
 		elevTalon.set(ControlMode.MotionMagic, targetPosition);
-		SmartDashboard.putNumber("DesiredPosition", position);
-		SmartDashboard.putNumber("targetSensorPosition", targetPosition);
-		int loop = 0;
-		// while (Math.abs(
-		// (currentPosition = talonController.getSelectedSensorPosition(kPIDLoopIdx)) -
-		// targetPosition) > 100) {
-
-		while (loop++ < 0) {
-			currentPosition = elevTalon.getSelectedSensorPosition(kPIDLoopIdx);
-			SmartDashboard.putNumber("currentPosition", currentPosition / clicksPerUnit);
-			remainder = targetPosition - currentPosition;
-
-			SmartDashboard.putNumber("Remaining Distance", remainder / clicksPerUnit);
-			SmartDashboard.putNumber("Talon Current", elevTalon.getOutputCurrent());
-			talonMax = Math.max(talonMax, elevTalon.getOutputCurrent());
-			SmartDashboard.putNumber("Talon Max Current", talonMax);
-			cvMax = Math.max(cvMax, elevTalon.getSelectedSensorVelocity(kPIDLoopIdx));
-			SmartDashboard.putNumber("Max Velocity", cvMax);
-
-			if (remainder / clicksPerUnit < 0.7)
-				break;
-			displayTalonParms();
-			if (Math.abs(remainder) < 200)
-				break;
-			Timer.delay(0.1); // wait for a motor update time
-		}
 
 	}
 
 	public void Init() {
-		SmartDashboard.putNumber("X Button Position", 0.0);
-		SmartDashboard.putNumber("Y Button Position", 15.0);
-		SmartDashboard.putNumber("B Button Position", 30.0);
-		talonInit();
-
+		talonConfig();
 	}
 
-	public void myMethod() {
+	public void perform() {
 		double desiredPosition = 0;
 
-		SmartDashboard.putNumber("Time", Timer.getFPGATimestamp());
 		/* if they hold the bumper, put it in motion mode */
-		if (Robot.driver.getBumper(GenericHID.Hand.kLeft)) {
-			/* Percent output mode */
-			double leftYStick = Robot.driver.getY(GenericHID.Hand.kLeft);
-			elevTalon.set(ControlMode.PercentOutput, leftYStick);
+
+		if (Robot.driver.getAButton()) {
+			int LOOP = 0;
+			double cvMax = 0;
+
+			elevTalon.set(ControlMode.PercentOutput, 0.4);
 			displayTalonParms();
 			SmartDashboard.putString("ControllerStatus", "PercentageOutput");
-			SmartDashboard.putNumber("ControllerPercentage", leftYStick);
+			SmartDashboard.putNumber("ControllerPercentage", 0.4);
+
+			while (LOOP++ < 10) {
+
+			}
+			elevTalon.set(ControlMode.PercentOutput, 0);
 		} else {
-			if (Robot.driver.getAButton()) {
-				int LOOP = 0;
-				double cvMax = 0;
-
-				elevTalon.set(ControlMode.PercentOutput, 0.4);
-				displayTalonParms();
-				SmartDashboard.putString("ControllerStatus", "PercentageOutput");
-				SmartDashboard.putNumber("ControllerPercentage", 0.4);
-
-				while (LOOP++ < 10) {
-					cvMax = Math.max(cvMax, elevTalon.getSelectedSensorVelocity(kPIDLoopIdx));
-					SmartDashboard.putNumber("Max Velocity A Button", cvMax);
-					Timer.delay(0.2);
-				}
-				elevTalon.set(ControlMode.PercentOutput, 0);
+			SmartDashboard.putString("ControllerStatus", "Button Input");
+			if (Robot.driver.getXButton()) {
+				desiredPosition = SmartDashboard.getNumber("X Button Position", 0.0);
+			} else if (Robot.driver.getYButton()) {
+				desiredPosition = SmartDashboard.getNumber("Y Button Position", 0.0);
+			} else if (Robot.driver.getBButton()) {
+				desiredPosition = SmartDashboard.getNumber("B Button Position", 0.0);
 			} else {
-				SmartDashboard.putString("ControllerStatus", "Button Input");
-				if (Robot.driver.getXButton()) {
-					desiredPosition = SmartDashboard.getNumber("X Button Position", 0.0);
-				} else if (Robot.driver.getYButton()) {
-					desiredPosition = SmartDashboard.getNumber("Y Button Position", 0.0);
-				} else if (Robot.driver.getBButton()) {
-					desiredPosition = SmartDashboard.getNumber("B Button Position", 0.0);
-				} else {
-					double pov = Robot.driver.getPOV(0);
-					if (pov != -1) {
+				double pov = Robot.driver.getPOV(0);
+				if (pov != -1) {
 
-						if (Robot.driver.getPOV(0) > 270 || Robot.driver.getPOV(0) < 90) {
-							desiredPosition += 0.5;
-						} else {
-							desiredPosition -= 0.5;
-						}
+					if (Robot.driver.getPOV(0) > 270 || Robot.driver.getPOV(0) < 90) {
+						desiredPosition += 0.5;
+					} else {
+						desiredPosition -= 0.5;
 					}
 				}
-				moveTalonTo(desiredPosition);
 			}
-			Timer.delay(0.02); // wait for a bit
-
+			moveTalonTo(desiredPosition);
 		}
+		Timer.delay(0.02); // wait for a bit
+
 	}
+
 	public void displayElev() {
-		
+
 	}
 }

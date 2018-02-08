@@ -32,7 +32,9 @@ public class RobotData {
 	public static final double elevHeightX = 0;
 	public static final double elevHeightY = 15;
 	public static final double elevHeightB = 30;
-	
+	public static final double elevCruiseVel = 1000.0;
+	public static final double elevCruiseAccel = 100.0;
+	public static double elevDesiredPosition = 0.0;
 	/*
 	 * This is where all the data are. 
 	 */
