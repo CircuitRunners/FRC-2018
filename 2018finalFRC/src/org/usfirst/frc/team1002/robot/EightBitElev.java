@@ -70,17 +70,20 @@ public class EightBitElev {
 		thisTalon.configMotionAcceleration((int) RobotData.elevCruiseAccel, kTimeoutMs);
 
 	}
-
-	public void displayTalonParms(TalonSRX thisTalon) {
-		boolean InMotionMagic = false;
+	double talonMax = 0.0;
+	double cvMax = 0.0;
+	double mttremainder = 0;
+	double currentPosition = 0;
+	
+	public void display() {
 		/* smart dash plots */
-		SmartDashboard.putNumber("Elevator SensorVel", thisTalon.getSelectedSensorVelocity(kPIDLoopIdx));
-		SmartDashboard.putNumber("Eevator SensorPos", thisTalon.getSelectedSensorPosition(kPIDLoopIdx));
+		SmartDashboard.putNumber("Elevator SensorVel", stageOneTalon.getSelectedSensorVelocity(kPIDLoopIdx));
+		SmartDashboard.putNumber("Eevator SensorPos", stageOneTalon.getSelectedSensorPosition(kPIDLoopIdx));
 
-		SmartDashboard.putNumber("Elevator MotorOutputPercent", thisTalon.getMotorOutputPercent());
+		SmartDashboard.putNumber("Elevator MotorOutputPercent", stageOneTalon.getMotorOutputPercent());
 
-		SmartDashboard.putNumber("Elevator ClosedLoopError", thisTalon.getClosedLoopError(kPIDLoopIdx));
-		SmartDashboard.putNumber("Elevator ClosedLoopTarget", thisTalon.getClosedLoopError(kPIDLoopIdx));
+		SmartDashboard.putNumber("Elevator ClosedLoopError", stageOneTalon.getClosedLoopError(kPIDLoopIdx));
+		SmartDashboard.putNumber("Elevator ClosedLoopTarget", stageOneTalon.getClosedLoopError(kPIDLoopIdx));
 
 		SmartDashboard.putNumber("Elevator CruiseVelocity", 300);
 		SmartDashboard.putNumber("Elevator CruiseAcceleration", 300);
@@ -88,44 +91,32 @@ public class EightBitElev {
 		SmartDashboard.putNumber("Time", Timer.getFPGATimestamp());
 
 		SmartDashboard.putNumber("Elevator Remaining Distance", mttremainder / clicksPerUnit);
-		SmartDashboard.putNumber("Elevator Talon Current", thisTalon.getOutputCurrent());
-		/* check if we are motion-magic-ing */
-		if (thisTalon.getControlMode() == ControlMode.MotionMagic) {
-			SmartDashboard.putString("ControllerStatus", "MotionMagicMode");
-			InMotionMagic = true;
-		} else {
-			SmartDashboard.putString("COntrollerStatus", "Non-MM");
-			InMotionMagic = false;
-		}
-		if (InMotionMagic) {
-			/* print the Active Trajectory Point Motion Magic is servoing towards */
-			SmartDashboard.putNumber("Elevator ActTrajVelocity", thisTalon.getActiveTrajectoryVelocity());
-			SmartDashboard.putNumber("Elevator ActTrajPosition", thisTalon.getActiveTrajectoryPosition());
-			SmartDashboard.putNumber("Elevator ActTrajHeading", thisTalon.getActiveTrajectoryHeading());
-		}
-		currentPosition = thisTalon.getSelectedSensorPosition(kPIDLoopIdx);
+		SmartDashboard.putNumber("Elevator Talon Current", stageOneTalon.getOutputCurrent());
+
+		/* print the Active Trajectory Point Motion Magic is going towards */
+		SmartDashboard.putNumber("Elevator ActTrajVelocity", stageOneTalon.getActiveTrajectoryVelocity());
+		SmartDashboard.putNumber("Elevator ActTrajPosition", stageOneTalon.getActiveTrajectoryPosition());
+		SmartDashboard.putNumber("Elevator ActTrajHeading", stageOneTalon.getActiveTrajectoryHeading());
+
+		currentPosition = stageOneTalon.getSelectedSensorPosition(kPIDLoopIdx);
 		SmartDashboard.putNumber("currentPosition", currentPosition / clicksPerUnit);
 		mttremainder = targetPosition - currentPosition;
 
-		talonMax = Math.max(talonMax, thisTalon.getOutputCurrent());
+		talonMax = Math.max(talonMax, stageOneTalon.getOutputCurrent());
 		SmartDashboard.putNumber("Elevator Talon Max Current", talonMax);
-		double elevcvMax = Math.max(cvMax, thisTalon.getSelectedSensorVelocity(kPIDLoopIdx));
+		double elevcvMax = Math.max(cvMax, stageOneTalon.getSelectedSensorVelocity(kPIDLoopIdx));
 		SmartDashboard.putNumber("Elevator Max Velocity", elevcvMax);
 
 		SmartDashboard.putNumber("DesiredPosition", RobotData.elevDesiredPosition);
 		SmartDashboard.putNumber("targetSensorPosition", targetPosition);
 
-		double Abtn_cvMax = Math.max(cvMax, thisTalon.getSelectedSensorVelocity(kPIDLoopIdx));
+		double Abtn_cvMax = Math.max(cvMax, stageOneTalon.getSelectedSensorVelocity(kPIDLoopIdx));
 		SmartDashboard.putNumber("Max Velocity A Button", Abtn_cvMax);
-		Timer.delay(0.2);
 
 	}
 
-	double talonMax = 0.0;
-	double cvMax = 0.0;
-	double mttremainder = 0;
+
 	double targetPosition;
-	double currentPosition = 0;
 
 	public void moveElevatorTo(double position) {
 		targetPosition = position * clicksPerUnit;
@@ -142,10 +133,6 @@ public class EightBitElev {
 	public void Init() {
 		talonConfig(stageOneTalon);
 		talonConfig(stageTwoTalon);
-	}
-
-	public void perform() {
-
 	}
 
 }
