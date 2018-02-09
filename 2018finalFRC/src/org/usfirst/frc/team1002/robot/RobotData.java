@@ -109,6 +109,14 @@ public class RobotData {
 	public static final double elevCruiseAccel = 100.0;
 	
 	
+	/*
+	 * Constants used by the CameraControl class.
+	 */
+	
+	public static final int xRes = 640;
+	public static final int yRes = 480;
+	//static static final int simpleMode = 1;
+	
 	/* 
 	 * 
 	 * 
