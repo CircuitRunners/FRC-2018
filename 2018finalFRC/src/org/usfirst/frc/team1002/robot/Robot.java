@@ -27,7 +27,7 @@ public class Robot extends IterativeRobot {
 	public static XboxController driver = new XboxController(RobotData.driverPort);
 	public static XboxController operator = new XboxController(RobotData.operatorPort);
 	static MarioDrive drive = new MarioDrive();
-
+	EightBitElev elev = new EightBitElev();
 	/**
 	 * This function is run when the robot is first started up and should be
 	 * used for any initialization code.
@@ -80,6 +80,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		drive.teleOp();
+		elev.moveElevatorTo(RobotData.elevDesiredPosition);
 	}
 
 	/**
