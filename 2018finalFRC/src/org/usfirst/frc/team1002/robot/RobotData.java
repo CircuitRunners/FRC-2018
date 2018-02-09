@@ -3,16 +3,10 @@ package org.usfirst.frc.team1002.robot;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.VictorSP;
 
+/*
+ * Contains all the public values used by the various classes, so that they are all in one place. 
+ */
 public class RobotData {
-	
-	/* 
-	 * 
-	 * 
-	 * This is where all the constants are.
-	 * 
-	 * 
-	 * 
-	 */
 	
 	/*
 	 * This is where controller mappings are. 
@@ -60,7 +54,7 @@ public class RobotData {
 	
 	
 	/*
-	 * Constants used by the MarioDrive class.
+	 * Values used by the MarioDrive class.
 	 */
 	
 	//Drivebase motors and their ports.
@@ -75,13 +69,19 @@ public class RobotData {
 	public static final int driveEnc2PortA = 0;
 	public static final int driveEnc2PortB = 1;
 	
+	//Motor PDP slots
+	public static final int driveFrontRightPDPSlot = 13;
+	public static final int driveFrontLeftPDPSlot = 14;
+	public static final int driveBackRightPDPSlot = 15;
+	public static final int driveBackLeftPDPSlot = 16;
+	
 	//Distance traveled by wheel per encoder click, in feet. 
 	public static final double driveDistancePerPulse = (1.0 / 90.0);
 	
 	
-	/*
-	 * Constants used by the EightBitElevator class.
-	 */
+/*
+ * Values used by the EightBitElevator class.
+ */
 	
 	//Port for stage 1 & 2 Talons on elevator. 
 	public static final int elevS1TalonPort = 3;
@@ -108,28 +108,26 @@ public class RobotData {
 	public static final double elevCruiseVel = 1000.0;
 	public static final double elevCruiseAccel = 100.0;
 	
-	
-	/*
-	 * Constants used by the CameraControl class.
-	 */
-	
-	public static final int xRes = 640;
-	public static final int yRes = 480;
-	//static static final int simpleMode = 1;
-	
-	/* 
-	 * 
-	 * 
-	 * This is where all the variables are.
-	 * 
-	 * 
-	 */
-	
-	/*
-	 * Variables used by EightBitElevator.
-	 */
-	
 	//Target height for elevator, in inches above drivebase.
 	public static double elevDesiredPosition = 0.0;
+	
+	
+	/*
+	 * Values used by the CameraControl class.
+	 */
+	
+	//Resolution of SmartDashboard feed.
+	public static final int camXRes = 640;
+	public static final int camYRes = 480;
+		
+	//Time delay between frames, in milliseconds. 
+	public static final double camFrameDelay = 0.05;
+	
+	// 0 is none, -1 is rev, 1 is fwd
+	public static int camActiveCamera = 0; 
+	
+	//The number of frames the camera has reached
+	public static int camFrameNumber = 0;
+
 	
 }

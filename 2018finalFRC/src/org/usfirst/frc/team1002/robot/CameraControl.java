@@ -15,16 +15,9 @@ public class CameraControl {
 	public CvSink fwdcvSink;
 	public CvSink rvscvSink;
 	public CvSink activecvSink;
-	public int activeCamera = 0; /* 0 is none, -1 is rev, 1 is fwd */
-	int switchCount = 0;
-	double frameDelay = 0.05;
-	int frameNumber = 0;
+	//int switchCount = 0;
 	public UsbCamera camSvr;
 	public CvSink cvSink;
-
-	public int xRes = 640;
-	public int yRes = 480;
-	static int simpleMode = 1;
 
 	public void cameraInit() {
 		Thread cameraOpThread = new Thread(new Runnable() {
@@ -40,37 +33,37 @@ public class CameraControl {
 	}
 
 	protected void setActiveCamera(int newCamera) {
-		if (newCamera == activeCamera)
+		if (newCamera == RobotData.camActiveCamera)
 			return;
 		if (newCamera == 1) { /* Forward */
 			activecvSink = fwdcvSink;
 		} else if (newCamera == -1) { /* Reverse */
 			activecvSink = rvscvSink;
 		}
-		activeCamera = newCamera;
+		RobotData.camActiveCamera = newCamera;
 	}
 
 	/* CameraThread */
 	protected void cameraOperation() {
-		int frameNumber = 0;
+		RobotData.camFrameNumber = 0;
 		
 		/* Init the camera sinks */
 		fwdCamSvr = CameraServer.getInstance().startAutomaticCapture("fwdCam", 0);
-		fwdCamSvr.setResolution(xRes, yRes);
+		fwdCamSvr.setResolution(RobotData.camXRes, RobotData.camYRes);
 		fwdcvSink = CameraServer.getInstance().getVideo(fwdCamSvr); /* init capture conn */
 
 		rvsCamSvr = CameraServer.getInstance().startAutomaticCapture("rvsCam", 1);
-		rvsCamSvr.setResolution(xRes, yRes);
+		rvsCamSvr.setResolution(RobotData.camXRes, RobotData.camYRes);
 		rvscvSink = CameraServer.getInstance().getVideo(rvsCamSvr); /* init capture conn */
 
 		activecvSink = fwdcvSink;
-		activeCamera = 1;
+		RobotData.camActiveCamera = 1;
 		/* turn on forward camera */
 
 		setActiveCamera(1);
 
 		/* init dashboard connection */
-		CvSource outputStream = CameraServer.getInstance().putVideo("DispWin", xRes, yRes);
+		CvSource outputStream = CameraServer.getInstance().putVideo("DispWin", RobotData.camXRes, RobotData.camYRes);
 
 		Mat camMat = new Mat();
 
@@ -80,9 +73,9 @@ public class CameraControl {
 				outputStream.notifyError("Line 147" + fwdcvSink.getError());
 				continue;
 			}
-			SmartDashboard.putNumber("frameNumber", frameNumber++);
+			SmartDashboard.putNumber("frameNumber", RobotData.camFrameNumber++);
 			/* Do something so you know the frames are changing */
-			// radius = (activeCamera == 1) ? switchCount + 40 : 140 - switchCount;
+			// radius = (RobotData.activeCamera == 1) ? switchCount + 40 : 140 - switchCount;
 			// Imgproc.circle(camMat, new Point(xRes / 2, yRes / 2), radius,
 			// new Scalar(230 - switchCount, 150 + switchCount, 225 - switchCount), 5);
 			outputStream.putFrame(camMat); /* post image */
@@ -90,14 +83,14 @@ public class CameraControl {
 			/* Camera switching */
 
 			if (Robot.driver.getStartButton()) {
-				if (activeCamera == 1)
+				if (RobotData.camActiveCamera == 1)
 					setActiveCamera(-1);
 				else
 					setActiveCamera(1);
-				SmartDashboard.putNumber("Camera", activeCamera);
+				SmartDashboard.putNumber("Camera", RobotData.camActiveCamera);
 			}
 
-			Timer.delay(frameDelay); /* wait for a bit */
+			Timer.delay(RobotData.camFrameDelay); /* wait for a bit */
 		}
 		/* Cleanup of camera connections should go here */
 	}
