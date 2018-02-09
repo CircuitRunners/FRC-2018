@@ -5,17 +5,18 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class EightBitElev {
+	TalonSRX stageOneTalon;
+	TalonSRX stageTwoTalon;
 
 	public EightBitElev() {
+		stageOneTalon = new TalonSRX(RobotData.elevTalonPort);
+		stageTwoTalon = new TalonSRX(6);
 
 	}
-
-	TalonSRX elevTalon = new TalonSRX(3);
 
 	/**
 	 * Which PID slot to pull gains from. Starting 2018, you can choose from 0,1,2
@@ -98,22 +99,22 @@ public class EightBitElev {
 		}
 		if (InMotionMagic) {
 			/* print the Active Trajectory Point Motion Magic is servoing towards */
-			SmartDashboard.putNumber("Elevator ActTrajVelocity", elevTalon.getActiveTrajectoryVelocity());
-			SmartDashboard.putNumber("Elevator ActTrajPosition", elevTalon.getActiveTrajectoryPosition());
-			SmartDashboard.putNumber("Elevator ActTrajHeading", elevTalon.getActiveTrajectoryHeading());
+			SmartDashboard.putNumber("Elevator ActTrajVelocity", thisTalon.getActiveTrajectoryVelocity());
+			SmartDashboard.putNumber("Elevator ActTrajPosition", thisTalon.getActiveTrajectoryPosition());
+			SmartDashboard.putNumber("Elevator ActTrajHeading", thisTalon.getActiveTrajectoryHeading());
 		}
-		currentPosition = elevTalon.getSelectedSensorPosition(kPIDLoopIdx);
+		currentPosition = thisTalon.getSelectedSensorPosition(kPIDLoopIdx);
 		SmartDashboard.putNumber("currentPosition", currentPosition / clicksPerUnit);
 		mttremainder = targetPosition - currentPosition;
 
-		talonMax = Math.max(talonMax, elevTalon.getOutputCurrent());
+		talonMax = Math.max(talonMax, thisTalon.getOutputCurrent());
 		SmartDashboard.putNumber("Elevator Talon Max Current", talonMax);
 		double elevcvMax = Math.max(cvMax, thisTalon.getSelectedSensorVelocity(kPIDLoopIdx));
 		SmartDashboard.putNumber("Elevator Max Velocity", elevcvMax);
 
 		SmartDashboard.putNumber("DesiredPosition", RobotData.elevDesiredPosition);
 		SmartDashboard.putNumber("targetSensorPosition", targetPosition);
-		
+
 		double Abtn_cvMax = Math.max(cvMax, thisTalon.getSelectedSensorVelocity(kPIDLoopIdx));
 		SmartDashboard.putNumber("Max Velocity A Button", Abtn_cvMax);
 		Timer.delay(0.2);
@@ -126,19 +127,25 @@ public class EightBitElev {
 	double targetPosition;
 	double currentPosition = 0;
 
-	void moveTalonTo(double position) {
+	public void moveElevatorTo(double position) {
 		targetPosition = position * clicksPerUnit;
+		double stageOneMax = 30.0 * clicksPerUnit;
 		/* Motion Magic - 4096 ticks/rev * 10 Rotations in either direction */
-		elevTalon.set(ControlMode.MotionMagic, targetPosition);
-
+		if (position <= 30) {
+			stageOneTalon.set(ControlMode.MotionMagic, targetPosition);
+		} else {
+			stageOneTalon.set(ControlMode.MotionMagic, stageOneMax);
+			stageTwoTalon.set(ControlMode.MotionMagic, (targetPosition - stageOneMax));
+		}
 	}
 
 	public void Init() {
-		talonConfig(elevTalon);
+		talonConfig(stageOneTalon);
+		talonConfig(stageTwoTalon);
 	}
 
 	public void perform() {
-			moveTalonTo(RobotData.elevDesiredPosition);
-		}
 
 	}
+
+}
