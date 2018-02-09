@@ -83,8 +83,9 @@ public class RobotData {
 	 * Constants used by the EightBitElevator class.
 	 */
 	
-	//Port for Talon on elevator. 
-	public static final int elevTalonPort = 3;
+	//Port for stage 1 & 2 Talons on elevator. 
+	public static final int elevS1TalonPort = 3;
+	public static final int elevS2TalonPort = 6;
 	
 	//Port for elevator Talon PID. 
 	public static final int elevSlotIdx = 0;
