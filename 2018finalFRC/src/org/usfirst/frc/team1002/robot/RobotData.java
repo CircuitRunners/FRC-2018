@@ -141,7 +141,24 @@ public class RobotData {
 	 * Values used by the RobotArm class. 
 	 */
 	
+	//Talon Port
+	public static final int armTalonPort = 13;
 	
+	//Port for arm Talon PID. 
+	public static final int armSlotIdx = 0;
+		
+	//Index of PID loop used by the arm.
+	public static final int armPIDLoopIdx = 0;
+		
+	//Amount of time in milliseconds that the Talon waits before getting confirmation that it has acted. 
+	public static final int armTimeoutMs = 10;
+		
+	//Number of encoder clicks per inch the arm travels. 
+	public static final double armClicksPerUnit = 895.99; 
+	
+	//Max speed and acceleration of arm Talon. 
+	public static final double armCruiseVel = 1000.0;
+	public static final double armCruiseAccel = 100.0;
 	
 	/*
 	 * Values used by the CameraControl class.
