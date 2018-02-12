@@ -88,6 +88,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void testPeriodic() {
+		elev.display();
 	}
 	public void getControllers() {
 		if (Robot.driver.getXButton()) {
