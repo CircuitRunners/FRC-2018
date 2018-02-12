@@ -105,10 +105,10 @@ public class EightBitElev {
 		double stageOneMax = 30.0 * RobotData.elevClicksPerUnit;
 		/* Motion Magic - 4096 ticks/rev * 10 Rotations in either direction */
 		if (position <= 30) {
-			stageOneTalon.set(ControlMode.MotionMagic, targetPosition);
+			moveS1To(targetPosition);
 		} else {
-			stageOneTalon.set(ControlMode.MotionMagic, stageOneMax);
-			stageTwoTalon.set(ControlMode.MotionMagic, (targetPosition - stageOneMax));
+			moveS1To(stageOneMax);
+			moveS2To(targetPosition - stageOneMax);
 		}
 	}
 
@@ -122,6 +122,12 @@ public class EightBitElev {
 
 	int InchesToS2Clicks(double pos) {
 		return (int) (pos * RobotData.elevClicksPerUnit);
+	}
+	public void moveS1To(double pos){
+		stageOneTalon.set(ControlMode.MotionMagic, pos);
+	}
+	public void moveS2To(double pos) {
+		stageTwoTalon.set(ControlMode.MotionMagic, pos);
 	}
 
 }
