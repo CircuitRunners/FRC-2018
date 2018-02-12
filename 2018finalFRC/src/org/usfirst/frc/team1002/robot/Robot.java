@@ -7,6 +7,8 @@
 
 package org.usfirst.frc.team1002.robot;
 
+import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -28,9 +30,11 @@ public class Robot extends IterativeRobot {
 	public static XboxController operator = new XboxController(RobotData.operatorPort);
 	static MarioDrive drive = new MarioDrive();
 	EightBitElev elev = new EightBitElev();
+	Grabber grab = new Grabber();
+
 	/**
-	 * This function is run when the robot is first started up and should be
-	 * used for any initialization code.
+	 * This function is run when the robot is first started up and should be used
+	 * for any initialization code.
 	 */
 	@Override
 	public void robotInit() {
@@ -41,14 +45,15 @@ public class Robot extends IterativeRobot {
 
 	/**
 	 * This autonomous (along with the chooser code above) shows how to select
-	 * between different autonomous modes using the dashboard. The sendable
-	 * chooser code works with the Java SmartDashboard. If you prefer the
-	 * LabVIEW Dashboard, remove all of the chooser code and uncomment the
-	 * getString line to get the auto name from the text box below the Gyro
+	 * between different autonomous modes using the dashboard. The sendable chooser
+	 * code works with the Java SmartDashboard. If you prefer the LabVIEW Dashboard,
+	 * remove all of the chooser code and uncomment the getString line to get the
+	 * auto name from the text box below the Gyro
 	 *
-	 * <p>You can add additional auto modes by adding additional comparisons to
-	 * the switch structure below with additional strings. If using the
-	 * SendableChooser make sure to add them to the chooser code above as well.
+	 * <p>
+	 * You can add additional auto modes by adding additional comparisons to the
+	 * switch structure below with additional strings. If using the SendableChooser
+	 * make sure to add them to the chooser code above as well.
 	 */
 	@Override
 	public void autonomousInit() {
@@ -64,13 +69,13 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousPeriodic() {
 		switch (m_autoSelected) {
-			case kCustomAuto:
-				// Put custom auto code here
-				break;
-			case kDefaultAuto:
-			default:
-				// Put default auto code here
-				break;
+		case kCustomAuto:
+			// Put custom auto code here
+			break;
+		case kDefaultAuto:
+		default:
+			// Put default auto code here
+			break;
 		}
 	}
 
@@ -90,23 +95,31 @@ public class Robot extends IterativeRobot {
 	public void testPeriodic() {
 		elev.display();
 	}
+
 	public void getControllers() {
 		if (Robot.driver.getXButton()) {
 			RobotData.elevPositionTarget = RobotData.elevHeightX;
-		} else if (Robot.driver.getYButton()) {
+		}
+		if (Robot.driver.getYButton()) {
 			RobotData.elevPositionTarget = RobotData.elevHeightY;
-		} else if (Robot.driver.getBButton()) {
+		}
+		if (Robot.driver.getBButton()) {
 			RobotData.elevPositionTarget = RobotData.elevHeightB;
-		} else {
-			double pov = Robot.driver.getPOV(0);
-			if (pov != -1) {
+		}
+		if (Robot.driver.getPOV(0) != -1) {
 
-				if (Robot.driver.getPOV(0) > 270 || Robot.driver.getPOV(0) < 90) {
-					RobotData.elevPositionTarget += 0.5;
-				} else {
-					RobotData.elevPositionTarget -= 0.5;
-				}
+			if (Robot.driver.getPOV(0) > 270 || Robot.driver.getPOV(0) < 90) {
+				RobotData.elevPositionTarget += 0.5;
+			} else {
+				RobotData.elevPositionTarget -= 0.5;
 			}
 		}
+		if(Robot.operator.getTriggerAxis(GenericHID.Hand.kLeft) > .1) {
+			grab.moveGrabber(Robot.operator.getTriggerAxis(GenericHID.Hand.kLeft));
+		}
+		if(Robot.operator.getTriggerAxis(GenericHID.Hand.kRight) > .1) {
+			grab.moveGrabber(Robot.operator.getTriggerAxis(GenericHID.Hand.kRight));
+		}
 	}
+
 }
