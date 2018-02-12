@@ -22,6 +22,8 @@ public class RobotData {
 	 * Stick Left Y: drive forward/reverse
 	 * Stick Right X: turn left/right
 	 * Stick Right Y: none
+	 * Trigger Left: none
+	 * Trigger Right: none 
 	 * Button A: none
 	 * Button B: none
 	 * Button X: none
@@ -40,6 +42,8 @@ public class RobotData {
 	 * Stick Left Y: none
 	 * Stick Right X: none
 	 * Stick Right Y: none
+	 * Trigger Left: open grabber
+	 * Trigger Right: close grabber
 	 * Button A: none
 	 * Button B: Set elevator height high
 	 * Button X: Set elevator height minimum
@@ -108,8 +112,30 @@ public class RobotData {
 	public static final double elevCruiseVel = 1000.0;
 	public static final double elevCruiseAccel = 100.0;
 	
+	//Maximum height of first stage, in clicks.
+	public static final double elevStageOneMax = 30.0 * RobotData.elevClicksPerUnit;
+	
 	//Target height for elevator, in inches above drivebase.
-	public static double elevDesiredPosition = 0.0;
+	public static double elevPositionTarget = 0.0;
+	public static double elevS1PositionTarget = 0.0;
+	public static double elevS1Position = 0.0;
+	public static double elevS2PositionTarget = 0.0;
+	public static double elevS2Position = 0.0;
+	
+	//Maximum current draw by Talon.
+	public static double elevS1OutputMax = 0;
+	public static double elevS2OutputMax = 0;
+	
+	//Remaining distance to target
+	public static double elevDistRemainder = 0;
+	public static double elevS1DistRemainder = 0;
+	public static double elevS2DistRemainder = 0;
+	
+	
+	/*
+	 * Values used by the RobotArm class. 
+	 */
+	
 	
 	
 	/*

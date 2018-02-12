@@ -18,11 +18,12 @@ public class EightBitElev {
 
 	}
 
-	//help
-	
+	// help
+
 	public void talonConfig(TalonSRX thisTalon) {
 		/* first choose the sensor */
-		thisTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, RobotData.elevPIDLoopIdx, RobotData.elevTimeoutMs);
+		thisTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, RobotData.elevPIDLoopIdx,
+				RobotData.elevTimeoutMs);
 		thisTalon.setSensorPhase(true);
 		thisTalon.setInverted(false);
 
@@ -53,62 +54,89 @@ public class EightBitElev {
 
 	}
 
-	double talonMax = 0.0;
-	double cvMax = 0.0;
-	double mttremainder = 0;
-	double currentPosition = 0;
-
 	public void display() {
 		/* smart dash plots */
-		SmartDashboard.putNumber("Elevator SensorVel", stageOneTalon.getSelectedSensorVelocity(RobotData.elevPIDLoopIdx));
-		SmartDashboard.putNumber("Elevator SensorPos", stageOneTalon.getSelectedSensorPosition(RobotData.elevPIDLoopIdx));
+		SmartDashboard.putNumber("Elevator S1 SensorVel",
+				stageOneTalon.getSelectedSensorVelocity(RobotData.elevPIDLoopIdx));
+		SmartDashboard.putNumber("Elevator S1 SensorPos",
+				stageOneTalon.getSelectedSensorPosition(RobotData.elevPIDLoopIdx));
 
-		SmartDashboard.putNumber("Elevator MotorOutputPercent", stageOneTalon.getMotorOutputPercent());
+		SmartDashboard.putNumber("Elevator S1 MotorOutputPercent", stageOneTalon.getMotorOutputPercent());
 
-		SmartDashboard.putNumber("Elevator ClosedLoopError", stageOneTalon.getClosedLoopError(RobotData.elevPIDLoopIdx));
-		SmartDashboard.putNumber("Elevator ClosedLoopTarget", stageOneTalon.getClosedLoopError(RobotData.elevPIDLoopIdx));
+		SmartDashboard.putNumber("Elevator S1 ClosedLoopError",
+				stageOneTalon.getClosedLoopError(RobotData.elevPIDLoopIdx));
+		SmartDashboard.putNumber("Elevator S1 ClosedLoopTarget",
+				stageOneTalon.getClosedLoopError(RobotData.elevPIDLoopIdx));
 
-		SmartDashboard.putNumber("Elevator CruiseVelocity", 300);
-		SmartDashboard.putNumber("Elevator CruiseAcceleration", 300);
+		SmartDashboard.putNumber("Elevator CruiseVelocity", RobotData.elevCruiseVel);
+		SmartDashboard.putNumber("Elevator CruiseAcceleration", RobotData.elevCruiseAccel);
 
 		SmartDashboard.putNumber("Time", Timer.getFPGATimestamp());
 
-		SmartDashboard.putNumber("Elevator Remaining Distance", mttremainder / RobotData.elevClicksPerUnit);
-		SmartDashboard.putNumber("Elevator Talon Current", stageOneTalon.getOutputCurrent());
+		SmartDashboard.putNumber("Elevator Remaining Distance", mtt1remainder / RobotData.elevClicksPerUnit);
+		SmartDashboard.putNumber("Elevator S1 Talon Current", stageOneTalon.getOutputCurrent());
 
 		/* print the Active Trajectory Point Motion Magic is going towards */
-		SmartDashboard.putNumber("Elevator ActTrajVelocity", stageOneTalon.getActiveTrajectoryVelocity());
-		SmartDashboard.putNumber("Elevator ActTrajPosition", stageOneTalon.getActiveTrajectoryPosition());
-		SmartDashboard.putNumber("Elevator ActTrajHeading", stageOneTalon.getActiveTrajectoryHeading());
+		SmartDashboard.putNumber("Elevator S1 ActTrajVelocity", stageOneTalon.getActiveTrajectoryVelocity());
+		SmartDashboard.putNumber("Elevator S1 ActTrajPosition", stageOneTalon.getActiveTrajectoryPosition());
+		SmartDashboard.putNumber("Elevator S1 ActTrajHeading", stageOneTalon.getActiveTrajectoryHeading());
 
-		currentPosition = stageOneTalon.getSelectedSensorPosition(RobotData.elevPIDLoopIdx);
-		SmartDashboard.putNumber("currentPosition", currentPosition / RobotData.elevClicksPerUnit);
-		mttremainder = targetPosition - currentPosition;
+		RobotData.elevS1Position = stageOneTalon.getSelectedSensorPosition(RobotData.elevPIDLoopIdx);
+		SmartDashboard.putNumber("S1 Position", RobotData.elevS1Position / RobotData.elevClicksPerUnit);
+		mtt1remainder = RobotData.elevS1PositionTarget - RobotData.elevS1Position;
 
-		talonMax = Math.max(talonMax, stageOneTalon.getOutputCurrent());
-		SmartDashboard.putNumber("Elevator Talon Max Current", talonMax);
+		RobotData.elevS1OutputMax = Math.max(RobotData.elevS1OutputMax, stageOneTalon.getOutputCurrent());
+		SmartDashboard.putNumber("Elevator Talon Max Current", RobotData.elevS1OutputMax);
 		double elevcvMax = Math.max(cvMax, stageOneTalon.getSelectedSensorVelocity(RobotData.elevPIDLoopIdx));
 		SmartDashboard.putNumber("Elevator Max Velocity", elevcvMax);
 
-		SmartDashboard.putNumber("DesiredPosition", RobotData.elevDesiredPosition);
+		SmartDashboard.putNumber("DesiredPosition", RobotData.elevPositionTarget);
+		SmartDashboard.putNumber("targetSensorPosition", RobotData.elevPositionTarget);
+
+		double Abtn_cvMax = Math.max(cvMax, stageOneTalon.getSelectedSensorVelocity(RobotData.elevPIDLoopIdx));
+		SmartDashboard.putNumber("Max Velocity A Button", Abtn_cvMax);
+		
+		
+		/* smart dash plots */
+		SmartDashboard.putNumber("Elevator SensorVel",
+				stageTwoTalon.getSelectedSensorVelocity(RobotData.elevPIDLoopIdx));
+		SmartDashboard.putNumber("Elevator SensorPos",
+				stageTwoTalon.getSelectedSensorPosition(RobotData.elevPIDLoopIdx));
+
+		SmartDashboard.putNumber("Elevator MotorOutputPercent", stageTwoTalon.getMotorOutputPercent());
+
+		SmartDashboard.putNumber("Elevator Talon Current", stageTwoTalon.getOutputCurrent());
+		SmartDashboard.putNumber("Elevator S2 Remaining Distance", mtt2remainder / RobotData.elevClicksPerUnit);
+		
+		/* print the Active Trajectory Point Motion Magic is going towards */
+		SmartDashboard.putNumber("Elevator ActTrajVelocity", stageTwoTalon.getActiveTrajectoryVelocity());
+		SmartDashboard.putNumber("Elevator ActTrajPosition", stageTwoTalon.getActiveTrajectoryPosition());
+		SmartDashboard.putNumber("Elevator ActTrajHeading", stageTwoTalon.getActiveTrajectoryHeading());
+
+		RobotData.elevS2Position = stageOneTalon.getSelectedSensorPosition(RobotData.elevPIDLoopIdx);
+		SmartDashboard.putNumber("currentPosition", RobotData.elevS2Position / RobotData.elevClicksPerUnit);
+		mtt2remainder = RobotData.elevS2PositionTarget - RobotData.elevS2Position;
+
+		RobotData.elevS2OutputMax = Math.max(RobotData.elevS2OutputMax, stageOneTalon.getOutputCurrent());
+		SmartDashboard.putNumber("Elevator Talon Max Current", RobotData.elevS2OutputMax);
+		double elevcvMax = Math.max(cvMax, stageOneTalon.getSelectedSensorVelocity(RobotData.elevPIDLoopIdx));
+		SmartDashboard.putNumber("Elevator Max Velocity", elevcvMax);
+
+		SmartDashboard.putNumber("DesiredPosition", RobotData.elevPositionTarget);
 		SmartDashboard.putNumber("targetSensorPosition", targetPosition);
 
 		double Abtn_cvMax = Math.max(cvMax, stageOneTalon.getSelectedSensorVelocity(RobotData.elevPIDLoopIdx));
 		SmartDashboard.putNumber("Max Velocity A Button", Abtn_cvMax);
-
 	}
 
-	double targetPosition;
-
 	public void moveElevatorTo(double position) {
-		targetPosition =InchesToS1Clicks(position);
-		double stageOneMax = 30.0 * RobotData.elevClicksPerUnit;
+		RobotData.elevPositionTarget = InchesToS1Clicks(position);
 		/* Motion Magic - 4096 ticks/rev * 10 Rotations in either direction */
 		if (position <= 30) {
-			moveS1To(targetPosition);
+			moveS1To(RobotData.elevPositionTarget);
 		} else {
-			moveS1To(stageOneMax);
-			moveS2To(targetPosition - stageOneMax);
+			moveS1To(RobotData.elevStageOneMax);
+			moveS2To(RobotData.elevPositionTarget - RobotData.elevStageOneMax);
 		}
 	}
 
@@ -116,6 +144,7 @@ public class EightBitElev {
 		talonConfig(stageOneTalon);
 		talonConfig(stageTwoTalon);
 	}
+
 	int InchesToS1Clicks(double pos) {
 		return (int) (pos * RobotData.elevClicksPerUnit);
 	}
@@ -123,9 +152,11 @@ public class EightBitElev {
 	int InchesToS2Clicks(double pos) {
 		return (int) (pos * RobotData.elevClicksPerUnit);
 	}
-	public void moveS1To(double pos){
+
+	public void moveS1To(double pos) {
 		stageOneTalon.set(ControlMode.MotionMagic, pos);
 	}
+
 	public void moveS2To(double pos) {
 		stageTwoTalon.set(ControlMode.MotionMagic, pos);
 	}
