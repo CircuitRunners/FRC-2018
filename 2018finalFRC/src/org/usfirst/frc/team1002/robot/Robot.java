@@ -8,7 +8,6 @@
 package org.usfirst.frc.team1002.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -25,7 +24,9 @@ public class Robot extends IterativeRobot {
 	private static final String kDefaultAuto = "Default";
 	private static final String kCustomAuto = "My Auto";
 	private String m_autoSelected;
-	private SendableChooser<String> m_chooser = new SendableChooser<>();
+	private SendableChooser<String> chooserPos = new SendableChooser<>();
+	private SendableChooser<String> chooserTarg = new SendableChooser<>();
+	private SendableChooser<String> chooserAlt = new SendableChooser<>();
 	public static XboxController driver = new XboxController(RobotData.driverPort);
 	public static XboxController operator = new XboxController(RobotData.operatorPort);
 	static MarioDrive drive = new MarioDrive();
@@ -38,9 +39,9 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
-		m_chooser.addDefault("Default Auto", kDefaultAuto);
-		m_chooser.addObject("My Auto", kCustomAuto);
-		SmartDashboard.putData("Auto choices", m_chooser);
+		chooserPos.addDefault("Default Auto", kDefaultAuto);
+		chooserPos.addObject("My Auto", kCustomAuto);
+		SmartDashboard.putData("Auto choices", chooserPos);
 	}
 
 	/**
@@ -57,7 +58,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousInit() {
-		m_autoSelected = m_chooser.getSelected();
+		m_autoSelected = chooserPos.getSelected();
 		// autoSelected = SmartDashboard.getString("Auto Selector",
 		// defaultAuto);
 		System.out.println("Auto selected: " + m_autoSelected);
