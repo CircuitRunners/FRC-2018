@@ -10,6 +10,9 @@ public class RobotArm {
 	public RobotArm() {
 		armTalon = new TalonSRX(RobotData.armTalonPort);
 	}
+	public void Init() {
+		talonConfig(armTalon);
+	}
 	
 	public void talonConfig(TalonSRX thisTalon) {
 		/* first choose the sensor */

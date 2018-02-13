@@ -113,7 +113,7 @@ public class RobotData {
 	public static final double elevCruiseAccel = 100.0;
 	
 	//Maximum height of first stage, in clicks.
-	public static final double elevStageOneMax = 30.0 * RobotData.elevClicksPerUnit;
+	public static final double elevStageOneMax = 30.0 * elevClicksPerUnit;
 	
 	//Target height for elevator, in inches above drivebase.
 	public static double elevPositionTarget = 0.0;
@@ -136,7 +136,7 @@ public class RobotData {
 	public static double elevS1CVMax = 0.0;
 	public static double elevS2CVMax = 0.0;
 	
-	
+
 	/*
 	 * Values used by the RobotArm class. 
 	 */
