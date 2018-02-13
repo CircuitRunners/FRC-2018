@@ -1,17 +1,21 @@
 package org.usfirst.frc.team1002.robot;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.Faults;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 public class RobotArm {
 	TalonSRX armTalon;
-
+	Faults f;
+	
 	public RobotArm() {
 		armTalon = new TalonSRX(RobotData.armTalonPort);
 	}
 	public void Init() {
 		talonConfig(armTalon);
+		f = new Faults();
 	}
 	
 	public void talonConfig(TalonSRX thisTalon) {
@@ -46,5 +50,21 @@ public class RobotArm {
 		thisTalon.configMotionCruiseVelocity((int) RobotData.armCruiseVel, RobotData.armTimeoutMs);
 		thisTalon.configMotionAcceleration((int) RobotData.armCruiseAccel, RobotData.armTimeoutMs);
 
+	}
+	
+	public void moveArmTo(double angle) {
+		armTalon.getFaults(f);
+		if (f.ForwardLimitSwitch) {
+			// what do you want to put here
+		}
+		if (f.ReverseLimitSwitch) {
+			// what do you want to put here
+		}
+
+		armTalon.set(ControlMode.MotionMagic, angle);
+	}
+	
+	int degreesToClicks(double angle) {
+		return (int) (angle * RobotData.armClicksPerUnit);
 	}
 }
