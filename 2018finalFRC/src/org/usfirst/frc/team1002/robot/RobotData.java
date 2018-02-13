@@ -34,26 +34,34 @@ public class RobotData {
 	 * Button Select: none
 	 * Button LS: none
 	 * Button RS: none
+	 * DPad Up:
+	 * DPad Left:
+	 * DPad Down:
+	 * DPad Right:
 	 */
 	
 	/* 
 	 * Operator button mappings:
 	 * Stick Left X: none
-	 * Stick Left Y: none
+	 * Stick Left Y: Elevator up/down
 	 * Stick Right X: none
-	 * Stick Right Y: none
+	 * Stick Right Y: Arm up/down
 	 * Trigger Left: open grabber
 	 * Trigger Right: close grabber
 	 * Button A: none
-	 * Button B: Set elevator height high
-	 * Button X: Set elevator height minimum
-	 * Button Y: Set elevator height low
+	 * Button B: none
+	 * Button X: none
+	 * Button Y: none
 	 * Button LB: none
 	 * Button RB: none
 	 * Button Start: none
 	 * Button Select: none
 	 * Button LS: none
 	 * Button RS: none
+	 * DPad Up:
+	 * DPad Left:
+	 * DPad Down:
+	 * DPad Right:
 	 */
 	
 	
