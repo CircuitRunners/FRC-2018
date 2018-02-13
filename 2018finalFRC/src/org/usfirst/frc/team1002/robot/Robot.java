@@ -106,28 +106,26 @@ public class Robot extends IterativeRobot {
 		if (driver.getBButton()) {
 			RobotData.elevPositionTarget = RobotData.elevHeightB;
 		}
-		if (driver.getPOV(0) != -1) {
 
-			if (driver.getPOV(0) > 270 || driver.getPOV(0) < 90) {
-				RobotData.elevPositionTarget += 0.5;
-			} else {
-				RobotData.elevPositionTarget -= 0.5;
-			}
+		if (operator.getX(GenericHID.Hand.kLeft) > 0.1) {
+			RobotData.elevPositionTarget += 0.5;
 		}
-		if(operator.getTriggerAxis(GenericHID.Hand.kLeft) > .1) {
+		if (operator.getX(GenericHID.Hand.kLeft) < -0.1) {
+			RobotData.elevPositionTarget -= 0.5;
+		}
+
+		if (operator.getTriggerAxis(GenericHID.Hand.kLeft) > .1) {
 			grab.moveGrabber(operator.getTriggerAxis(GenericHID.Hand.kLeft));
 		}
-		if(operator.getTriggerAxis(GenericHID.Hand.kRight) > .1) {
+		if (operator.getTriggerAxis(GenericHID.Hand.kRight) > .1) {
 			grab.moveGrabber(operator.getTriggerAxis(GenericHID.Hand.kRight));
 		}
-		if(operator.getPOV(0) != -1) {
-			if(operator.getPOV(0) > 270 || operator.getPOV(0) < 90) {
-				//move arm up
-			}else {
-			//move arm down
-			}
+		if (operator.getX(GenericHID.Hand.kRight) >0.1) {
+			//do something
 		}
-		
+		if(operator.getX(GenericHID.Hand.kRight) < -0.1) {
+			//do something
+		}
 	}
 
 }
