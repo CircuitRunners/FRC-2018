@@ -13,7 +13,7 @@ public class RobotArm {
 	public RobotArm() {
 		armTalon = new TalonSRX(RobotData.armTalonPort);
 	}
-	public void Init() {
+	public void init() {
 		talonConfig(armTalon);
 		f = new Faults();
 	}
@@ -60,8 +60,8 @@ public class RobotArm {
 		if (f.ReverseLimitSwitch) {
 			// what do you want to put here
 		}
-
-		armTalon.set(ControlMode.MotionMagic, angle);
+		RobotData.armPositionTarget = degreesToClicks(angle);
+		armTalon.set(ControlMode.MotionMagic, RobotData.armPositionTarget);
 	}
 	
 	int degreesToClicks(double angle) {

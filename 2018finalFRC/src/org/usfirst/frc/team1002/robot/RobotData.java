@@ -123,7 +123,7 @@ public class RobotData {
 	//Maximum height of first stage, in clicks.
 	public static final double elevStageOneMax = 30.0 * elevClicksPerUnit;
 	
-	//Target height for elevator, in inches above drivebase.
+	//Target height for elevator, in clicks above drivebase.
 	public static double elevPositionTarget = 0.0;
 	public static double elevPosition = 0.0;
 	public static double elevS1PositionTarget = 0.0;
@@ -167,6 +167,9 @@ public class RobotData {
 	//Max speed and acceleration of arm Talon. 
 	public static final double armCruiseVel = 1000.0;
 	public static final double armCruiseAccel = 100.0;
+	
+	//Desired position of the arm, in clicks.
+	public static double armPositionTarget = 0.0;
 	
 	/*
 	 * Values used by the CameraControl class.

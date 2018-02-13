@@ -138,7 +138,7 @@ public class EightBitElev {
 	}
 
 	public void moveElevatorTo(double position) {
-		RobotData.elevPositionTarget = InchesToS1Clicks(position);
+		RobotData.elevPositionTarget = inchesToS1Clicks(position);
 		/* Motion Magic - 4096 ticks/rev * 10 Rotations in either direction */
 		if (position <= 30) {
 			moveS1To(RobotData.elevPositionTarget);
@@ -150,17 +150,17 @@ public class EightBitElev {
 
 	Faults f;
 
-	public void Init() {
+	public void init() {
 		talonConfig(stageOneTalon);
 		talonConfig(stageTwoTalon);
 		f = new Faults();
 	}
 
-	int InchesToS1Clicks(double pos) {
+	int inchesToS1Clicks(double pos) {
 		return (int) (pos * RobotData.elevClicksPerUnit);
 	}
 
-	int InchesToS2Clicks(double pos) {
+	int inchesToS2Clicks(double pos) {
 		return (int) (pos * RobotData.elevClicksPerUnit);
 	}
 
