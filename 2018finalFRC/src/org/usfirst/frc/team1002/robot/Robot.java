@@ -97,29 +97,37 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void getControllers() {
-		if (Robot.driver.getXButton()) {
+		if (driver.getXButton()) {
 			RobotData.elevPositionTarget = RobotData.elevHeightX;
 		}
-		if (Robot.driver.getYButton()) {
+		if (driver.getYButton()) {
 			RobotData.elevPositionTarget = RobotData.elevHeightY;
 		}
-		if (Robot.driver.getBButton()) {
+		if (driver.getBButton()) {
 			RobotData.elevPositionTarget = RobotData.elevHeightB;
 		}
-		if (Robot.driver.getPOV(0) != -1) {
+		if (driver.getPOV(0) != -1) {
 
-			if (Robot.driver.getPOV(0) > 270 || Robot.driver.getPOV(0) < 90) {
+			if (driver.getPOV(0) > 270 || driver.getPOV(0) < 90) {
 				RobotData.elevPositionTarget += 0.5;
 			} else {
 				RobotData.elevPositionTarget -= 0.5;
 			}
 		}
-		if(Robot.operator.getTriggerAxis(GenericHID.Hand.kLeft) > .1) {
-			grab.moveGrabber(Robot.operator.getTriggerAxis(GenericHID.Hand.kLeft));
+		if(operator.getTriggerAxis(GenericHID.Hand.kLeft) > .1) {
+			grab.moveGrabber(operator.getTriggerAxis(GenericHID.Hand.kLeft));
 		}
-		if(Robot.operator.getTriggerAxis(GenericHID.Hand.kRight) > .1) {
-			grab.moveGrabber(Robot.operator.getTriggerAxis(GenericHID.Hand.kRight));
+		if(operator.getTriggerAxis(GenericHID.Hand.kRight) > .1) {
+			grab.moveGrabber(operator.getTriggerAxis(GenericHID.Hand.kRight));
 		}
+		if(operator.getPOV(0) != -1) {
+			if(operator.getPOV(0) > 270 || operator.getPOV(0) < 90) {
+				//move arm up
+			}else {
+			//move arm down
+			}
+		}
+		
 	}
 
 }
