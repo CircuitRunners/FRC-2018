@@ -1,14 +1,14 @@
 package org.usfirst.frc.team1002.robot;
 
-import edu.wpi.first.wpilibj.VictorSP;
+import edu.wpi.first.wpilibj.Servo;
 
 public class Grabber {
-	VictorSP grabberMotor;
+	Servo grabberMotor;
 	public Grabber() {
-	 grabberMotor = new VictorSP(0);
+	 grabberMotor = new Servo(0);
 	}
 
-	public void moveGrabber(double spd) {
-		grabberMotor.set(spd);
+	public void moveGrabber(double angle) {
+		grabberMotor.set(angle);
 	}
 }

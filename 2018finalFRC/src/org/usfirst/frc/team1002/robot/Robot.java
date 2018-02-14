@@ -21,12 +21,20 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * project.
  */
 public class Robot extends IterativeRobot {
-	private static final String kDefaultAuto = "Default";
-	private static final String kCustomAuto = "My Auto";
-	private String m_autoSelected;
-	private SendableChooser<String> chooserPos = new SendableChooser<>();
-	private SendableChooser<String> chooserTarg = new SendableChooser<>();
-	private SendableChooser<String> chooserAlt = new SendableChooser<>();
+	public static final String posLeft = "Left";
+	public static final String posCenter = "Center";
+	public static final String posRight = "Right";
+	public static final String targSwitch = "Switch";
+	public static final String targScale = "Scale";
+	public static final String targLine = "None";
+	public static final String altFalse = "Normal";
+	public static final String altTrue = "Alternate";
+	public static String posSelected;
+	public static String targSelected;
+	public static String altSelected;	
+	private SendableChooser<String> chooserPos = new SendableChooser<>();	//Choose the starting position of the robot, with respect to the driver wall.
+	private SendableChooser<String> chooserTarg = new SendableChooser<>();	//Choose the target of the robot: switch, scale, or nothing. 
+	private SendableChooser<String> chooserAlt = new SendableChooser<>();	//Choose if the robot should use an alternate path. Intended to be used if we think another robot will obstruct ours. 
 	public static XboxController driver = new XboxController(RobotData.driverPort);
 	public static XboxController operator = new XboxController(RobotData.operatorPort);
 	static MarioDrive drive = new MarioDrive();
@@ -39,9 +47,17 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
-		chooserPos.addDefault("Default Auto", kDefaultAuto);
-		chooserPos.addObject("My Auto", kCustomAuto);
-		SmartDashboard.putData("Auto choices", chooserPos);
+		chooserPos.addDefault("Left", posLeft);
+		chooserPos.addObject("Center", posCenter);
+		chooserPos.addObject("Right", posRight);
+		chooserTarg.addDefault("Switch", targSwitch);
+		chooserTarg.addObject("Scale", targScale);
+		chooserTarg.addObject("Cross Line", targLine);
+		chooserAlt.addDefault("Normal Mode", altFalse);
+		chooserAlt.addObject("Alternate Mode", altTrue);
+		SmartDashboard.putData("Starting Position", chooserPos);
+		SmartDashboard.putData("Target", chooserTarg);
+		SmartDashboard.putData("Alternate Mode?", chooserAlt);
 	}
 
 	/**
@@ -58,10 +74,15 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousInit() {
-		m_autoSelected = chooserPos.getSelected();
+		posSelected = chooserPos.getSelected();
+		targSelected = chooserTarg.getSelected();
+		altSelected = chooserAlt.getSelected();
 		// autoSelected = SmartDashboard.getString("Auto Selector",
 		// defaultAuto);
-		System.out.println("Auto selected: " + m_autoSelected);
+		System.out.println("Starting Position: " + posSelected);
+		System.out.println("Target Selected: " + targSelected);
+		System.out.println("Autonomous Mode: " + altSelected);
+		Autonomous.init();
 	}
 
 	/**
@@ -69,15 +90,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
-		switch (m_autoSelected) {
-		case kCustomAuto:
-			// Put custom auto code here
-			break;
-		case kDefaultAuto:
-		default:
-			// Put default auto code here
-			break;
-		}
+		Autonomous.run();
 	}
 
 	/**
@@ -116,10 +129,10 @@ public class Robot extends IterativeRobot {
 		}
 
 		if (operator.getTriggerAxis(GenericHID.Hand.kLeft) > .1) {
-			grab.moveGrabber(operator.getTriggerAxis(GenericHID.Hand.kLeft));
+			grab.moveGrabber(90);
 		}
 		if (operator.getTriggerAxis(GenericHID.Hand.kRight) > .1) {
-			grab.moveGrabber(operator.getTriggerAxis(GenericHID.Hand.kRight));
+			grab.moveGrabber(15);
 		}
 		if (operator.getX(GenericHID.Hand.kRight) >0.1) {
 			//do something

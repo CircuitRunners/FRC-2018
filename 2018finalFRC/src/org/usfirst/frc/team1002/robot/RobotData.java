@@ -172,6 +172,13 @@ public class RobotData {
 	public static double armPositionTarget = 0.0;
 	
 	/*
+	 * Values used by the Grabber class.
+	 */
+	
+	//Servo max: ???
+	//Servo min: ???
+	
+	/*
 	 * Values used by the CameraControl class.
 	 */
 	
