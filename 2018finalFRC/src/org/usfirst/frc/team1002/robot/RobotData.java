@@ -8,9 +8,9 @@ import edu.wpi.first.wpilibj.VictorSP;
  */
 public class RobotData {
 	
-	/*
-	 * This is where controller mappings are. 
-	 */
+/*
+ * This is where controller mappings are. 
+ */
 	
 	//Controller ports - driver controls drivebase, operator controls elevator, arm, and grabber.
 	public static final int driverPort = 0;
@@ -65,9 +65,9 @@ public class RobotData {
 	 */
 	
 	
-	/*
-	 * Values used by the MarioDrive class.
-	 */
+/*
+ * Values used by the MarioDrive class.
+ */
 	
 	//Drivebase motors and their ports.
 	public static final SpeedController driveFrontRight = new VictorSP(7);
@@ -144,10 +144,13 @@ public class RobotData {
 	public static double elevS1CVMax = 0.0;
 	public static double elevS2CVMax = 0.0;
 	
+	//Is the elevator not doing anything?
+	public static boolean elevIdle = true;
 
-	/*
-	 * Values used by the RobotArm class. 
-	 */
+	
+/*
+ * Values used by the RobotArm class. 
+ */
 	
 	//Talon Port
 	public static final int armTalonPort = 13;
@@ -171,16 +174,22 @@ public class RobotData {
 	//Desired position of the arm, in clicks.
 	public static double armPositionTarget = 0.0;
 	
-	/*
-	 * Values used by the Grabber class.
-	 */
+	//Is the arm not doing anything?
+	public static boolean armIdle = true;
+	
+/*
+ * Values used by the Grabber class.
+ */
 	
 	//Servo max: ???
 	//Servo min: ???
 	
-	/*
-	 * Values used by the CameraControl class.
-	 */
+	//Is the Grabber not doing anything?
+	public static boolean grabIdle = true;
+	
+/*
+ * Values used by the CameraControl class.
+ */
 	
 	//Resolution of SmartDashboard feed.
 	public static final int camXRes = 640;
@@ -195,5 +204,4 @@ public class RobotData {
 	//The number of frames the camera has reached
 	public static int camFrameNumber = 0;
 
-	
 }

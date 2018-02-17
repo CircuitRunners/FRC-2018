@@ -138,8 +138,13 @@ public class EightBitElev {
 	}
 
 	public void moveElevatorTo(double position) {
+		RobotData.elevIdle = false;
 		RobotData.elevPositionTarget = inchesToS1Clicks(position);
 		/* Motion Magic - 4096 ticks/rev * 10 Rotations in either direction */
+		if (Math.abs((stageOneTalon.getSelectedSensorPosition(RobotData.elevPIDLoopIdx)
+				+ stageTwoTalon.getSelectedSensorPosition(RobotData.elevPIDLoopIdx))) - position <= 0.02) {
+			RobotData.elevIdle = true;
+		}
 		if (position <= 30) {
 			moveS1To(RobotData.elevPositionTarget);
 		} else {
@@ -177,7 +182,7 @@ public class EightBitElev {
 	}
 
 	public void moveS2To(double pos) {
-		stageOneTalon.getFaults(f);
+		stageTwoTalon.getFaults(f);
 		if (f.ForwardLimitSwitch) {
 			// what do you want to put here
 		}

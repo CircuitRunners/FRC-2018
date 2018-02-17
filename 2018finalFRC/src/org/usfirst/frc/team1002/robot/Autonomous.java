@@ -12,6 +12,8 @@ public class Autonomous {
 	private static char sideScale; // side scale is on.
 	private static char handed; // L or R, which direction robot should turn first. Used to reduce repeated
 								// code.
+	private static boolean switchNear;
+	private static boolean scaleNear;
 
 	private static MarioDrive drive = new MarioDrive();
 	private static EightBitElev elev = new EightBitElev();
@@ -89,5 +91,24 @@ public class Autonomous {
 	public static void run() {
 		drive.autoDrive(.5, .5, 6);
 
+	}
+
+	public void getAutoFromSelections() {
+		switch (posIndex) {
+		case 'L':
+			switch (sideSwitch) {
+			case 'L':
+				switchNear = true;
+			case 'R':
+				switchNear = false;
+			}
+		case 'R':
+			switch(sideSwitch) {
+			case 'L':
+				switchNear = false;
+			case 'R':
+				switchNear = true;
+			}
+		}
 	}
 }
