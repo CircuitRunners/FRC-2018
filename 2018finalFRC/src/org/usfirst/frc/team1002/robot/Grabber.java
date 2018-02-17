@@ -9,6 +9,8 @@ public class Grabber {
 	}
 
 	public void moveGrabber(double angle) {
+		RobotData.grabIdle = false;
 		grabberMotor.set(angle);
+		RobotData.grabIdle = true;
 	}
 }
