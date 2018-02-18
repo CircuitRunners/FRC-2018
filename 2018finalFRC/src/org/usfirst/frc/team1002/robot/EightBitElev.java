@@ -158,7 +158,7 @@ public class EightBitElev {
 	public void init() {
 		talonConfig(stageOneTalon);
 		talonConfig(stageTwoTalon);
-		f = new Faults();
+		// f = new Faults();
 	}
 
 	int inchesToS1Clicks(double pos) {
@@ -170,25 +170,25 @@ public class EightBitElev {
 	}
 
 	public void moveS1To(double pos) {
-		stageOneTalon.getFaults(f);
-		if (f.ForwardLimitSwitch) {
-			// what do you want to put here
-		}
-		if (f.ReverseLimitSwitch) {
-			// what do you want to put here
-		}
+		// stageOneTalon.getFaults(f);
+		// if (f.ForwardLimitSwitch) {
+		// what do you want to put here
+		// }
+		// if (f.ReverseLimitSwitch) {
+		// what do you want to put here
+		// }
 
 		stageOneTalon.set(ControlMode.MotionMagic, pos);
 	}
 
 	public void moveS2To(double pos) {
-		stageTwoTalon.getFaults(f);
-		if (f.ForwardLimitSwitch) {
-			// what do you want to put here
-		}
-		if (f.ReverseLimitSwitch) {
-			// what do you want to put here
-		}
+		// stageTwoTalon.getFaults(f);
+		// if (f.ForwardLimitSwitch) {
+		// what do you want to put here
+		// }
+		// if (f.ReverseLimitSwitch) {
+		// what do you want to put here
+		// }
 		stageTwoTalon.set(ControlMode.MotionMagic, pos);
 	}
 

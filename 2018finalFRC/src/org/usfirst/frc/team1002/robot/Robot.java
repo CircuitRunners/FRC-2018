@@ -31,15 +31,20 @@ public class Robot extends IterativeRobot {
 	public static final String altTrue = "Alternate";
 	public static String posSelected;
 	public static String targSelected;
-	public static String altSelected;	
-	private SendableChooser<String> chooserPos = new SendableChooser<>();	//Choose the starting position of the robot, with respect to the driver wall.
-	private SendableChooser<String> chooserTarg = new SendableChooser<>();	//Choose the target of the robot: switch, scale, or nothing. 
-	private SendableChooser<String> chooserAlt = new SendableChooser<>();	//Choose if the robot should use an alternate path. Intended to be used if we think another robot will obstruct ours. 
+	public static String altSelected;
+	private SendableChooser<String> chooserPos = new SendableChooser<>(); // Choose the starting position of the robot,
+																			// with respect to the driver wall.
+	private SendableChooser<String> chooserTarg = new SendableChooser<>(); // Choose the target of the robot: switch,
+																			// scale, or nothing.
+	private SendableChooser<String> chooserAlt = new SendableChooser<>(); // Choose if the robot should use an alternate
+																			// path. Intended to be used if we think
+																			// another robot will obstruct ours.
 	public static XboxController driver = new XboxController(RobotData.driverPort);
 	public static XboxController operator = new XboxController(RobotData.operatorPort);
 	static MarioDrive drive = new MarioDrive();
 	EightBitElev elev = new EightBitElev();
 	Grabber grab = new Grabber();
+	RobotArm arm = new RobotArm();
 
 	/**
 	 * This function is run when the robot is first started up and should be used
@@ -98,6 +103,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
+		getControllers();
 		drive.teleOp();
 		elev.moveElevatorTo(RobotData.elevPositionTarget);
 	}
@@ -120,12 +126,13 @@ public class Robot extends IterativeRobot {
 		if (driver.getBButton()) {
 			RobotData.elevPositionTarget = RobotData.elevHeightB;
 		}
-
-		if (operator.getX(GenericHID.Hand.kLeft) > 0.1) {
-			RobotData.elevPositionTarget += 0.5;
-		}
-		if (operator.getX(GenericHID.Hand.kLeft) < -0.1) {
-			RobotData.elevPositionTarget -= 0.5;
+		if (operator.getPOV(0) != -1) {
+			if (operator.getPOV(0) > 270 || operator.getPOV(0) < 90) {
+				RobotData.elevPositionTarget += 0.5;
+			}
+			else{
+				RobotData.elevPositionTarget -= 0.5;
+			}
 		}
 
 		if (operator.getTriggerAxis(GenericHID.Hand.kLeft) > .1) {
@@ -134,11 +141,11 @@ public class Robot extends IterativeRobot {
 		if (operator.getTriggerAxis(GenericHID.Hand.kRight) > .1) {
 			grab.moveGrabber(15);
 		}
-		if (operator.getX(GenericHID.Hand.kRight) >0.1) {
-			//do something
+		if (operator.getX(GenericHID.Hand.kRight) > 0.1) {
+			arm.moveArmTo(RobotData.armPositionDegrees);
 		}
-		if(operator.getX(GenericHID.Hand.kRight) < -0.1) {
-			//do something
+		if (operator.getX(GenericHID.Hand.kRight) < -0.1) {
+			// do something
 		}
 	}
 

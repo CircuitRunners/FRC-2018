@@ -96,7 +96,7 @@ public class RobotData {
  */
 	
 	//Port for stage 1 & 2 Talons on elevator. 
-	public static final int elevS1TalonPort = 3;
+	public static final int elevS1TalonPort = 5;
 	public static final int elevS2TalonPort = 6;
 	
 	//Port for elevator Talon PID. 
@@ -153,7 +153,7 @@ public class RobotData {
  */
 	
 	//Talon Port
-	public static final int armTalonPort = 13;
+	public static final int armTalonPort = 7;
 	
 	//Port for arm Talon PID. 
 	public static final int armSlotIdx = 0;
@@ -166,7 +166,8 @@ public class RobotData {
 		
 	//Number of encoder clicks per degree the arm travels. 
 	public static final double armClicksPerUnit = 11.38; 
-	
+	//Arm position in degrees
+	public static double armPositionDegrees = 0.0;
 	//Max speed and acceleration of arm Talon. 
 	public static final double armCruiseVel = 1000.0;
 	public static final double armCruiseAccel = 100.0;
