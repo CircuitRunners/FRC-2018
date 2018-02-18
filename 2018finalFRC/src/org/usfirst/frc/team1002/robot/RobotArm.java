@@ -15,7 +15,7 @@ public class RobotArm {
 	}
 	public void init() {
 		talonConfig(armTalon);
-		f = new Faults();
+		//f = new Faults();
 	}
 	
 	public void talonConfig(TalonSRX thisTalon) {
@@ -53,13 +53,13 @@ public class RobotArm {
 	}
 	
 	public void moveArmTo(double angle) {
-		armTalon.getFaults(f);
-		if (f.ForwardLimitSwitch) {
+		//armTalon.getFaults(f);
+	//	if (f.ForwardLimitSwitch) {
 			// what do you want to put here
-		}
-		if (f.ReverseLimitSwitch) {
+	//	}
+	//	if (f.ReverseLimitSwitch) {
 			// what do you want to put here
-		}
+	//	}
 		RobotData.armPositionTarget = degreesToClicks(angle);
 		armTalon.set(ControlMode.MotionMagic, RobotData.armPositionTarget);
 	}
