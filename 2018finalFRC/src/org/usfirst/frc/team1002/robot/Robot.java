@@ -63,6 +63,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putData("Starting Position", chooserPos);
 		SmartDashboard.putData("Target", chooserTarg);
 		SmartDashboard.putData("Alternate Mode?", chooserAlt);
+		elev.init();
 	}
 
 	/**

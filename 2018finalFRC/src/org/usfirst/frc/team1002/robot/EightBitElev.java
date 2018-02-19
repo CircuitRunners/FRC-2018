@@ -75,9 +75,9 @@ public class EightBitElev {
 		SmartDashboard.putNumber("Time", Timer.getFPGATimestamp());
 
 		SmartDashboard.putNumber("Elevator Remaining Distance",
-				RobotData.elevDistRemainder / RobotData.elevClicksPerUnit);
+				RobotData.elevDistRemainder / RobotData.elevClicksPerUnitS1);
 		SmartDashboard.putNumber("Elevator S1 Remaining Distance",
-				RobotData.elevS1DistRemainder / RobotData.elevClicksPerUnit);
+				RobotData.elevS1DistRemainder / RobotData.elevClicksPerUnitS1);
 		SmartDashboard.putNumber("Elevator S1 Talon Current", stageOneTalon.getOutputCurrent());
 
 		/* print the Active Trajectory Point Motion Magic is going towards */
@@ -86,7 +86,7 @@ public class EightBitElev {
 		SmartDashboard.putNumber("Elevator S1 ActTrajHeading", stageOneTalon.getActiveTrajectoryHeading());
 
 		RobotData.elevS1Position = stageOneTalon.getSelectedSensorPosition(RobotData.elevPIDLoopIdx);
-		SmartDashboard.putNumber("S1 Position", RobotData.elevS1Position / RobotData.elevClicksPerUnit);
+		SmartDashboard.putNumber("S1 Position", RobotData.elevS1Position / RobotData.elevClicksPerUnitS1);
 		RobotData.elevDistRemainder = RobotData.elevPositionTarget - RobotData.elevPosition;
 		RobotData.elevS1DistRemainder = RobotData.elevS1PositionTarget - RobotData.elevS1Position;
 
@@ -113,7 +113,7 @@ public class EightBitElev {
 
 		SmartDashboard.putNumber("Elevator S2 Talon Current", stageTwoTalon.getOutputCurrent());
 		SmartDashboard.putNumber("Elevator S2 Remaining Distance",
-				RobotData.elevS2DistRemainder / RobotData.elevClicksPerUnit);
+				RobotData.elevS2DistRemainder / RobotData.elevClicksPerUnitS1);
 
 		/* print the Active Trajectory Point Motion Magic is going towards */
 		SmartDashboard.putNumber("Elevator S2 ActTrajVelocity", stageTwoTalon.getActiveTrajectoryVelocity());
@@ -121,7 +121,7 @@ public class EightBitElev {
 		SmartDashboard.putNumber("Elevator S2 ActTrajHeading", stageTwoTalon.getActiveTrajectoryHeading());
 
 		RobotData.elevS2Position = stageTwoTalon.getSelectedSensorPosition(RobotData.elevPIDLoopIdx);
-		SmartDashboard.putNumber("currentPosition", RobotData.elevS2Position / RobotData.elevClicksPerUnit);
+		SmartDashboard.putNumber("currentPosition", RobotData.elevS2Position / RobotData.elevClicksPerUnitS1);
 		RobotData.elevS2DistRemainder = RobotData.elevS2PositionTarget - RobotData.elevS2Position;
 
 		RobotData.elevS2OutputMax = Math.max(RobotData.elevS2OutputMax, stageTwoTalon.getOutputCurrent());
@@ -139,17 +139,17 @@ public class EightBitElev {
 
 	public void moveElevatorTo(double position) {
 		RobotData.elevIdle = false;
-		RobotData.elevPositionTarget = inchesToS1Clicks(position);
+
 		/* Motion Magic - 4096 ticks/rev * 10 Rotations in either direction */
 		if (Math.abs((stageOneTalon.getSelectedSensorPosition(RobotData.elevPIDLoopIdx)
 				+ stageTwoTalon.getSelectedSensorPosition(RobotData.elevPIDLoopIdx))) - position <= 0.02) {
 			RobotData.elevIdle = true;
 		}
 		if (position <= 35) {
-			moveS2To(RobotData.elevPositionTarget);
+			moveS2To(position);
 		} else {
-			moveS2To(RobotData.elevStageTwoMax);
-			moveS1To(RobotData.elevPositionTarget - RobotData.elevStageTwoMax);
+			moveS2To(RobotData.elevStageTwoMaxUnits);
+			moveS1To(position - RobotData.elevStageOneMaxUnits);
 		}
 	}
 
@@ -162,39 +162,45 @@ public class EightBitElev {
 	}
 
 	int inchesToS1Clicks(double pos) {
-		return (int) (pos * RobotData.elevClicksPerUnit);
+		return (int) (pos * RobotData.elevClicksPerUnitS1);
 	}
 
 	int inchesToS2Clicks(double pos) {
-		return (int) (pos * RobotData.elevClicksPerUnit);
+		return (int) (pos * RobotData.elevClicksPerUnitS2);
 	}
 
 	public void moveS1To(double pos) {
 
 		// stageOneTalon.getFaults(f);
 
-		if (pos > RobotData.elevStageOneMax) {
-			pos = RobotData.elevStageOneMax;
+		if (pos > RobotData.elevStageOneMaxUnits) {
+			pos = RobotData.elevStageOneMaxUnits;
 		}
 		if (pos < 0) {
 			pos = 0;
 		}
-		SmartDashboard.putNumber("S1 Height", pos);
-		stageOneTalon.set(ControlMode.MotionMagic, pos);
+
+		SmartDashboard.putNumber("S1 Height (units)", pos);
+		SmartDashboard.putNumber("S1 Height (clicks)", inchesToS1Clicks(pos));
+
+		stageOneTalon.set(ControlMode.MotionMagic, inchesToS1Clicks(pos));
 	}
 
 	public void moveS2To(double pos) {
 
 		// stageTwoTalon.getFaults(f);
 
-		if (pos > RobotData.elevStageTwoMax) {
-			pos = RobotData.elevStageTwoMax;
+		if (pos > RobotData.elevStageTwoMaxUnits) {
+			pos = RobotData.elevStageTwoMaxUnits;
 		}
 		if (pos < 0) {
 			pos = 0;
 		}
-		SmartDashboard.putNumber("S2 Height", pos);
-		stageTwoTalon.set(ControlMode.MotionMagic, pos);
+
+		SmartDashboard.putNumber("S2 Height(units)", pos);
+		SmartDashboard.putNumber("S2 Height(clicks)", inchesToS2Clicks(pos));
+
+		stageTwoTalon.set(ControlMode.MotionMagic, inchesToS2Clicks(pos));
 	}
 
 }

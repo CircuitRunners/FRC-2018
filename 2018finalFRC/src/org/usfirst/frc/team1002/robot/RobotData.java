@@ -109,7 +109,8 @@ public class RobotData {
 	public static final int elevTimeoutMs = 10;
 	
 	//Number of encoder clicks per inch the elevator travels. 
-	public static final double elevClicksPerUnit = 895.99; 
+	public static final double elevClicksPerUnitS1 = 895.99; 
+	public static final double elevClicksPerUnitS2 = 895.99;
 	
 	//Height target set when operator presses respective button, in inches above drivebase.
 	public static final double elevHeightX = 0;
@@ -121,8 +122,11 @@ public class RobotData {
 	public static final double elevCruiseAccel = 400.0;
 	
 	//Maximum height of two stages, in clicks.
-	public static final double elevStageOneMax = 39 * elevClicksPerUnit;
-	public static final double elevStageTwoMax = 35 * elevClicksPerUnit;
+	public static final double elevStageOneMax = 39 * elevClicksPerUnitS1;
+	public static final double elevStageTwoMax = 35 * elevClicksPerUnitS1;
+	
+	public static final double elevStageOneMaxUnits= 39;
+	public static final double elevStageTwoMaxUnits = 35;
 	
 	//Target height for elevator, in clicks above drivebase.
 	public static double elevPositionTarget = 0.0;
