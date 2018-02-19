@@ -106,6 +106,8 @@ public class Robot extends IterativeRobot {
 		getControllers();
 		drive.teleOp();
 		elev.moveElevatorTo(RobotData.elevPositionTarget);
+SmartDashboard.putNumber("Current Position", (elev.stageOneTalon.getSelectedSensorPosition(RobotData.elevPIDLoopIdx)
+				+ elev.stageTwoTalon.getSelectedSensorPosition(RobotData.elevPIDLoopIdx)));
 	}
 
 	/**

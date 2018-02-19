@@ -145,11 +145,11 @@ public class EightBitElev {
 				+ stageTwoTalon.getSelectedSensorPosition(RobotData.elevPIDLoopIdx))) - position <= 0.02) {
 			RobotData.elevIdle = true;
 		}
-		if (position <= 30) {
-			moveS1To(RobotData.elevPositionTarget);
+		if (position <= 35) {
+			moveS2To(RobotData.elevPositionTarget);
 		} else {
-			moveS1To(RobotData.elevStageOneMax);
-			moveS2To(RobotData.elevPositionTarget - RobotData.elevStageOneMax);
+			moveS2To(RobotData.elevStageTwoMax);
+			moveS1To(RobotData.elevPositionTarget - RobotData.elevStageTwoMax);
 		}
 	}
 
@@ -170,25 +170,30 @@ public class EightBitElev {
 	}
 
 	public void moveS1To(double pos) {
-		// stageOneTalon.getFaults(f);
-		// if (f.ForwardLimitSwitch) {
-		// what do you want to put here
-		// }
-		// if (f.ReverseLimitSwitch) {
-		// what do you want to put here
-		// }
 
+		// stageOneTalon.getFaults(f);
+
+		if (pos > RobotData.elevStageOneMax) {
+			pos = RobotData.elevStageOneMax;
+		}
+		if (pos < 0) {
+			pos = 0;
+		}
+		SmartDashboard.putNumber("S1 Height", pos);
 		stageOneTalon.set(ControlMode.MotionMagic, pos);
 	}
 
 	public void moveS2To(double pos) {
+
 		// stageTwoTalon.getFaults(f);
-		// if (f.ForwardLimitSwitch) {
-		// what do you want to put here
-		// }
-		// if (f.ReverseLimitSwitch) {
-		// what do you want to put here
-		// }
+
+		if (pos > RobotData.elevStageTwoMax) {
+			pos = RobotData.elevStageTwoMax;
+		}
+		if (pos < 0) {
+			pos = 0;
+		}
+		SmartDashboard.putNumber("S2 Height", pos);
 		stageTwoTalon.set(ControlMode.MotionMagic, pos);
 	}
 

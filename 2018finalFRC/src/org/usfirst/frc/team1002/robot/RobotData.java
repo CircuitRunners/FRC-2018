@@ -117,11 +117,12 @@ public class RobotData {
 	public static final double elevHeightB = 30;
 	
 	//Max speed and acceleration of elevator Talon. 
-	public static final double elevCruiseVel = 1000.0;
-	public static final double elevCruiseAccel = 100.0;
+	public static final double elevCruiseVel = 400.0;
+	public static final double elevCruiseAccel = 400.0;
 	
-	//Maximum height of first stage, in clicks.
-	public static final double elevStageOneMax = 30.0 * elevClicksPerUnit;
+	//Maximum height of two stages, in clicks.
+	public static final double elevStageOneMax = 39 * elevClicksPerUnit;
+	public static final double elevStageTwoMax = 35 * elevClicksPerUnit;
 	
 	//Target height for elevator, in clicks above drivebase.
 	public static double elevPositionTarget = 0.0;
