@@ -6,18 +6,21 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 public class RobotArm {
 	TalonSRX armTalon;
 	Faults f;
-	
+
 	public RobotArm() {
 		armTalon = new TalonSRX(RobotData.armTalonPort);
 	}
+
 	public void init() {
 		talonConfig(armTalon);
-		//f = new Faults();
+		// f = new Faults();
 	}
-	
+
 	public void talonConfig(TalonSRX thisTalon) {
 		/* first choose the sensor */
 		thisTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, RobotData.elevPIDLoopIdx,
@@ -51,19 +54,24 @@ public class RobotArm {
 		thisTalon.configMotionAcceleration((int) RobotData.armCruiseAccel, RobotData.armTimeoutMs);
 
 	}
-	
+
 	public void moveArmTo(double angle) {
-		//armTalon.getFaults(f);
-	//	if (f.ForwardLimitSwitch) {
-			// what do you want to put here
-	//	}
-	//	if (f.ReverseLimitSwitch) {
-			// what do you want to put here
-	//	}
+		// armTalon.getFaults(f);
+		// if (f.ForwardLimitSwitch) {
+		// what do you want to put here
+		// }
+		// if (f.ReverseLimitSwitch) {
+		// what do you want to put here
+		// }
+		
 		RobotData.armPositionTarget = degreesToClicks(angle);
+		
+		SmartDashboard.putNumber("Arm Desired Angle", angle);
+		SmartDashboard.putNumber("Arm desired encoder count", RobotData.armPositionTarget);
+		
 		armTalon.set(ControlMode.MotionMagic, RobotData.armPositionTarget);
 	}
-	
+
 	int degreesToClicks(double angle) {
 		return (int) (angle * RobotData.armClicksPerUnit);
 	}

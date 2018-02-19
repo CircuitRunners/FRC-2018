@@ -43,7 +43,7 @@ public class Robot extends IterativeRobot {
 	public static XboxController operator = new XboxController(RobotData.operatorPort);
 	static MarioDrive drive = new MarioDrive();
 	EightBitElev elev = new EightBitElev();
-	Grabber grab = new Grabber();
+	//Grabber grab = new Grabber();
 	RobotArm arm = new RobotArm();
 
 	/**
@@ -64,6 +64,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putData("Target", chooserTarg);
 		SmartDashboard.putData("Alternate Mode?", chooserAlt);
 		elev.init();
+		arm.init();
 	}
 
 	/**
@@ -107,8 +108,10 @@ public class Robot extends IterativeRobot {
 		getControllers();
 		drive.teleOp();
 		elev.moveElevatorTo(RobotData.elevPositionTarget);
-SmartDashboard.putNumber("Current Position", (elev.stageOneTalon.getSelectedSensorPosition(RobotData.elevPIDLoopIdx)
-				+ elev.stageTwoTalon.getSelectedSensorPosition(RobotData.elevPIDLoopIdx)));
+		SmartDashboard.putNumber("Current Position",
+				(elev.stageOneTalon.getSelectedSensorPosition(RobotData.elevPIDLoopIdx)
+						+ elev.stageTwoTalon.getSelectedSensorPosition(RobotData.elevPIDLoopIdx)));
+		arm.moveArmTo(RobotData.desiredArmAngle);
 	}
 
 	/**
@@ -132,23 +135,28 @@ SmartDashboard.putNumber("Current Position", (elev.stageOneTalon.getSelectedSens
 		if (operator.getPOV(0) != -1) {
 			if (operator.getPOV(0) > 270 || operator.getPOV(0) < 90) {
 				RobotData.elevPositionTarget += 0.5;
-			}
-			else{
+			} else {
 				RobotData.elevPositionTarget -= 0.5;
 			}
 		}
 
 		if (operator.getTriggerAxis(GenericHID.Hand.kLeft) > .1) {
-			grab.moveGrabber(90);
+			//grab.moveGrabber(90);
 		}
 		if (operator.getTriggerAxis(GenericHID.Hand.kRight) > .1) {
-			grab.moveGrabber(15);
+			//grab.moveGrabber(15);
 		}
 		if (operator.getX(GenericHID.Hand.kRight) > 0.1) {
 			arm.moveArmTo(RobotData.armPositionDegrees);
 		}
 		if (operator.getX(GenericHID.Hand.kRight) < -0.1) {
 			// do something
+		}
+		if (operator.getBumper(GenericHID.Hand.kLeft)) {
+			RobotData.desiredArmAngle += 0.1;
+		}
+		if (operator.getBumper(GenericHID.Hand.kRight)) {
+			RobotData.desiredArmAngle -= 0.1;
 		}
 	}
 

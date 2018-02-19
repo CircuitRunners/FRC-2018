@@ -147,6 +147,7 @@ public class EightBitElev {
 		}
 		if (position <= 35) {
 			moveS2To(position);
+			moveS1To(0);
 		} else {
 			moveS2To(RobotData.elevStageTwoMaxUnits);
 			moveS1To(position - RobotData.elevStageOneMaxUnits);
@@ -176,9 +177,6 @@ public class EightBitElev {
 		if (pos > RobotData.elevStageOneMaxUnits) {
 			pos = RobotData.elevStageOneMaxUnits;
 		}
-		if (pos < 0) {
-			pos = 0;
-		}
 
 		SmartDashboard.putNumber("S1 Height (units)", pos);
 		SmartDashboard.putNumber("S1 Height (clicks)", inchesToS1Clicks(pos));
@@ -188,7 +186,7 @@ public class EightBitElev {
 
 	public void moveS2To(double pos) {
 
-		// stageTwoTalon.getFaults(f);
+		//stageTwoTalon.getFaults(f);
 
 		if (pos > RobotData.elevStageTwoMaxUnits) {
 			pos = RobotData.elevStageTwoMaxUnits;
@@ -196,7 +194,9 @@ public class EightBitElev {
 		if (pos < 0) {
 			pos = 0;
 		}
+		// if(f.ReverseLimitSwitch) {
 
+		// }
 		SmartDashboard.putNumber("S2 Height(units)", pos);
 		SmartDashboard.putNumber("S2 Height(clicks)", inchesToS2Clicks(pos));
 

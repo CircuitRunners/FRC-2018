@@ -52,16 +52,16 @@ public class RobotData {
 	 * Button B: none
 	 * Button X: none
 	 * Button Y: none
-	 * Button LB: none
-	 * Button RB: none
+	 * Button LB: Arm up
+	 * Button RB: Arm down
 	 * Button Start: none
 	 * Button Select: none
 	 * Button LS: none
 	 * Button RS: none
-	 * DPad Up:
-	 * DPad Left:
-	 * DPad Down:
-	 * DPad Right:
+	 * DPad Up: elevator up
+	 * DPad Left:xx
+	 * DPad Down:elevator down
+	 * DPad Right:xx
 	 */
 	
 	
@@ -109,7 +109,7 @@ public class RobotData {
 	public static final int elevTimeoutMs = 10;
 	
 	//Number of encoder clicks per inch the elevator travels. 
-	public static final double elevClicksPerUnitS1 = 895.99; 
+	public static final double elevClicksPerUnitS1 = 990; 
 	public static final double elevClicksPerUnitS2 = 895.99;
 	
 	//Height target set when operator presses respective button, in inches above drivebase.
@@ -122,10 +122,10 @@ public class RobotData {
 	public static final double elevCruiseAccel = 400.0;
 	
 	//Maximum height of two stages, in clicks.
-	public static final double elevStageOneMax = 39 * elevClicksPerUnitS1;
+	public static final double elevStageOneMax = 30 * elevClicksPerUnitS1;
 	public static final double elevStageTwoMax = 35 * elevClicksPerUnitS1;
 	
-	public static final double elevStageOneMaxUnits= 39;
+	public static final double elevStageOneMaxUnits= 30;
 	public static final double elevStageTwoMaxUnits = 35;
 	
 	//Target height for elevator, in clicks above drivebase.
@@ -170,15 +170,17 @@ public class RobotData {
 	public static final int armTimeoutMs = 10;
 		
 	//Number of encoder clicks per degree the arm travels. 
-	public static final double armClicksPerUnit = 11.38; 
+	public static final double armClicksPerUnit = 130; 
 	//Arm position in degrees
 	public static double armPositionDegrees = 0.0;
 	//Max speed and acceleration of arm Talon. 
-	public static final double armCruiseVel = 1000.0;
+	public static final double armCruiseVel = 100.0;
 	public static final double armCruiseAccel = 100.0;
 	
 	//Desired position of the arm, in clicks.
 	public static double armPositionTarget = 0.0;
+	//desired angle of the arm, in degrees.
+	public static double desiredArmAngle = 0.0;
 	
 	//Is the arm not doing anything?
 	public static boolean armIdle = true;
