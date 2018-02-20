@@ -71,9 +71,9 @@ public class RobotData {
 	
 	//Drivebase motors and their ports.
 	public static final SpeedController driveFrontRight = new VictorSP(7);
-	public static final SpeedController driveBackRight = new VictorSP(9);
-	public static final SpeedController driveFrontLeft = new VictorSP(8);
-	public static final SpeedController driveBackLeft = new VictorSP(6);
+	public static final SpeedController driveBackRight = new VictorSP(6);
+	public static final SpeedController driveFrontLeft = new VictorSP(9);
+	public static final SpeedController driveBackLeft = new VictorSP(8);
 	
 	//Drive motor encoder port values. 
 	public static final int driveEnc1PortA = 2;
@@ -118,8 +118,8 @@ public class RobotData {
 	public static final double elevHeightB = 30;
 	
 	//Max speed and acceleration of elevator Talon. 
-	public static final double elevCruiseVel = 400.0;
-	public static final double elevCruiseAccel = 400.0;
+	public static final double elevCruiseVel = 4900.0;
+	public static final double elevCruiseAccel = 4200.0;
 	
 	//Maximum height of two stages, in clicks.
 	public static final double elevStageOneMax = 30 * elevClicksPerUnitS1;

@@ -12,14 +12,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class EightBitElev {
 	TalonSRX stageOneTalon;
 	TalonSRX stageTwoTalon;
-
+	Faults f;
 	public EightBitElev() {
 		stageOneTalon = new TalonSRX(RobotData.elevS1TalonPort);
 		stageTwoTalon = new TalonSRX(RobotData.elevS2TalonPort);
-
+		f = new Faults();
 	}
 
-	// help
+
+
 
 	public void talonConfig(TalonSRX thisTalon) {
 		/* first choose the sensor */
@@ -139,11 +140,18 @@ public class EightBitElev {
 
 	public void moveElevatorTo(double position) {
 		RobotData.elevIdle = false;
-
-		/* Motion Magic - 4096 ticks/rev * 10 Rotations in either direction */
+		if (position >= RobotData.elevStageOneMaxUnits + RobotData.elevStageTwoMaxUnits) {
+			position = RobotData.elevStageOneMaxUnits + RobotData.elevStageTwoMaxUnits;
+			RobotData.elevPositionTarget = RobotData.elevStageOneMaxUnits + RobotData.elevStageTwoMaxUnits;
+		}
+		// This tells the robot if the elevator is at idle.
 		if (Math.abs((stageOneTalon.getSelectedSensorPosition(RobotData.elevPIDLoopIdx)
 				+ stageTwoTalon.getSelectedSensorPosition(RobotData.elevPIDLoopIdx))) - position <= 0.02) {
 			RobotData.elevIdle = true;
+		}
+		stageOneTalon.getFaults(f);
+		if(f.ReverseLimitSwitch){
+			RobotData.elevPositionTarget = Math.max(RobotData.elevPositionTarget, 0);
 		}
 		if (position <= 35) {
 			moveS2To(position);
@@ -154,7 +162,6 @@ public class EightBitElev {
 		}
 	}
 
-	Faults f;
 
 	public void init() {
 		talonConfig(stageOneTalon);
@@ -186,7 +193,7 @@ public class EightBitElev {
 
 	public void moveS2To(double pos) {
 
-		//stageTwoTalon.getFaults(f);
+		// stageTwoTalon.getFaults(f);
 
 		if (pos > RobotData.elevStageTwoMaxUnits) {
 			pos = RobotData.elevStageTwoMaxUnits;
