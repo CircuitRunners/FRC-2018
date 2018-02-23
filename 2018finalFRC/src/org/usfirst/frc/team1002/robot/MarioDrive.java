@@ -16,7 +16,7 @@ public class MarioDrive {
 
 		if (value > 0.9)
 			return 1;
-		else if (value < 0.15 && value > -0.15)
+		else if (value < 0.25 && value > -0.25)
 			return 0;
 		else if (value < -0.9) {
 			return -1;
@@ -51,11 +51,7 @@ public class MarioDrive {
 
 		x = smooth(Robot.driver.getY(GenericHID.Hand.kLeft));
 		y = smooth((Robot.driver.getX(GenericHID.Hand.kLeft) * -1));
-		if (!Robot.driver.getBackButton()) {
-			t = smooth((Robot.driver.getX(GenericHID.Hand.kRight) * -1));
-		} else {
-			t = 0;
-		}
+		t = smooth((Robot.driver.getX(GenericHID.Hand.kRight) * -1));
 		if (Math.abs(x - prev_x) > maxSpeedDiff) {
 			x = (prev_x + (x - prev_x) / protectedConstant);
 		}

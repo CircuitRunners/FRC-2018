@@ -88,7 +88,7 @@ public class RobotData {
 	public static final int driveBackLeftPDPSlot = 16;
 	
 	//Distance traveled by wheel per encoder click, in feet. 
-	public static final double driveDistancePerPulse = (1.0 / 90.0);
+	public static final double driveDistancePerPulse = (1.0 / 116.0);
 	
 	
 /*
@@ -118,15 +118,16 @@ public class RobotData {
 	public static final double elevHeightB = 30;
 	
 	//Max speed and acceleration of elevator Talon. 
-	public static final double elevCruiseVel = 4900.0;
-	public static final double elevCruiseAccel = 4200.0;
-	
-	//Maximum height of two stages, in clicks.
-	public static final double elevStageOneMax = 30 * elevClicksPerUnitS1;
-	public static final double elevStageTwoMax = 35 * elevClicksPerUnitS1;
-	
+	public static final double elevCruiseVel = 5400.0;
+	public static final double elevCruiseAccel = 3200.0;
+	//Max height of the Elevator stages in inches.
 	public static final double elevStageOneMaxUnits= 30;
-	public static final double elevStageTwoMaxUnits = 35;
+	public static final double elevStageTwoMaxUnits = 33;
+	//Maximum height of two stages, in clicks.
+	public static final double elevStageOneMax = elevStageOneMaxUnits * elevClicksPerUnitS1;
+	public static final double elevStageTwoMax = elevStageTwoMaxUnits * elevClicksPerUnitS1;
+	
+
 	
 	//Target height for elevator, in clicks above drivebase.
 	public static double elevPositionTarget = 0.0;

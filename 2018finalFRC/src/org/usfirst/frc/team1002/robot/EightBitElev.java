@@ -13,14 +13,12 @@ public class EightBitElev {
 	TalonSRX stageOneTalon;
 	TalonSRX stageTwoTalon;
 	Faults f;
+
 	public EightBitElev() {
 		stageOneTalon = new TalonSRX(RobotData.elevS1TalonPort);
 		stageTwoTalon = new TalonSRX(RobotData.elevS2TalonPort);
 		f = new Faults();
 	}
-
-
-
 
 	public void talonConfig(TalonSRX thisTalon) {
 		/* first choose the sensor */
@@ -150,7 +148,7 @@ public class EightBitElev {
 			RobotData.elevIdle = true;
 		}
 		stageOneTalon.getFaults(f);
-		if(f.ReverseLimitSwitch){
+		if (f.ReverseLimitSwitch) {
 			RobotData.elevPositionTarget = Math.max(RobotData.elevPositionTarget, 0);
 		}
 		if (position <= 35) {
@@ -161,7 +159,6 @@ public class EightBitElev {
 			moveS1To(position - RobotData.elevStageOneMaxUnits);
 		}
 	}
-
 
 	public void init() {
 		talonConfig(stageOneTalon);
@@ -210,4 +207,11 @@ public class EightBitElev {
 		stageTwoTalon.set(ControlMode.MotionMagic, inchesToS2Clicks(pos));
 	}
 
+	public double getElevatorPositionUnits() {
+		return (stageOneTalon.getSelectedSensorPosition(RobotData.elevPIDLoopIdx)/RobotData.elevClicksPerUnitS1)
+				+ (stageTwoTalon.getSelectedSensorPosition(RobotData.elevPIDLoopIdx) / RobotData.elevClicksPerUnitS2);
+	}
+	public void setElevatorPositionUnits(double pos) {
+		moveElevatorTo(pos);
+	}
 }

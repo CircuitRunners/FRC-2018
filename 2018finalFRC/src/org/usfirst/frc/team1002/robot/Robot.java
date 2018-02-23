@@ -90,6 +90,7 @@ public class Robot extends IterativeRobot {
 		System.out.println("Target Selected: " + targSelected);
 		System.out.println("Autonomous Mode: " + altSelected);
 		Autonomous.init();
+		elev.setElevatorPositionUnits(elev.getElevatorPositionUnits());
 	}
 
 	/**
@@ -120,16 +121,34 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void testPeriodic() {
 		elev.display();
+		if(driver.getXButton()) {
+		drive.autoDrive(0.3, 10.0, 6.0);
+		drive.autoTurn(-90,7);
+		drive.autoDrive(0.3, 8.0, 2.0);
+		drive.autoTurn(0, 5);
+		drive.autoDrive(0.3, 10.0, 10);
+		elev.moveElevatorTo(RobotData.elevStageOneMaxUnits + RobotData.elevStageTwoMaxUnits);
+		arm.moveArmTo(20);
+		drive.autoTurn(20, 5);	
+		drive.autoDrive(0.3, 7, 5.5);
+		}
 	}
-
+	public void disabledPeriodic() {
+		SmartDashboard.putNumber("Left Encoder Count",  drive.encL.get());
+		SmartDashboard.putNumber("Right Encoder Count",  drive.encR.get());
+		SmartDashboard.putNumber("Left Encoder Distance",  drive.encL.getDistance());
+		SmartDashboard.putNumber("Right Encoder Distance",  drive.encR.getDistance());
+		
+		//elev.display();
+	}
 	public void getControllers() {
-		if (driver.getXButton()) {
+		if (operator.getXButton()) {
 			RobotData.elevPositionTarget = RobotData.elevHeightX;
 		}
-		if (driver.getYButton()) {
+		if (operator.getYButton()) {
 			RobotData.elevPositionTarget = RobotData.elevHeightY;
 		}
-		if (driver.getBButton()) {
+		if (operator.getBButton()) {
 			RobotData.elevPositionTarget = RobotData.elevHeightB;
 		}
 		if (operator.getPOV(0) != -1) {
@@ -140,11 +159,11 @@ public class Robot extends IterativeRobot {
 			}
 		}
 
-		if (operator.getStartButton()) {
-			grab.moveGrabber(170);
+		if (operator.getBumper(GenericHID.Hand.kLeft)) {
+			grab.moveGrabber(1);
 		}
-		if (operator.getBackButton()) {
-			grab.moveGrabber(0);
+		if (operator.getBumper(GenericHID.Hand.kRight)) {
+			grab.moveGrabber(-1);
 		}
 		if (operator.getX(GenericHID.Hand.kRight) > 0.1) {
 			arm.moveArmTo(RobotData.armPositionDegrees);
@@ -152,11 +171,11 @@ public class Robot extends IterativeRobot {
 		if (operator.getX(GenericHID.Hand.kRight) < -0.1) {
 			// do something
 		}
-		if (operator.getBumper(GenericHID.Hand.kLeft)) {
-			RobotData.desiredArmAngle += 0.1;
+		if (operator.getTriggerAxis(GenericHID.Hand.kLeft)!= 0) {
+			RobotData.desiredArmAngle += operator.getTriggerAxis(GenericHID.Hand.kLeft);
 		}
-		if (operator.getBumper(GenericHID.Hand.kRight)) {
-			RobotData.desiredArmAngle -= 0.1;
+		if (operator.getTriggerAxis(GenericHID.Hand.kRight)!= 0) {
+			RobotData.desiredArmAngle -= operator.getTriggerAxis(GenericHID.Hand.kRight);
 		}
 	}
 
