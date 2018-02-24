@@ -78,6 +78,7 @@ public class Robot extends IterativeRobot {
 	 * You can add additional auto modes by adding additional comparisons to the
 	 * switch structure below with additional strings. If using the SendableChooser
 	 * make sure to add them to the chooser code above as well.
+	 * </p>
 	 */
 	@Override
 	public void autonomousInit() {
@@ -98,6 +99,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
+		drive.checkStatus();
 		Autonomous.run();
 	}
 

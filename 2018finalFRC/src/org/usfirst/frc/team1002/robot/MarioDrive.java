@@ -8,7 +8,12 @@ import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class MarioDrive {
+	private static final int IDLE = 0;
+	private static final int AUTOTURN = 1;
+	private static final int AUTODRIVE = 2;
+	private static final int TELEOP = 3;
 
+	int currentJob = IDLE;
 	private static MecanumDrive marioDrive;
 	private double x, y, t;
 
@@ -27,7 +32,7 @@ public class MarioDrive {
 	ADXRS450_Gyro gyro;
 	Encoder encL;
 	Encoder encR;
-	
+
 	public MarioDrive() {
 
 		marioDrive = new MecanumDrive(RobotData.driveFrontLeft, RobotData.driveBackLeft, RobotData.driveFrontRight,
@@ -47,7 +52,13 @@ public class MarioDrive {
 	static final double protectedConstant = 20;
 	static final double maxSpeedDiff = 0.30;
 
+	public boolean isIdle() {
+		return (currentJob == IDLE);
+	}
+
 	public void teleOp() {
+
+		currentJob = TELEOP;
 
 		x = smooth(Robot.driver.getY(GenericHID.Hand.kLeft));
 		y = smooth((Robot.driver.getX(GenericHID.Hand.kLeft) * -1));
@@ -73,63 +84,104 @@ public class MarioDrive {
 		SmartDashboard.putNumber("Gyro Count Degrees", gyro.getAngle());
 	}
 
+	double desiredHeading = 0;
+	double desiredDistance = 0;
+	double currentTime = 0;
+	double desiredSpeed = 0;
+	double degChange = 0;
+	double currentHeading = 0;
+	double endTime = 0;
+
+	void displayAD() {
+		SmartDashboard.putNumber("Degree Change", degChange);
+		SmartDashboard.putNumber("Current Heading", currentHeading);
+		SmartDashboard.putNumber("Desired Heading", desiredHeading);
+		SmartDashboard.putNumber("Left Encoder Count", encL.get());
+		SmartDashboard.putNumber("Left Encoder Distance", encL.getDistance());
+		SmartDashboard.putNumber("Right Encoder Count", encR.get());
+		SmartDashboard.putNumber("Right Encoder Distance", encR.getDistance());
+	}
+
+	public void checkStatus() {
+		switch (currentJob) {
+		case IDLE:
+			break;
+		case TELEOP:
+			break;
+		case AUTODRIVE:
+			this.checkStatusAD();
+		case AUTOTURN:
+			this.checkStatusAT();
+		}
+	}
+
+	void checkStatusAT() {
+		double twist = 0.0;
+		currentHeading = gyro.getAngle();
+		degChange = (desiredHeading - currentHeading);
+		if (Math.abs(degChange) < 1) {
+			currentJob = IDLE;
+			marioDrive.stopMotor();
+		}
+		currentTime = Timer.getFPGATimestamp();
+		if (currentTime > endTime) {
+			currentJob = IDLE;
+			marioDrive.stopMotor();
+		}
+		if (degChange < 0.0)
+			twist = 0.3;
+		else
+			twist = -0.3;
+
+		marioDrive.driveCartesian(0.0, 0.0, twist);
+
+	}
+
+	void checkStatusAD() {
+		if (Math.min(Math.abs(encL.getDistance()), Math.abs(encR.getDistance())) > Math.abs(desiredDistance)) {
+			currentJob = IDLE;
+			marioDrive.stopMotor();
+		}
+		currentTime = Timer.getFPGATimestamp();
+		if (currentTime > endTime) {
+			currentJob = IDLE;
+			marioDrive.stopMotor();
+		}
+		currentHeading = gyro.getAngle();
+		degChange = ((desiredHeading - currentHeading) * -1) / 50;
+		marioDrive.driveCartesian(0.0, desiredSpeed, degChange);
+		currentTime = Timer.getFPGATimestamp();
+		displayAD();
+	}
+
 	public void autoDrive(double speed, double time, double dist) {
+
+		currentJob = AUTODRIVE;
+
 		speed *= -1;
+
 		boolean forward = true;
-		double currentTime = Timer.getFPGATimestamp();
-		double endTime = Timer.getFPGATimestamp() + time;
-		double desiredDistance = dist;
+
+		endTime = Timer.getFPGATimestamp() + time;
+
 		encL.reset();
 		encR.reset();
-		double desiredHeading = gyro.getAngle();
+
 		if (dist < 0)
 			forward = false;
 		if (!forward)
 			speed *= -1;
 
-		while (currentTime < endTime) {
-			if (Math.min(Math.abs(encL.getDistance()), Math.abs(encR.getDistance())) > Math.abs(desiredDistance))
-				break;
-			double currentHeading = gyro.getAngle();
-			double degChange = ((desiredHeading - currentHeading) * -1) / 50;
-			marioDrive.driveCartesian(0.0, speed, degChange);
-			currentTime = Timer.getFPGATimestamp();
-			SmartDashboard.putNumber("Degree Change", degChange);
-			SmartDashboard.putNumber("Current Heading", currentHeading);
-			SmartDashboard.putNumber("Desired Heading", desiredHeading);
-			SmartDashboard.putNumber("Left Encoder Count", encL.get());
-			SmartDashboard.putNumber("Left Encoder Distance", encL.getDistance());
-			SmartDashboard.putNumber("Right Encoder Count", encR.get());
-			SmartDashboard.putNumber("Right Encoder Distance", encR.getDistance());
-			Timer.delay(0.05);
-			// wait 5ms to avoid hogging CPU cycles.
-		}
-		marioDrive.driveCartesian(0.0, 0.0, 0.0);
+		desiredSpeed = speed;
+		desiredDistance = dist;
 	}
 
 	public void autoTurn(double turn, double time) {
-		double currentTime = Timer.getFPGATimestamp();
-		double endTime = Timer.getFPGATimestamp() + time;
 
-		double desiredHeading = turn;
+		currentJob = AUTOTURN;
 
-		while (currentTime < endTime) {
-			double twist = 0.0;
-			double currentHeading = gyro.getAngle();
-			double degChange = (desiredHeading - currentHeading);
-			if (Math.abs(degChange) < 1)
-				break;
-
-			if (degChange < 0.0)
-				twist = 0.3;
-			else
-				twist = -0.3;
-
-			marioDrive.driveCartesian(0.0, 0.0, twist);
-			currentTime = Timer.getFPGATimestamp();
-			Timer.delay(0.05);
-			// wait 5ms to avoid hogging CPU cycles.
-		}
+		endTime = Timer.getFPGATimestamp() + time;
+		desiredHeading = turn;
 	}
 
 }

@@ -55,6 +55,20 @@ public class RobotArm {
 
 	}
 
+	void displayArmStatus() {
+		SmartDashboard.putNumber("Arm Desired Angle", RobotData.armPositionDegrees);
+		SmartDashboard.putNumber("Arm desired encoder count", RobotData.armPositionTarget);
+	}
+
+	public void checkStatus() {
+		if (Math.abs(
+				armTalon.getSelectedSensorPosition(RobotData.armPIDLoopIdx) - RobotData.armPositionTarget) <= 0.3) {
+			RobotData.armIdle = true;
+		} else {
+			RobotData.armIdle = false;
+		}
+	}
+
 	public void moveArmTo(double angle) {
 		// armTalon.getFaults(f);
 		// if (f.ForwardLimitSwitch) {
@@ -63,16 +77,25 @@ public class RobotArm {
 		// if (f.ReverseLimitSwitch) {
 		// what do you want to put here
 		// }
-		
+
 		RobotData.armPositionTarget = degreesToClicks(angle);
-		
-		SmartDashboard.putNumber("Arm Desired Angle", angle);
-		SmartDashboard.putNumber("Arm desired encoder count", RobotData.armPositionTarget);
-		
+
 		armTalon.set(ControlMode.MotionMagic, RobotData.armPositionTarget);
 	}
 
 	int degreesToClicks(double angle) {
 		return (int) (angle * RobotData.armClicksPerUnit);
+	}
+
+	public double getArmPositionUnits() {
+		return (armTalon.getSelectedSensorPosition(RobotData.armPIDLoopIdx) / RobotData.armClicksPerUnit);
+	}
+
+	public void setArmPositionUnits(double pos) {
+		moveArmTo(pos);
+	}
+
+	public void resetArmPositon() {
+		moveArmTo(0);
 	}
 }

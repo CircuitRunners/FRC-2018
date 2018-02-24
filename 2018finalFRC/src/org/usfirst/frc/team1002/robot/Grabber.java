@@ -1,13 +1,11 @@
 package org.usfirst.frc.team1002.robot;
 
-import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Victor;
 
 public class Grabber {
 
-	
 	SpeedController grabberMotor;
 
 	public Grabber() {
@@ -21,7 +19,7 @@ public class Grabber {
 			RobotData.grabIdle = false;
 			grabberMotor.set(0.85);
 			Timer.delay(0.5);
-			grabberMotor.set(0);
+			grabberMotor.set(0.15);
 			RobotData.grabIdle = true;
 		case -1:
 			RobotData.grabIdle = false;
