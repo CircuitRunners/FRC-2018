@@ -214,4 +214,11 @@ public class EightBitElev {
 	public void setElevatorPositionUnits(double pos) {
 		moveElevatorTo(pos);
 	}
+	public void checkStatus() {
+		if(Math.abs(getElevatorPositionUnits() - RobotData.elevPositionTarget) <= 0.3) {
+			RobotData.elevIdle = true;
+		}else {
+			RobotData.elevIdle = false;
+		}
+	}
 }

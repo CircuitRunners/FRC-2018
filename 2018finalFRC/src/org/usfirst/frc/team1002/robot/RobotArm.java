@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class RobotArm {
 	TalonSRX armTalon;
-	Faults f;
+	//Faults f;
 
 	public RobotArm() {
 		armTalon = new TalonSRX(RobotData.armTalonPort);
