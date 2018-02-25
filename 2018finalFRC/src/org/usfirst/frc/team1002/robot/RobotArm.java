@@ -18,6 +18,7 @@ public class RobotArm {
 
 	public void init() {
 		talonConfig(armTalon);
+		
 		// f = new Faults();
 	}
 

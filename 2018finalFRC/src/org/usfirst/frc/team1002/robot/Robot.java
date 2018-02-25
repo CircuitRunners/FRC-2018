@@ -7,8 +7,11 @@
 
 package org.usfirst.frc.team1002.robot;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -45,6 +48,7 @@ public class Robot extends IterativeRobot {
 	EightBitElev elev = new EightBitElev();
 	Grabber grab = new Grabber();
 	RobotArm arm = new RobotArm();
+	static PowerDistributionPanel pdp = new PowerDistributionPanel(0);
 
 	/**
 	 * This function is run when the robot is first started up and should be used
@@ -82,6 +86,8 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousInit() {
+		RobotData.desiredArmAngle = arm.getArmPositionUnits();
+		//RobotData.elevPositionTarget = elev.getElevatorPositionUnits();
 		posSelected = chooserPos.getSelected();
 		targSelected = chooserTarg.getSelected();
 		altSelected = chooserAlt.getSelected();
@@ -91,7 +97,7 @@ public class Robot extends IterativeRobot {
 		System.out.println("Target Selected: " + targSelected);
 		System.out.println("Autonomous Mode: " + altSelected);
 		Autonomous.init();
-		elev.setElevatorPositionUnits(elev.getElevatorPositionUnits());
+	//	elev.setElevatorPositionUnits(elev.getElevatorPositionUnits());
 	}
 
 	/**
@@ -101,10 +107,13 @@ public class Robot extends IterativeRobot {
 	public void autonomousPeriodic() {
 		drive.checkStatus();
 		arm.checkStatus();
-		elev.checkStatus();
+		//elev.checkStatus();
 		Autonomous.run();
 	}
-
+	public void teleopIinit() {
+		RobotData.desiredArmAngle = arm.getArmPositionUnits();
+	//	RobotData.elevPositionTarget = elev.getElevatorPositionUnits();
+	}
 	/**
 	 * This function is called periodically during operator control.
 	 */
@@ -155,9 +164,15 @@ public class Robot extends IterativeRobot {
 		}
 		if (operator.getPOV(0) != -1) {
 			if (operator.getPOV(0) > 270 || operator.getPOV(0) < 90) {
-				RobotData.elevPositionTarget += 0.5;
+				//RobotData.elevPositionTarget += 0.5;
+				RobotData.elevLastEncPos = elev.getEncoderPosition(elev.elevatorTalon);
+				elev.moveElevatorPecrcentageBased(0.5);
+				elev.elevatorTalon.set(ControlMode.MotionMagic, elev.elevatorTalon.getSelectedSensorPosition(RobotData.elevPIDLoopIdx));
 			} else {
-				RobotData.elevPositionTarget -= 0.5;
+				//RobotData.elevPositionTarget -= 0.5;
+				RobotData.elevLastEncPos = elev.getEncoderPosition(elev.elevatorTalon);				
+				elev.moveElevatorPecrcentageBased(-0.5);
+				elev.moveElevToCurrentPos();
 			}
 		}
 

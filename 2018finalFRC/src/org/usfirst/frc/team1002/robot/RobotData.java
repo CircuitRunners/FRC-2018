@@ -152,7 +152,8 @@ public class RobotData {
 	
 	//Is the elevator not doing anything?
 	public static boolean elevIdle = true;
-
+	//last elevator position.
+	public static double elevLastEncPos = 0;
 	
 /*
  * Values used by the RobotArm class. 
@@ -175,8 +176,8 @@ public class RobotData {
 	//Arm position in degrees
 	public static double armPositionDegrees = 0.0;
 	//Max speed and acceleration of arm Talon. 
-	public static final double armCruiseVel = 100.0;
-	public static final double armCruiseAccel = 100.0;
+	public static final double armCruiseVel = 300.0;
+	public static final double armCruiseAccel = 200.0;
 	
 	//Desired position of the arm, in clicks.
 	public static double armPositionTarget = 0.0;

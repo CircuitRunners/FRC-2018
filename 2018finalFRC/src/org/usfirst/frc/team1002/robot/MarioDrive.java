@@ -21,12 +21,12 @@ public class MarioDrive {
 
 		if (value > 0.9)
 			return 1;
-		else if (value < 0.25 && value > -0.25)
+		else if (value < 0.22 && value > -0.22)
 			return 0;
 		else if (value < -0.9) {
 			return -1;
 		} else
-			return Math.sin(value);
+			return Math.sin(value) * (Math.PI / 2);
 	}
 
 	ADXRS450_Gyro gyro;
