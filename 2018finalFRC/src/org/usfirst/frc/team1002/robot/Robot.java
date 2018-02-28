@@ -7,8 +7,6 @@
 
 package org.usfirst.frc.team1002.robot;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
@@ -24,6 +22,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * project.
  */
 public class Robot extends IterativeRobot {
+	
 	public static final String posLeft = "Left";
 	public static final String posCenter = "Center";
 	public static final String posRight = "Right";
@@ -42,8 +41,10 @@ public class Robot extends IterativeRobot {
 	private SendableChooser<String> chooserAlt = new SendableChooser<>(); // Choose if the robot should use an alternate
 																			// path. Intended to be used if we think
 																			// another robot will obstruct ours.
-	public static XboxController driver = new XboxController(RobotData.driverPort);
+	
+		public static XboxController driver = new XboxController(RobotData.driverPort);
 	public static XboxController operator = new XboxController(RobotData.operatorPort);
+	
 	static MarioDrive drive = new MarioDrive();
 	EightBitElev elev = new EightBitElev();
 	Grabber grab = new Grabber();
@@ -87,7 +88,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousInit() {
 		RobotData.desiredArmAngle = arm.getArmPositionUnits();
-		//RobotData.elevPositionTarget = elev.getElevatorPositionUnits();
+		// RobotData.elevPositionTarget = elev.getElevatorPositionUnits();
 		posSelected = chooserPos.getSelected();
 		targSelected = chooserTarg.getSelected();
 		altSelected = chooserAlt.getSelected();
@@ -97,7 +98,7 @@ public class Robot extends IterativeRobot {
 		System.out.println("Target Selected: " + targSelected);
 		System.out.println("Autonomous Mode: " + altSelected);
 		Autonomous.init();
-	//	elev.setElevatorPositionUnits(elev.getElevatorPositionUnits());
+		// elev.setElevatorPositionUnits(elev.getElevatorPositionUnits());
 	}
 
 	/**
@@ -107,13 +108,15 @@ public class Robot extends IterativeRobot {
 	public void autonomousPeriodic() {
 		drive.checkStatus();
 		arm.checkStatus();
-		//elev.checkStatus();
+		// elev.checkStatus();
 		Autonomous.run();
 	}
+
 	public void teleopIinit() {
 		RobotData.desiredArmAngle = arm.getArmPositionUnits();
-	//	RobotData.elevPositionTarget = elev.getElevatorPositionUnits();
+		// RobotData.elevPositionTarget = elev.getElevatorPositionUnits();
 	}
+
 	/**
 	 * This function is called periodically during operator control.
 	 */
@@ -121,8 +124,8 @@ public class Robot extends IterativeRobot {
 	public void teleopPeriodic() {
 		getControllers();
 		drive.teleOp();
-		elev.moveElevatorTo(RobotData.elevPositionTarget);
-		
+		elev.moveTo(RobotData.elevPositionTarget);
+
 		arm.moveArmTo(RobotData.desiredArmAngle);
 	}
 
@@ -132,68 +135,92 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void testPeriodic() {
 		elev.display();
-		if(driver.getXButton()) {
-		drive.autoDrive(0.3, 10.0, 6.0);
-		drive.autoTurn(-90,7);
-		drive.autoDrive(0.3, 8.0, 2.0);
-		drive.autoTurn(0, 5);
-		drive.autoDrive(0.3, 10.0, 10);
-		elev.moveElevatorTo(RobotData.elevStageOneMaxUnits + RobotData.elevStageTwoMaxUnits);
-		arm.moveArmTo(20);
-		drive.autoTurn(20, 5);	
-		drive.autoDrive(0.3, 7, 5.5);
+		if (driver.getXButton()) {
+			drive.autoDrive(0.3, 10.0, 6.0);
+			drive.autoTurn(-90, 7);
+			drive.autoDrive(0.3, 8.0, 2.0);
+			drive.autoTurn(0, 5);
+			drive.autoDrive(0.3, 10.0, 10);
+			elev.moveTo(RobotData.elevStageOneMaxUnits + RobotData.elevStageTwoMaxUnits);
+			arm.moveArmTo(20);
+			drive.autoTurn(20, 5);
+			drive.autoDrive(0.3, 7, 5.5);
 		}
 	}
+
 	public void disabledPeriodic() {
-		SmartDashboard.putNumber("Left Encoder Count",  drive.encL.get());
-		SmartDashboard.putNumber("Right Encoder Count",  drive.encR.get());
-		SmartDashboard.putNumber("Left Encoder Distance",  drive.encL.getDistance());
-		SmartDashboard.putNumber("Right Encoder Distance",  drive.encR.getDistance());
-		
-		//elev.display();
+		SmartDashboard.putNumber("Left Encoder Count", drive.encL.get());
+		SmartDashboard.putNumber("Right Encoder Count", drive.encR.get());
+		SmartDashboard.putNumber("Left Encoder Distance", drive.encL.getDistance());
+		SmartDashboard.putNumber("Right Encoder Distance", drive.encR.getDistance());
+
+		// elev.display();
 	}
+
+	boolean lastTimeElevIncrement = false;
+	boolean lastTimeArmIncrement = false;
+
 	public void getControllers() {
+		/*
+		 * The else if's are to ensure only one operation is commanded for each pass of
+		 * the loop
+		 */
+		/*
+		 * Elevator Operation Code +++++++++++++++++++++++++++++++++
+		 */
 		if (operator.getXButton()) {
 			RobotData.elevPositionTarget = RobotData.elevHeightX;
-		}
-		if (operator.getYButton()) {
+		} else if (operator.getYButton()) {
 			RobotData.elevPositionTarget = RobotData.elevHeightY;
-		}
-		if (operator.getBButton()) {
+		} else if (operator.getBButton()) {
 			RobotData.elevPositionTarget = RobotData.elevHeightB;
-		}
-		if (operator.getPOV(0) != -1) {
+		} else if (operator.getPOV(0) != -1) {
+			lastTimeElevIncrement = true;
 			if (operator.getPOV(0) > 270 || operator.getPOV(0) < 90) {
-				//RobotData.elevPositionTarget += 0.5;
-				RobotData.elevLastEncPos = elev.getEncoderPosition(elev.elevatorTalon);
-				elev.moveElevatorPecrcentageBased(0.5);
-				elev.elevatorTalon.set(ControlMode.MotionMagic, elev.elevatorTalon.getSelectedSensorPosition(RobotData.elevPIDLoopIdx));
+				RobotData.elevPositionTarget += 0.5;
 			} else {
-				//RobotData.elevPositionTarget -= 0.5;
-				RobotData.elevLastEncPos = elev.getEncoderPosition(elev.elevatorTalon);				
-				elev.moveElevatorPecrcentageBased(-0.5);
-				elev.moveElevToCurrentPos();
+				RobotData.elevPositionTarget -= 0.5;
 			}
+		} else if (lastTimeElevIncrement) {
+			/*
+			 * This says, if the POV was used last time, when the button is released, stop
+			 * at that point
+			 */
+			lastTimeElevIncrement = false;
+			SmartDashboard.putNumber("Elevator getPosition", elev.getElevatorPositionUnits());
+		//	RobotData.elevPositionTarget = elev.getElevatorPositionUnits();
+			
 		}
 
-		if (operator.getBumper(GenericHID.Hand.kLeft)) {
-			grab.moveGrabber(1);
-		}
-		if (operator.getBumper(GenericHID.Hand.kRight)) {
-			grab.moveGrabber(-1);
-		}
+		/*
+		 * Arm Operation Code +++++++++++++++++++++++++++++++++++++++++
+		 */
+
 		if (operator.getX(GenericHID.Hand.kRight) > 0.1) {
 			arm.moveArmTo(RobotData.armPositionDegrees);
-		}
-		if (operator.getX(GenericHID.Hand.kRight) < -0.1) {
+		} else if (operator.getX(GenericHID.Hand.kRight) < -0.1) {
 			// do something
-		}
-		if (operator.getTriggerAxis(GenericHID.Hand.kLeft)!= 0) {
+		} else if (operator.getTriggerAxis(GenericHID.Hand.kLeft) != 0) {
+			lastTimeArmIncrement = true;
 			RobotData.desiredArmAngle += operator.getTriggerAxis(GenericHID.Hand.kLeft);
-		}
-		if (operator.getTriggerAxis(GenericHID.Hand.kRight)!= 0) {
+		} else if (operator.getTriggerAxis(GenericHID.Hand.kRight) != 0) {
+			lastTimeArmIncrement = true;
 			RobotData.desiredArmAngle -= operator.getTriggerAxis(GenericHID.Hand.kRight);
+		} else if (lastTimeArmIncrement) {
+			/*
+			 * This says, if the POV was used last time, when the button is released, stop
+			 * at that point
+			 */
+			lastTimeArmIncrement = false;
+			RobotData.desiredArmAngle = arm.getArmPositionUnits();
+		}
+		/*
+		 * Grabber Operation Code ++++++++++++++++++++++++++++++++++++++++++
+		 */
+		if (operator.getBumper(GenericHID.Hand.kLeft)) {
+			grab.moveGrabber(1);
+		} else if (operator.getBumper(GenericHID.Hand.kRight)) {
+			grab.moveGrabber(-1);
 		}
 	}
-
 }
