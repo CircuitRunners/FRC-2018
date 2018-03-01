@@ -46,9 +46,9 @@ public class Robot extends IterativeRobot {
 	public static XboxController operator = new XboxController(RobotData.operatorPort);
 	
 	static MarioDrive drive = new MarioDrive();
-	EightBitElev elev = new EightBitElev();
-	Grabber grab = new Grabber();
-	RobotArm arm = new RobotArm();
+	static EightBitElev elev = new EightBitElev();
+	static Grabber grab = new Grabber();
+	static RobotArm arm = new RobotArm();
 	static PowerDistributionPanel pdp = new PowerDistributionPanel(0);
 
 	/**
@@ -124,9 +124,10 @@ public class Robot extends IterativeRobot {
 	public void teleopPeriodic() {
 		getControllers();
 		drive.teleOp();
+		grab.checkStatus();
 		elev.moveTo(RobotData.elevPositionTarget);
 
-		arm.moveArmTo(RobotData.desiredArmAngle);
+		arm.moveTo(RobotData.desiredArmAngle);
 	}
 
 	/**
@@ -141,8 +142,8 @@ public class Robot extends IterativeRobot {
 			drive.autoDrive(0.3, 8.0, 2.0);
 			drive.autoTurn(0, 5);
 			drive.autoDrive(0.3, 10.0, 10);
-			elev.moveTo(RobotData.elevStageOneMaxUnits + RobotData.elevStageTwoMaxUnits);
-			arm.moveArmTo(20);
+			elev.moveTo(RobotData.elevMaxHeightUnits);
+			arm.moveTo(20);
 			drive.autoTurn(20, 5);
 			drive.autoDrive(0.3, 7, 5.5);
 		}
@@ -188,7 +189,7 @@ public class Robot extends IterativeRobot {
 			 */
 			lastTimeElevIncrement = false;
 			SmartDashboard.putNumber("Elevator getPosition", elev.getElevatorPositionUnits());
-		//	RobotData.elevPositionTarget = elev.getElevatorPositionUnits();
+			RobotData.elevPositionTarget = elev.moveElevatorToCurrentPosition();
 			
 		}
 
@@ -197,7 +198,7 @@ public class Robot extends IterativeRobot {
 		 */
 
 		if (operator.getX(GenericHID.Hand.kRight) > 0.1) {
-			arm.moveArmTo(RobotData.armPositionDegrees);
+			arm.moveTo(RobotData.armPositionDegrees);
 		} else if (operator.getX(GenericHID.Hand.kRight) < -0.1) {
 			// do something
 		} else if (operator.getTriggerAxis(GenericHID.Hand.kLeft) != 0) {

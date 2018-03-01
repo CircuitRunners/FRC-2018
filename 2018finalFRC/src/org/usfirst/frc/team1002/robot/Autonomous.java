@@ -11,14 +11,14 @@ public class Autonomous {
 	private static char sideSwitch; // side switch is on.
 	private static char sideScale; // side scale is on.
 	private static char handed; // L or R, which direction robot should turn first. Used to reduce repeated
-								// code.
+	private static final double SPEED = 0.3;		// code.
 	private static boolean switchNear;
 	private static boolean scaleNear;
 
-	private static MarioDrive drive = new MarioDrive();
-	private static EightBitElev elev = new EightBitElev();
-	private static RobotArm arm = new RobotArm();
-	private static Grabber grab = new Grabber();
+	//private static MarioDrive drive = new MarioDrive();
+	//private static EightBitElev elev = new EightBitElev();
+	//private static RobotArm arm = new RobotArm();
+	//private static Grabber grab = new Grabber();
 
 	public static void init() {
 		switch (Robot.posSelected) {
@@ -89,7 +89,7 @@ public class Autonomous {
 	}
 
 	public static void run() {
-		drive.autoDrive(.5, .5, 6);
+		Robot.drive.autoDrive(.5, .5, 6);
 
 	}
 
@@ -111,4 +111,64 @@ public class Autonomous {
 			}
 		}
 	}
+	public void sameSideScale() {
+		int step = 1;
+		switch(step){
+			case 1: 
+				Robot.drive.autoDrive(SPEED, 10.0, 6.0);
+				step++;
+			case 2: 
+				if(!Robot.drive.isIdle()) {
+					break;
+				}
+				Robot.drive.autoTurn(-90, 7);
+				step++;
+			case 3: 
+				if(!Robot.drive.isIdle()) {
+					break;
+				}
+				Robot.drive.autoDrive(SPEED, 8.0, 2.0);
+				step++;
+			case 4:
+				if(!Robot.drive.isIdle()) {
+					break;
+				}
+				Robot.drive.autoTurn(0, 5);
+				step++;
+			case 5: 
+				if(!Robot.drive.isIdle()) {
+					break;
+				}
+				Robot.drive.autoDrive(SPEED, 10.0, 10);
+				step++;
+			case 6:
+				if(!Robot.elev.isIdle()) {
+					break;
+				}
+				Robot.elev.moveTo(RobotData.elevMaxHeightUnits);
+				step++;
+			case 7:
+				if(!Robot.arm.isIdle()) {
+					break;
+				}
+				Robot.arm.moveTo(20);
+				step++;
+			case 8:
+				if(!Robot.drive.isIdle()) {
+					break;
+				}
+				Robot.drive.autoTurn(20, 5);
+				step++;
+			case 9:
+				if(!Robot.drive.isIdle()) {
+					break;
+				}
+				Robot.drive.autoDrive(SPEED, 7, 5.5);
+				//dodododododododododododododododooooo
+		}
+	}
 }
+
+
+
+

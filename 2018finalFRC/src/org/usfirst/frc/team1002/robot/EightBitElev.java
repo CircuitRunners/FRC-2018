@@ -155,32 +155,14 @@ public class EightBitElev {
 	public void moveTo(double position) {
 		RobotData.elevIdle = false;
 		// this will keep the elevator from moving past the maximum height.
-		if (position >= RobotData.elevStageOneMaxUnits + RobotData.elevStageTwoMaxUnits) {
-			position = RobotData.elevStageOneMaxUnits + RobotData.elevStageTwoMaxUnits;
-			RobotData.elevPositionTarget = RobotData.elevStageOneMaxUnits + RobotData.elevStageTwoMaxUnits;
+		if (position >= RobotData.elevMaxHeightUnits) {
+			position = RobotData.elevMaxHeightUnits;
+			RobotData.elevPositionTarget = RobotData.elevMaxHeightUnits;
 		}
-		// This tells the robot if the elevator is at idle.
-		// if
-		// (Math.abs((elevatorTalon.getSelectedSensorPosition(RobotData.elevPIDLoopIdx)
-		// + stageTwoTalon.getSelectedSensorPosition(RobotData.elevPIDLoopIdx))) -
-		// position <= 0.02) {
-		// RobotData.elevIdle = true;
-		// }
-		// elevatorTalon.getFaults(f);
-		// if (f.ReverseLimitSwitch) {
-		// RobotData.elevPositionTarget = Math.max(RobotData.elevPositionTarget, 0);
-		// }
-
-		position = Math.min(RobotData.elevStageOneMaxUnits, position);
+		
 		position = Math.max(0, position);
+		
 		SmartDashboard.putNumber("Elevator Target", position);
-
-		// stageOneTalon.getFaults(f);
-
-		if (position > RobotData.elevStageOneMaxUnits) {
-			position = RobotData.elevStageOneMaxUnits;
-		}
-
 		SmartDashboard.putNumber("S1 Height (units)", position);
 		SmartDashboard.putNumber("S1 Height (clicks)", inchesToClicks(position));
 
@@ -201,15 +183,10 @@ public class EightBitElev {
 		return pos / RobotData.elevClicksPerUnitS1;
 	}
 
-	// public double getElevatorPositionUnits() {
-	// return (elevatorTalon.getSelectedSensorPosition(RobotData.elevPIDLoopIdx) /
-	// RobotData.elevClicksPerUnitS1)
-	// + (stageTwoTalon.getSelectedSensorPosition(RobotData.elevPIDLoopIdx) /
-	// RobotData.elevClicksPerUnitS2);
-	// }
-
-	public void setElevatorPositionUnits(double pos) {
-		moveTo(pos);
+	public double moveElevatorToCurrentPosition() {
+		int ePos = elevatorTalon.getSelectedSensorPosition(RobotData.elevPIDLoopIdx);
+		elevatorTalon.set(ControlMode.MotionMagic, ePos);
+		return clicksToInches(elevatorTalon.getSelectedSensorPosition(RobotData.elevPIDLoopIdx));
 	}
 
 	// public void checkStatus() {
@@ -263,5 +240,8 @@ public class EightBitElev {
 		// } else {
 		// RobotData.elevIdle = false;
 		// }
+	}
+	public boolean isIdle() {
+		return RobotData.elevIdle;
 	}
 }

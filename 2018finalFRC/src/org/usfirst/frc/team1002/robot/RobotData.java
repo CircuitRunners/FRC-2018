@@ -121,11 +121,11 @@ public class RobotData {
 	public static final double elevCruiseVel = 5400.0;
 	public static final double elevCruiseAccel = 3200.0;
 	//Max height of the Elevator stages in inches.
-	public static final double elevStageOneMaxUnits= 30;
+	public static final double elevMaxHeightUnits= 30;
 	public static final double elevStageTwoMaxUnits = 33;
 	//Maximum height of two stages, in clicks.
-	public static final double elevStageOneMax = elevStageOneMaxUnits * elevClicksPerUnitS1;
-	public static final double elevStageTwoMax = elevStageTwoMaxUnits * elevClicksPerUnitS1;
+	public static final double elevStageOneMax = elevMaxHeightUnits * elevClicksPerUnitS1;
+	//public static final double elevStageTwoMax = elevStageTwoMaxUnits * elevClicksPerUnitS1;
 	
 
 	

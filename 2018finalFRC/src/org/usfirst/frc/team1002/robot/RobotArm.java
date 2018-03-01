@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class RobotArm {
 	TalonSRX armTalon;
-	//Faults f;
+	// Faults f;
 
 	public RobotArm() {
 		armTalon = new TalonSRX(RobotData.armTalonPort);
@@ -18,7 +18,7 @@ public class RobotArm {
 
 	public void init() {
 		talonConfig(armTalon);
-		
+
 		// f = new Faults();
 	}
 
@@ -70,7 +70,7 @@ public class RobotArm {
 		}
 	}
 
-	public void moveArmTo(double angle) {
+	public void moveTo(double angle) {
 		// armTalon.getFaults(f);
 		// if (f.ForwardLimitSwitch) {
 		// what do you want to put here
@@ -93,10 +93,14 @@ public class RobotArm {
 	}
 
 	public void setArmPositionUnits(double pos) {
-		moveArmTo(pos);
+		moveTo(pos);
 	}
 
 	public void resetArmPositon() {
-		moveArmTo(0);
+		moveTo(0);
+	}
+
+	public boolean isIdle() {
+		return RobotData.armIdle;
 	}
 }
