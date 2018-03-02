@@ -110,8 +110,11 @@ public class MarioDrive {
 			break;
 		case AUTODRIVE:
 			this.checkStatusAD();
+			displayAD();
+			break;
 		case AUTOTURN:
 			this.checkStatusAT();
+			break;
 		}
 	}
 
@@ -150,6 +153,9 @@ public class MarioDrive {
 		currentHeading = gyro.getAngle();
 		degChange = ((desiredHeading - currentHeading) * -1) / 50;
 		marioDrive.driveCartesian(0.0, desiredSpeed, degChange);
+		SmartDashboard.putNumber("Desired Speed", desiredSpeed);
+		SmartDashboard.putNumber("Degree Change", degChange);
+
 		currentTime = Timer.getFPGATimestamp();
 		displayAD();
 	}

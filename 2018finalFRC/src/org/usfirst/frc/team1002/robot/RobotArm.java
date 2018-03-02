@@ -68,6 +68,8 @@ public class RobotArm {
 		} else {
 			RobotData.armIdle = false;
 		}
+		SmartDashboard.putNumber("Arm Height (Units)", RobotData.armPositionTarget);
+		SmartDashboard.putNumber("Arm Height (Clicks)", degreesToClicks(RobotData.armPositionTarget));
 	}
 
 	public void moveTo(double angle) {
@@ -82,6 +84,7 @@ public class RobotArm {
 		RobotData.armPositionTarget = degreesToClicks(angle);
 
 		armTalon.set(ControlMode.MotionMagic, RobotData.armPositionTarget);
+
 	}
 
 	int degreesToClicks(double angle) {

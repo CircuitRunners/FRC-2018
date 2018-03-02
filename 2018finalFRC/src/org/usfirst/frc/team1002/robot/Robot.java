@@ -22,7 +22,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * project.
  */
 public class Robot extends IterativeRobot {
-	
+
 	public static final String posLeft = "Left";
 	public static final String posCenter = "Center";
 	public static final String posRight = "Right";
@@ -41,15 +41,16 @@ public class Robot extends IterativeRobot {
 	private SendableChooser<String> chooserAlt = new SendableChooser<>(); // Choose if the robot should use an alternate
 																			// path. Intended to be used if we think
 																			// another robot will obstruct ours.
-	
-		public static XboxController driver = new XboxController(RobotData.driverPort);
+
+	public static XboxController driver = new XboxController(RobotData.driverPort);
 	public static XboxController operator = new XboxController(RobotData.operatorPort);
-	
+
 	static MarioDrive drive = new MarioDrive();
 	static EightBitElev elev = new EightBitElev();
 	static Grabber grab = new Grabber();
 	static RobotArm arm = new RobotArm();
 	static PowerDistributionPanel pdp = new PowerDistributionPanel(0);
+	static Autonomous auto = new Autonomous();
 
 	/**
 	 * This function is run when the robot is first started up and should be used
@@ -97,7 +98,7 @@ public class Robot extends IterativeRobot {
 		System.out.println("Starting Position: " + posSelected);
 		System.out.println("Target Selected: " + targSelected);
 		System.out.println("Autonomous Mode: " + altSelected);
-		Autonomous.init();
+		auto.init();
 		// elev.setElevatorPositionUnits(elev.getElevatorPositionUnits());
 	}
 
@@ -108,8 +109,11 @@ public class Robot extends IterativeRobot {
 	public void autonomousPeriodic() {
 		drive.checkStatus();
 		arm.checkStatus();
-		// elev.checkStatus();
-		Autonomous.run();
+		elev.checkStatus();
+		// Autonomous.run();
+		auto.sameSideScale();
+		
+
 	}
 
 	public void teleopIinit() {
@@ -123,11 +127,12 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		getControllers();
+		elev.moveTo(RobotData.elevPositionTarget);
+		arm.moveTo(RobotData.desiredArmAngle);
 		drive.teleOp();
 		grab.checkStatus();
-		elev.moveTo(RobotData.elevPositionTarget);
-
-		arm.moveTo(RobotData.desiredArmAngle);
+		arm.checkStatus();
+		
 	}
 
 	/**
@@ -147,6 +152,7 @@ public class Robot extends IterativeRobot {
 			drive.autoTurn(20, 5);
 			drive.autoDrive(0.3, 7, 5.5);
 		}
+
 	}
 
 	public void disabledPeriodic() {
@@ -175,12 +181,15 @@ public class Robot extends IterativeRobot {
 			RobotData.elevPositionTarget = RobotData.elevHeightY;
 		} else if (operator.getBButton()) {
 			RobotData.elevPositionTarget = RobotData.elevHeightB;
+		} else if (operator.getAButton()) {
+			RobotData.elevPositionTarget = 20;
+			RobotData.armPositionTarget = 10;
 		} else if (operator.getPOV(0) != -1) {
 			lastTimeElevIncrement = true;
 			if (operator.getPOV(0) > 270 || operator.getPOV(0) < 90) {
-				RobotData.elevPositionTarget += 0.5;
+				RobotData.elevPositionTarget += 0.2;
 			} else {
-				RobotData.elevPositionTarget -= 0.5;
+				RobotData.elevPositionTarget -= 0.2;
 			}
 		} else if (lastTimeElevIncrement) {
 			/*
@@ -189,8 +198,8 @@ public class Robot extends IterativeRobot {
 			 */
 			lastTimeElevIncrement = false;
 			SmartDashboard.putNumber("Elevator getPosition", elev.getElevatorPositionUnits());
-			RobotData.elevPositionTarget = elev.moveElevatorToCurrentPosition();
-			
+			//RobotData.elevPositionTarget = elev.moveElevatorToCurrentPosition();
+
 		}
 
 		/*

@@ -8,6 +8,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Grabber {
 
+	int loop;
+	double currentTime;
+	double endTime;
+	double direction;
+	final double OPENING = 0;
+	final double CLOSING = 1;
+	
 	VictorSP grabberMotor;
 	public double maxAmperage = 0;
 
@@ -15,39 +22,35 @@ public class Grabber {
 		grabberMotor = new VictorSP(5);
 	}
 
-	static final double GRABBERPOWER = 0.3;
-
+	static final double GRABBERPOWER = 0.8;
 	public void display() {
 		maxAmperage = Math.max(maxAmperage, Robot.pdp.getCurrent(0));
 		SmartDashboard.putNumber("Grabber Amperage", Robot.pdp.getCurrent(0));
 	}
 
 	public void checkStatus() {
+		
+		currentTime = Timer.getFPGATimestamp();
+		
 		if (direction == OPENING) {
 			if (currentTime < endTime) {// Later if limit switch added, edit this if statement to check.
 				grabberMotor.set(GRABBERPOWER);
 			} else {
+				grabberMotor.stopMotor();
 				RobotData.grabIdle = true;
 			}
 		} else if (direction == CLOSING) {
 			if (currentTime < endTime) {// Later if limit switch added, edit this if statement to check.
-				grabberMotor.set(GRABBERPOWER);
+				grabberMotor.set(-GRABBERPOWER);
 			} else {
+				grabberMotor.stopMotor();
 				RobotData.grabIdle = true;
 			}
 		}
 	}
 
-	int loop;
-	double currentTime;
-	double endTime;
-	double direction;
-	final double OPENING = 0;
-	final double CLOSING = 1;
 
 	public void moveGrabber(int angle) {
-
-		currentTime = Timer.getFPGATimestamp();
 
 		switch (angle) {
 		case 1:
