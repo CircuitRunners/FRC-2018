@@ -20,7 +20,7 @@ public class Autonomous {
 	//private static RobotArm arm = new RobotArm();
 	//private static Grabber grab = new Grabber();
 
-	public static void init() {
+	public void init() {
 		switch (Robot.posSelected) {
 		case (Robot.posLeft):
 			posIndex = 'L';
@@ -111,8 +111,9 @@ public class Autonomous {
 			}
 		}
 	}
+	int step = 1;
 	public void sameSideScale() {
-		int step = 1;
+
 		switch(step){
 			case 1: 
 				Robot.drive.autoDrive(SPEED, 10.0, 6.0);
@@ -145,13 +146,13 @@ public class Autonomous {
 				if(!Robot.elev.isIdle()) {
 					break;
 				}
-				Robot.elev.moveTo(RobotData.elevMaxHeightUnits);
+				//Robot.elev.moveTo(RobotData.elevMaxHeightUnits);
 				step++;
 			case 7:
 				if(!Robot.arm.isIdle()) {
 					break;
 				}
-				Robot.arm.moveTo(20);
+				//Robot.arm.moveTo(20);
 				step++;
 			case 8:
 				if(!Robot.drive.isIdle()) {
@@ -164,6 +165,10 @@ public class Autonomous {
 					break;
 				}
 				Robot.drive.autoDrive(SPEED, 7, 5.5);
+				step++;
+				break;
+			case 10:
+				break;
 				//dodododododododododododododododooooo
 		}
 	}
