@@ -18,7 +18,7 @@ public class RobotArm {
 
 	public void init() {
 		talonConfig(armTalon);
-
+		armTalon.setSelectedSensorPosition(-3455, RobotData.armPIDLoopIdx, RobotData.armTimeoutMs);
 		// f = new Faults();
 	}
 
@@ -32,7 +32,7 @@ public class RobotArm {
 		/* Set relevant frame periods to be at least as fast as periodic rate */
 		thisTalon.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, RobotData.armTimeoutMs);
 		thisTalon.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, RobotData.armTimeoutMs);
-
+		thisTalon.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 10, RobotData.armTimeoutMs);
 		/* set the peak and nominal outputs */
 		thisTalon.configNominalOutputForward(0, RobotData.armTimeoutMs);
 		thisTalon.configNominalOutputReverse(0, RobotData.armTimeoutMs);
@@ -46,8 +46,8 @@ public class RobotArm {
 		thisTalon.config_kI(0, 0, RobotData.armTimeoutMs);
 		thisTalon.config_kD(0, 0, RobotData.armTimeoutMs);
 		/* set acceleration and vcruise velocity - see documentation */
-		thisTalon.configMotionCruiseVelocity(15000, RobotData.armTimeoutMs);
-		thisTalon.configMotionAcceleration(6000, RobotData.armTimeoutMs);
+		thisTalon.configMotionCruiseVelocity(10000, RobotData.armTimeoutMs);
+		thisTalon.configMotionAcceleration(10000, RobotData.armTimeoutMs);
 		/* zero the sensor */
 		thisTalon.setSelectedSensorPosition(0, RobotData.armPIDLoopIdx, RobotData.armTimeoutMs);
 
@@ -57,19 +57,26 @@ public class RobotArm {
 	}
 
 	void displayArmStatus() {
-		SmartDashboard.putNumber("Arm Desired Angle", RobotData.armPositionDegrees);
-		SmartDashboard.putNumber("Arm desired encoder count", RobotData.armPositionTarget);
+		SmartDashboard.putNumber("Arm Desired Angle", RobotData.armPositionTarget);
+		SmartDashboard.putNumber("Arm desired encoder count", RobotData.armPositionClicks);
 	}
 
+	/**
+	 * 
+	 */
 	public void checkStatus() {
-		if (Math.abs(
-				armTalon.getSelectedSensorPosition(RobotData.armPIDLoopIdx) - RobotData.armPositionTarget) <= 0.3) {
+		int armPos = armTalon.getSelectedSensorPosition(RobotData.armPIDLoopIdx);
+		if (Math.abs(armPos - RobotData.armPositionClicks) <= 0.3) {
 			RobotData.armIdle = true;
 		} else {
 			RobotData.armIdle = false;
 		}
-		SmartDashboard.putNumber("Arm Height (Units)", RobotData.armPositionTarget);
-		SmartDashboard.putNumber("Arm Height (Clicks)", degreesToClicks(RobotData.armPositionTarget));
+		/*if(Robot.elev.getElevatorPositionUnits() < 10.0) {
+			RobotData.armPositionDegrees = Math.max(0,  RobotData.armPositionDegrees);
+		}
+		*/
+		SmartDashboard.putNumber("ChkStat Arm Pos-Clicks", armPos);
+		SmartDashboard.putNumber("ChkStat Arm Pos-Degrees", clicksToDegrees(armPos));
 	}
 
 	public void moveTo(double angle) {
@@ -81,9 +88,10 @@ public class RobotArm {
 		// what do you want to put here
 		// }
 
-		RobotData.armPositionTarget = degreesToClicks(angle);
-
-		armTalon.set(ControlMode.MotionMagic, RobotData.armPositionTarget);
+		RobotData.armPositionClicks = degreesToClicks(angle);
+		SmartDashboard.putNumber("MoveTo-Arm Pos-Degrees)", angle);
+		SmartDashboard.putNumber("MoveTo-Arm Pos-Clicks)", RobotData.armPositionClicks);
+		armTalon.set(ControlMode.MotionMagic, RobotData.armPositionClicks);
 
 	}
 
@@ -91,19 +99,27 @@ public class RobotArm {
 		return (int) (angle * RobotData.armClicksPerUnit);
 	}
 
-	public double getArmPositionUnits() {
+	int clicksToDegrees(int pos) {
+		return (int) (pos / RobotData.armClicksPerUnit);
+	}
+
+	public double getArmPosition() {
 		return (armTalon.getSelectedSensorPosition(RobotData.armPIDLoopIdx) / RobotData.armClicksPerUnit);
 	}
 
-	public void setArmPositionUnits(double pos) {
-		moveTo(pos);
-	}
-
 	public void resetArmPositon() {
-		moveTo(0);
+		RobotData.armPositionTarget = 0;
 	}
 
 	public boolean isIdle() {
 		return RobotData.armIdle;
+	}
+
+	public void setPosition(double positionUnits) {
+		RobotData.armPositionTarget = positionUnits;
+	}
+
+	public void incrementPosition(double increment) {
+		RobotData.armPositionTarget += increment;
 	}
 }

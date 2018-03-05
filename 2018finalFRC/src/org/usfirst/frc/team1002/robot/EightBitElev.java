@@ -20,7 +20,7 @@ public class EightBitElev {
 
 	public EightBitElev() {
 		elevatorTalon = new TalonSRX(RobotData.elevS1TalonPort);
-		// upperLim = new DigitalInput(0);
+		upperLim = new DigitalInput(5);
 	}
 
 	public double getElevatorPositionUnits() {
@@ -39,7 +39,7 @@ public class EightBitElev {
 		/* Set relevant frame periods to be at least as fast as periodic rate */
 		thisTalon.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, RobotData.elevTimeoutMs);
 		thisTalon.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, RobotData.elevTimeoutMs);
-
+		thisTalon.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 10, RobotData.elevTimeoutMs);
 		/* set the peak and nominal outputs */
 		thisTalon.configNominalOutputForward(0, RobotData.elevTimeoutMs);
 		thisTalon.configNominalOutputReverse(0, RobotData.elevTimeoutMs);
@@ -54,7 +54,7 @@ public class EightBitElev {
 		thisTalon.config_kD(0, 0, RobotData.elevTimeoutMs);
 		/* set acceleration and vcruise velocity - see documentation */
 		thisTalon.configMotionCruiseVelocity(15000, RobotData.elevTimeoutMs);
-		thisTalon.configMotionAcceleration(6000, RobotData.elevTimeoutMs);
+		thisTalon.configMotionAcceleration(15000, RobotData.elevTimeoutMs);
 		/* zero the sensor */
 		thisTalon.setSelectedSensorPosition(0, RobotData.elevPIDLoopIdx, RobotData.elevTimeoutMs);
 
@@ -122,8 +122,6 @@ public class EightBitElev {
 
 		// SmartDashboard.putNumber("Elevator S2 Talon Current",
 		// stageTwoTalon.getOutputCurrent());
-		SmartDashboard.putNumber("Elevator S2 Remaining Distance",
-				RobotData.elevS2DistRemainder / RobotData.elevClicksPerUnitS1);
 
 		/* print the Active Trajectory Point Motion Magic is going towards */
 		// SmartDashboard.putNumber("Elevator S2 ActTrajVelocity",
@@ -135,17 +133,12 @@ public class EightBitElev {
 
 		// RobotData.elevS2Position =
 		// stageTwoTalon.getSelectedSensorPosition(RobotData.elevPIDLoopIdx);
-		SmartDashboard.putNumber("currentPosition", RobotData.elevS2Position / RobotData.elevClicksPerUnitS1);
-		RobotData.elevS2DistRemainder = RobotData.elevS2PositionTarget - RobotData.elevS2Position;
 
 		// RobotData.elevS2OutputMax = Math.max(RobotData.elevS2OutputMax,
 		// stageTwoTalon.getOutputCurrent());
-		SmartDashboard.putNumber("Elevator Talon S2 Max Current", RobotData.elevS2OutputMax);
 		// double elevS2cvMax = Math.max(RobotData.elevS2CVMax,
 		// stageTwoTalon.getSelectedSensorVelocity(RobotData.elevPIDLoopIdx));
 		// SmartDashboard.putNumber("Elevator Max Velocity", elevS2cvMax);
-
-		SmartDashboard.putNumber("S2TargetSensorPosition", RobotData.elevS2PositionTarget);
 
 		// double AbtnS2cvMax = Math.max(RobotData.elevS2CVMax,
 		// stageTwoTalon.getSelectedSensorVelocity(RobotData.elevPIDLoopIdx));
@@ -155,16 +148,16 @@ public class EightBitElev {
 	public void moveTo(double position) {
 		RobotData.elevIdle = false;
 		// this will keep the elevator from moving past the maximum height.
-		if (position >= RobotData.elevMaxHeightUnits) {
-			position = RobotData.elevMaxHeightUnits;
-			RobotData.elevPositionTarget = RobotData.elevMaxHeightUnits;
-		}
-		
-		position = Math.max(0, position);
-		
+		// if (position >= RobotData.elevMaxHeightUnits) {
+		// position = RobotData.elevMaxHeightUnits;
+		// RobotData.elevPositionTarget = RobotData.elevMaxHeightUnits;
+		// }
+
+		// position = Math.max(0, position);
+
 		SmartDashboard.putNumber("Elevator Target", position);
-		SmartDashboard.putNumber("S1 Height (units)", position);
-		SmartDashboard.putNumber("S1 Height (clicks)", inchesToClicks(position));
+		SmartDashboard.putNumber("Elevator Height (units)", position);
+		SmartDashboard.putNumber("Elevator Height (clicks)", inchesToClicks(position));
 
 		elevatorTalon.set(ControlMode.MotionMagic, inchesToClicks(position));
 		if (isCascade)
@@ -173,6 +166,7 @@ public class EightBitElev {
 
 	public void init() {
 		talonConfig(elevatorTalon);
+		elevatorTalon.setSelectedSensorPosition(13413, RobotData.elevPIDLoopIdx, RobotData.elevTimeoutMs);
 	}
 
 	private int inchesToClicks(double pos) {
@@ -183,7 +177,7 @@ public class EightBitElev {
 		return pos / RobotData.elevClicksPerUnitS1;
 	}
 
-	public double moveElevatorToCurrentPosition() {
+	public double moveToCurrentPosition() {
 		int ePos = elevatorTalon.getSelectedSensorPosition(RobotData.elevPIDLoopIdx);
 		elevatorTalon.set(ControlMode.MotionMagic, ePos);
 		return clicksToInches(elevatorTalon.getSelectedSensorPosition(RobotData.elevPIDLoopIdx));
@@ -198,14 +192,10 @@ public class EightBitElev {
 	// }
 	// }
 
-	public void moveElevToCurrentPos() {
-		elevatorTalon.set(ControlMode.MotionMagic, elevatorTalon.getSelectedSensorPosition(RobotData.elevPIDLoopIdx));
-	}
-
 	private void safeTalon(TalonSRX thisTalon) {
 		thisTalon.setNeutralMode(NeutralMode.Brake);
-		//thisTalon.set(ControlMode.PercentOutput, 0);
-		
+		// thisTalon.set(ControlMode.PercentOutput, 0);
+
 	}
 
 	private void checkEncoder(TalonSRX thisTalon) {
@@ -233,6 +223,10 @@ public class EightBitElev {
 		} else {
 			SmartDashboard.putBoolean("Elevator Lower Limit", false);
 		}
+		//if (upperLim.get()) {
+		//	RobotData.elevPositionTarget -= 0.2;
+			
+		//}
 		/* Again this should be check velocity, not position */
 		// if (Math.abs(getElevatorPositionUnits() - RobotData.elevPositionTarget) <=
 		// 0.3) {
@@ -240,8 +234,22 @@ public class EightBitElev {
 		// } else {
 		// RobotData.elevIdle = false;
 		// }
+		int elevPos = elevatorTalon.getSelectedSensorPosition(RobotData.elevPIDLoopIdx);
+
+		SmartDashboard.putNumber("ChkStat Elev Pos-Clicks", elevPos);
+		SmartDashboard.putNumber("ChkStat Elev Pos-Inches", clicksToInches(elevPos));
 	}
+
 	public boolean isIdle() {
 		return RobotData.elevIdle;
+	}
+
+	public void setPosition(double positionUnits) {
+		RobotData.elevPositionTarget = positionUnits;
+	}
+
+	public void storedPosition() {
+		RobotData.elevPositionTarget = 30.0;
+		RobotData.armPositionTarget = -25;
 	}
 }

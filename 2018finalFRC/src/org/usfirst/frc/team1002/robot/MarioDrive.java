@@ -17,16 +17,14 @@ public class MarioDrive {
 	private static MecanumDrive marioDrive;
 	private double x, y, t;
 
-	private static double smooth(double value) {
-
-		if (value > 0.9)
-			return 1;
-		else if (value < 0.22 && value > -0.22)
+	private static double smooth(double value, double deadBand, double max) {
+		double aValue = Math.abs(value);
+		if (aValue > max)
+			return (value / aValue);
+		else if (aValue < deadBand)
 			return 0;
-		else if (value < -0.9) {
-			return -1;
-		} else
-			return Math.sin(value) * (Math.PI / 2);
+		else
+			return aValue * aValue * aValue * (value/aValue);
 	}
 
 	ADXRS450_Gyro gyro;
@@ -60,9 +58,9 @@ public class MarioDrive {
 
 		currentJob = TELEOP;
 
-		x = smooth(Robot.driver.getY(GenericHID.Hand.kLeft));
-		y = smooth((Robot.driver.getX(GenericHID.Hand.kLeft) * -1));
-		t = smooth((Robot.driver.getX(GenericHID.Hand.kRight) * -1));
+		x = smooth(Robot.driver.getY(GenericHID.Hand.kLeft), 0.22, 0.95);
+		y = smooth((Robot.driver.getX(GenericHID.Hand.kLeft) * -1), 0.22, 0.95);
+		t = smooth((Robot.driver.getX(GenericHID.Hand.kRight) * -1), 0.22, 0.95);
 		if (Math.abs(x - prev_x) > maxSpeedDiff) {
 			x = (prev_x + (x - prev_x) / protectedConstant);
 		}
@@ -107,9 +105,11 @@ public class MarioDrive {
 		case IDLE:
 			break;
 		case TELEOP:
+			double speed = encL.getRate() * (5280/3600);
+			SmartDashboard.putNumber("Speed MPH",  speed);
 			break;
 		case AUTODRIVE:
-			this.checkStatusAD();
+			checkStatusAD();
 			displayAD();
 			break;
 		case AUTOTURN:
@@ -180,6 +180,7 @@ public class MarioDrive {
 
 		desiredSpeed = speed;
 		desiredDistance = dist;
+		desiredHeading = gyro.getAngle();
 	}
 
 	public void autoTurn(double turn, double time) {
@@ -188,6 +189,16 @@ public class MarioDrive {
 
 		endTime = Timer.getFPGATimestamp() + time;
 		desiredHeading = turn;
+	}
+	double DZone(double input) {
+		if (input > 0.9)
+			return 1;
+		else if (input < 0.22 && input > -0.22)
+			return 0;
+		else if (input < -0.9) {
+			return -1;
+		} else
+			return input;
 	}
 
 }
