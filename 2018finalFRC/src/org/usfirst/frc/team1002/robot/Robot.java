@@ -271,5 +271,9 @@ public class Robot extends IterativeRobot {
 			grab.moveGrabber(-1);
 			SmartDashboard.putString("GrabberStat", "-1");
 		}
+		if(operator.getTriggerAxis(GenericHID.Hand.kRight) >0.5) {
+			elev.enableLimitless();
+			arm.enableLimitless();
+		}
 	}
 }

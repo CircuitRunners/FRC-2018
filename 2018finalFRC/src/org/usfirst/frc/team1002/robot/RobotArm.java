@@ -18,7 +18,7 @@ public class RobotArm {
 
 	public void init() {
 		talonConfig(armTalon);
-		armTalon.setSelectedSensorPosition(-3455, RobotData.armPIDLoopIdx, RobotData.armTimeoutMs);
+		armTalon.setSelectedSensorPosition(-9668, RobotData.armPIDLoopIdx, RobotData.armTimeoutMs);
 		// f = new Faults();
 	}
 
@@ -71,28 +71,42 @@ public class RobotArm {
 		} else {
 			RobotData.armIdle = false;
 		}
-		/*if(Robot.elev.getElevatorPositionUnits() < 10.0) {
-			RobotData.armPositionDegrees = Math.max(0,  RobotData.armPositionDegrees);
-		}
-		*/
+		/*
+		 * if(Robot.elev.getElevatorPositionUnits() < 10.0) {
+		 * RobotData.armPositionDegrees = Math.max(0, RobotData.armPositionDegrees); }
+		 */
 		SmartDashboard.putNumber("ChkStat Arm Pos-Clicks", armPos);
 		SmartDashboard.putNumber("ChkStat Arm Pos-Degrees", clicksToDegrees(armPos));
 	}
 
-	public void moveTo(double angle) {
-		// armTalon.getFaults(f);
-		// if (f.ForwardLimitSwitch) {
-		// what do you want to put here
-		// }
-		// if (f.ReverseLimitSwitch) {
-		// what do you want to put here
-		// }
+	boolean limitless = true;
 
+	public double moveTo(double angle) {
+		boolean insideLimits = true;
+		RobotData.armIdle = false;
+
+		double safeAngle = Math.max(angle, RobotData.armMinAngle);
+		safeAngle = Math.min(safeAngle, RobotData.armMaxAngle);
+
+		if (safeAngle != angle)
+			insideLimits = false;
+		if (limitless) {
+			if (insideLimits)
+				limitless = false;
+			internalMoveTo(angle);
+			return angle;
+		} else {
+			internalMoveTo(safeAngle);
+			return safeAngle;
+		}
+
+	}
+
+	private void internalMoveTo(double angle) {
 		RobotData.armPositionClicks = degreesToClicks(angle);
 		SmartDashboard.putNumber("MoveTo-Arm Pos-Degrees)", angle);
 		SmartDashboard.putNumber("MoveTo-Arm Pos-Clicks)", RobotData.armPositionClicks);
 		armTalon.set(ControlMode.MotionMagic, RobotData.armPositionClicks);
-
 	}
 
 	int degreesToClicks(double angle) {
@@ -121,5 +135,8 @@ public class RobotArm {
 
 	public void incrementPosition(double increment) {
 		RobotData.armPositionTarget += increment;
+	}
+	public void enableLimitless() {
+		limitless = true;
 	}
 }

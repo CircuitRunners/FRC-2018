@@ -182,6 +182,8 @@ public class RobotData {
 	//Desired position of the arm, in clicks.
 	public static double armPositionClicks = 0.0;
 	
+	public static double armMaxAngle = 30;
+	public static double armMinAngle = -30;
 	//Is the arm not doing anything?
 	public static boolean armIdle = true;
 	

@@ -145,23 +145,36 @@ public class EightBitElev {
 		// SmartDashboard.putNumber("Max Velocity A Button", AbtnS2cvMax);
 	}
 
-	public void moveTo(double position) {
+	boolean limitless = true;
+
+	public double moveTo(double position) {
+		boolean insideLimits = true;
 		RobotData.elevIdle = false;
-		// this will keep the elevator from moving past the maximum height.
-		// if (position >= RobotData.elevMaxHeightUnits) {
-		// position = RobotData.elevMaxHeightUnits;
-		// RobotData.elevPositionTarget = RobotData.elevMaxHeightUnits;
-		// }
 
-		// position = Math.max(0, position);
+		double safePosition = Math.min(RobotData.elevMaxHeightUnits, position);
+		safePosition = Math.max(0, safePosition);
 
+		if (position != safePosition) {
+			insideLimits = false;
+		}
+		if (limitless) {
+			if (insideLimits)
+				limitless = false;
+			internalMoveTo(position);
+			return position;
+		} else {
+			internalMoveTo(safePosition);
+			return safePosition;
+		}
+
+	}
+
+	public void internalMoveTo(double position) {
 		SmartDashboard.putNumber("Elevator Target", position);
 		SmartDashboard.putNumber("Elevator Height (units)", position);
 		SmartDashboard.putNumber("Elevator Height (clicks)", inchesToClicks(position));
 
 		elevatorTalon.set(ControlMode.MotionMagic, inchesToClicks(position));
-		if (isCascade)
-			return;
 	}
 
 	public void init() {
@@ -223,10 +236,10 @@ public class EightBitElev {
 		} else {
 			SmartDashboard.putBoolean("Elevator Lower Limit", false);
 		}
-		//if (upperLim.get()) {
-		//	RobotData.elevPositionTarget -= 0.2;
-			
-		//}
+		// if (upperLim.get()) {
+		// RobotData.elevPositionTarget -= 0.2;
+
+		// }
 		/* Again this should be check velocity, not position */
 		// if (Math.abs(getElevatorPositionUnits() - RobotData.elevPositionTarget) <=
 		// 0.3) {
@@ -251,5 +264,8 @@ public class EightBitElev {
 	public void storedPosition() {
 		RobotData.elevPositionTarget = 30.0;
 		RobotData.armPositionTarget = -25;
+	}
+	public void enableLimitless() {
+		limitless = true;
 	}
 }
