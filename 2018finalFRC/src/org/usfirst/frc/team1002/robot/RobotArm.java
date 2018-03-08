@@ -18,10 +18,10 @@ public class RobotArm {
 
 	public void init() {
 		talonConfig(armTalon);
-		armTalon.setSelectedSensorPosition(-9668, RobotData.armPIDLoopIdx, RobotData.armTimeoutMs);
+		armTalon.setSelectedSensorPosition(-11300, RobotData.armPIDLoopIdx, RobotData.armTimeoutMs);
 		// f = new Faults();
 	}
-
+ public static int armCV = 10000;
 	public void talonConfig(TalonSRX thisTalon) {
 		/* first choose the sensor */
 		thisTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, RobotData.elevPIDLoopIdx,
@@ -46,8 +46,8 @@ public class RobotArm {
 		thisTalon.config_kI(0, 0, RobotData.armTimeoutMs);
 		thisTalon.config_kD(0, 0, RobotData.armTimeoutMs);
 		/* set acceleration and vcruise velocity - see documentation */
-		thisTalon.configMotionCruiseVelocity(10000, RobotData.armTimeoutMs);
-		thisTalon.configMotionAcceleration(10000, RobotData.armTimeoutMs);
+		thisTalon.configMotionCruiseVelocity(RobotData.armCruiseVel, RobotData.armTimeoutMs);
+		thisTalon.configMotionAcceleration(RobotData.armCruiseAccel, RobotData.armTimeoutMs);
 		/* zero the sensor */
 		thisTalon.setSelectedSensorPosition(0, RobotData.armPIDLoopIdx, RobotData.armTimeoutMs);
 

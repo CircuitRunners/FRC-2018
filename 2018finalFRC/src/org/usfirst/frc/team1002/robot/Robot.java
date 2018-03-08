@@ -142,9 +142,9 @@ public class Robot extends IterativeRobot {
 		getControllers();
 
 		if (lastElevPos != RobotData.elevPositionTarget)
-			elev.moveTo(RobotData.elevPositionTarget);
+			RobotData.elevPositionTarget = elev.moveTo(RobotData.elevPositionTarget);
 		if (lastArmPos != RobotData.armPositionTarget)
-			arm.moveTo(RobotData.armPositionTarget);
+			RobotData.armPositionTarget = arm.moveTo(RobotData.armPositionTarget);
 
 		drive.teleOp();
 
@@ -189,12 +189,12 @@ public class Robot extends IterativeRobot {
 		if (aValue < deadBand)
 			return 0.0;
 		return max * value;
-	}
+	}	
 
 	boolean lastTimeElevIncrement = false;
 	boolean lastTimeArmIncrement = false;
 	static double elevIncrement = 0.2;
-	static double armIncrement = 1;
+	static double armIncrement = (RobotArm.armCV / RobotData.armClicksPerUnit) / 50;
 
 	public void getControllers() {
 		/*
