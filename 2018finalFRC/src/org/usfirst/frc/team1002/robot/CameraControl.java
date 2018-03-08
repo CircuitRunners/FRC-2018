@@ -52,9 +52,9 @@ public class CameraControl {
 		fwdCamSvr.setResolution(RobotData.camXRes, RobotData.camYRes);
 		fwdcvSink = CameraServer.getInstance().getVideo(fwdCamSvr); /* init capture conn */
 
-		rvsCamSvr = CameraServer.getInstance().startAutomaticCapture("rvsCam", 1);
-		rvsCamSvr.setResolution(RobotData.camXRes, RobotData.camYRes);
-		rvscvSink = CameraServer.getInstance().getVideo(rvsCamSvr); /* init capture conn */
+	//	rvsCamSvr = CameraServer.getInstance().startAutomaticCapture("rvsCam", 1);
+	//	rvsCamSvr.setResolution(RobotData.camXRes, RobotData.camYRes);
+	//	rvscvSink = CameraServer.getInstance().getVideo(rvsCamSvr); /* init capture conn */
 
 		activecvSink = fwdcvSink;
 		RobotData.camActiveCamera = 1;
@@ -73,7 +73,7 @@ public class CameraControl {
 				outputStream.notifyError("Line 147" + fwdcvSink.getError());
 				continue;
 			}
-			SmartDashboard.putNumber("frameNumber", RobotData.camFrameNumber++);
+		//	SmartDashboard.putNumber("frameNumber", RobotData.camFrameNumber++);
 			/* Do something so you know the frames are changing */
 			// radius = (RobotData.activeCamera == 1) ? switchCount + 40 : 140 - switchCount;
 			// Imgproc.circle(camMat, new Point(xRes / 2, yRes / 2), radius,
@@ -82,13 +82,13 @@ public class CameraControl {
 
 			/* Camera switching */
 
-			if (Robot.driver.getStartButton()) {
-				if (RobotData.camActiveCamera == 1)
-					setActiveCamera(-1);
-				else
-					setActiveCamera(1);
-				SmartDashboard.putNumber("Camera", RobotData.camActiveCamera);
-			}
+		//	if (Robot.operator.getStartButton()) {
+		//		if (RobotData.camActiveCamera == 1)
+		//			setActiveCamera(-1);
+		//		else
+		//			setActiveCamera(1);
+		//		SmartDashboard.putNumber("Camera", RobotData.camActiveCamera);
+		//	}
 
 			Timer.delay(RobotData.camFrameDelay); /* wait for a bit */
 		}

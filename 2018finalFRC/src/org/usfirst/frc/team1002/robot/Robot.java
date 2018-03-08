@@ -54,7 +54,7 @@ public class Robot extends IterativeRobot {
 	static RobotArm arm = new RobotArm();
 	static PowerDistributionPanel pdp = new PowerDistributionPanel(0);
 	static Autonomous auto = new Autonomous();
-
+	static CameraControl cam = new CameraControl();
 	/**
 	 * This function is run when the robot is first started up and should be used
 	 * for any initialization code.
@@ -76,7 +76,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putData("Target", chooserTarg);
 		SmartDashboard.putData("Alternate Mode?", chooserAlt);
 		
-		
+		cam.cameraInit();
 		elev.init();
 		arm.init();
 		
