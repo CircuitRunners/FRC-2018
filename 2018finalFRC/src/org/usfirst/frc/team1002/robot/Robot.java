@@ -10,6 +10,7 @@ package org.usfirst.frc.team1002.robot;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -116,14 +117,20 @@ public class Robot extends IterativeRobot {
 	/**
 	 * This function is called periodically during autonomous.
 	 */
+	boolean hasFMS = false;
 	@Override
 	public void autonomousPeriodic() {
+		while(!hasFMS) {
+			hasFMS = auto.getAutoRoutine();
+			Timer.delay(0.01);
+		}
 		drive.checkStatus();
 		arm.checkStatus();
 		elev.checkStatus();
 		grab.checkStatus();
-		// Autonomous.run();
-		auto.sameSideScale();
+
+		auto.run();
+
 
 	}
 
@@ -168,7 +175,7 @@ public class Robot extends IterativeRobot {
 
 		}
 		if(driver.getAButton()) {
-			auto.ScaleAutoV2();
+			auto.sameSideScale();
 		}
 		drive.checkStatus();
 		elev.checkStatus();

@@ -36,17 +36,7 @@ public class Autonomous {
 			posIndex = "R";
 			break;
 		}
-		switch (Robot.targSelected) {
-		case (Robot.targSwitch):
-			targIndex = 1;
-			break;
-		case (Robot.targScale):
-			targIndex = 2;
-			break;
-		case (Robot.targLine):
-			targIndex = 3;
-			break;
-		}
+
 		switch (Robot.altSelected) {
 		case (Robot.altFalse):
 			altIndex = false;
@@ -100,44 +90,96 @@ public class Autonomous {
 	static boolean called = false;
 
 	public void run() {
-		if (called)
-			return;
-		Robot.drive.autoDrive(.4, 12.5, 8);
-		called = true;
-	}
+		switch (posIndex) {
+		case "R":
 
-	public void getAutoRoutine() {
-
-		if (DriverStation.getInstance().getGameSpecificMessage().length() == 3) {
-			// The field will take about a second to send the fms string so you cant grab
-			// it in init; instead, keep looping this until you get mthe string, then go
-			// through the algorithm.
-			FMSString = DriverStation.getInstance().getGameSpecificMessage();
-			sideSwitch = FMSString.substring(0, 1);
-			sideScale = FMSString.substring(1, 2);
-
-			switch (posIndex) {
-			case "L":
-				switch (sideSwitch) {
-				case "L":
-					switchNear = true;
-				case "R":
-					switchNear = false;
+		case "L":
+			if (Robot.targSelected == Robot.targScale) {
+				if (scaleNear) {
+					sameSideScale();
+				} else {
+					farSideScale();
 				}
-			case "'R":
-				switch (sideSwitch) {
-				case "L":
-					switchNear = false;
-				case "R":
-					switchNear = true;
+			} else if (Robot.targSelected == Robot.targSwitch) {
+				if (switchNear) {
+					sameSideSwitch();
+				} else {
+					farSideSwitch();
 				}
 			}
+			break;
+		case "C":
+			if (!called) {
+				Robot.drive.autoDrive(SPEED, 7, 10);
+				called = true;
+			}
+			break;
+
 		}
+	}
+
+	private void farSideSwitch() {
+		// TODO Auto-generated method stub
+
+	}
+
+	private void sameSideSwitch() {
+		// TODO Auto-generated method stub
+
+	}
+
+	private void farSideScale() {
+		// TODO Auto-generated method stub
+
+	}
+
+	int turnDir = 1;
+
+	public boolean getAutoRoutine() {
+
+		if (DriverStation.getInstance().getGameSpecificMessage().length() != 3)
+			return false;
+
+		// The field will take about a second to send the fms string so you cant grab
+		// it in init; instead, keep looping this until you get the string, then go
+		// through the algorithm.
+		FMSString = DriverStation.getInstance().getGameSpecificMessage();
+		sideSwitch = FMSString.substring(0, 1);
+		sideScale = FMSString.substring(1, 2);
+
+		switchNear = (posIndex == sideSwitch);
+		scaleNear = (posIndex == sideScale);
+
+		if (posIndex.equalsIgnoreCase("L")) {
+			turnDir = 1;
+		} else if (posIndex.equalsIgnoreCase("R")) {
+			turnDir = -1;
+		} else {
+			turnDir = 0;
+		}
+
+		switch (Robot.targSelected) {
+		case (Robot.targSwitch):
+			if (switchNear) {
+				switchAutoTester();
+			} else {
+				Robot.drive.autoDrive(SPEED, 7, 10);
+			}
+			break;
+		case (Robot.targScale):
+			targIndex = 2;
+			break;
+		case (Robot.targLine):
+			targIndex = 3;
+			break;
+		}
+		return true;
+
 	}
 
 	int step = 1;
 
-	public void sameSideScale() {
+	public void sameSideScaleOld() {
 		SmartDashboard.putNumber("SameSideScale:Step #", step);
 		switch (step) {
 		case 1:
@@ -178,7 +220,7 @@ public class Autonomous {
 				break;
 			}
 			Robot.elev.moveTo(RobotData.elevMaxHeightUnits);
-			 Robot.arm.moveTo(30);
+			Robot.arm.moveTo(30);
 			step++;
 		case 8:
 			if (!Robot.drive.isIdle() || !Robot.arm.isIdle() || !Robot.elev.isIdle()) {
@@ -194,19 +236,19 @@ public class Autonomous {
 			step++;
 			break;
 		case 10:
-			if(!Robot.drive.isIdle())
+			if (!Robot.drive.isIdle())
 				break;
 			Robot.grab.autoRelease();
 			step++;
 			break;
 		case 11:
-			if(!Robot.grab.isIdle())
+			if (!Robot.grab.isIdle())
 				break;
-			Robot.drive.autoDrive(SPEED, 4,-4.0);
+			Robot.drive.autoDrive(SPEED, 4, -4.0);
 			step++;
 			break;
 		case 12:
-			if(!Robot.drive.isIdle())
+			if (!Robot.drive.isIdle())
 				break;
 			Robot.arm.moveTo(10);
 			Robot.elev.moveTo(0);
@@ -270,26 +312,27 @@ public class Autonomous {
 
 	int scaleStep = 1;
 
-	public void ScaleAutoV2() {
+	public void sameSideScale() {
 		switch (scaleStep) {
 		case 1:
 			if (!Robot.drive.isIdle())
 				break;
 			Robot.drive.autoDrive(0.5, 4, 10.0);
+			Robot.elev.moveTo(20);
 			scaleStep++;
 			break;
 		case 2:
 			if (!Robot.drive.isIdle() || !Robot.elev.isIdle() || !Robot.arm.isIdle())
 				break;
 			Robot.drive.autoDrive(0.3, 6, 17.75);
-			Robot.elev.moveTo(30);
-			Robot.arm.moveTo(5);
+			Robot.elev.moveTo(RobotData.elevMaxHeightUnits);
+			Robot.arm.moveTo(30);
 			scaleStep++;
 			break;
 		case 3:
 			if (!Robot.drive.isIdle() || !Robot.elev.isIdle() || !Robot.arm.isIdle())
 				break;
-			Robot.drive.autoTurn(-20, 2);
+			Robot.drive.autoTurn(20 * turnDir, 2);
 			scaleStep++;
 			break;
 		case 4:
@@ -313,8 +356,9 @@ public class Autonomous {
 		case 7:
 			if (!Robot.drive.isIdle() || !Robot.elev.isIdle())
 				break;
+			Robot.arm.moveTo(10);
 			Robot.elev.moveTo(0);
-			Robot.drive.autoTurn(-110, 4);
+			Robot.drive.autoTurn(110 * turnDir, 4);
 			scaleStep++;
 			break;
 		case 8:
@@ -326,36 +370,36 @@ public class Autonomous {
 	int switchStep2 = 1;
 
 	public void sideSwitch() {
-		switch(switchStep2) {
-		
+		switch (switchStep2) {
+
 		case 1:
-			if(!Robot.drive.isIdle())
+			if (!Robot.drive.isIdle())
 				break;
 			Robot.drive.autoDrive(0.5, 3, 13.0);
 			switchStep2++;
 			break;
 		case 2:
 			int turnDir = (Robot.chooserPos.getSelected() == Robot.posRight) ? -1 : 1;
-			if(!Robot.drive.isIdle())
+			if (!Robot.drive.isIdle())
 				break;
 			Robot.drive.autoTurn(90 * turnDir, 3);
 			Robot.arm.moveTo(0);
 			switchStep2++;
 			break;
 		case 3:
-			if(!Robot.drive.isIdle() || !Robot.arm.isIdle())
+			if (!Robot.drive.isIdle() || !Robot.arm.isIdle())
 				break;
 			Robot.drive.autoDrive(0.4, 2, 3.8);
 			switchStep2++;
 			break;
 		case 4:
-			if(!Robot.drive.isIdle())
+			if (!Robot.drive.isIdle())
 				break;
 			Robot.grab.autoRelease();
 			switchStep2++;
 			break;
 		case 5:
 			break;
-			}
 		}
+	}
 }
