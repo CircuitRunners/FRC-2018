@@ -76,7 +76,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putData("Target", chooserTarg);
 		SmartDashboard.putData("Alternate Mode?", chooserAlt);
 		
-		cam.cameraInit();
+		//cam.cameraInit();
 		elev.init();
 		arm.init();
 		
@@ -97,6 +97,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousInit() {
+		drive.gyro.reset();
 		RobotData.armPositionTarget = arm.getArmPosition();
 		// RobotData.elevPositionTarget = elev.getElevatorPositionUnits();
 		posSelected = chooserPos.getSelected();
@@ -108,6 +109,7 @@ public class Robot extends IterativeRobot {
 		System.out.println("Target Selected: " + targSelected);
 		System.out.println("Autonomous Mode: " + altSelected);
 		auto.init();
+		
 		// elev.setElevatorPositionUnits(elev.getElevatorPositionUnits());
 	}
 
@@ -121,7 +123,7 @@ public class Robot extends IterativeRobot {
 		elev.checkStatus();
 		grab.checkStatus();
 		// Autonomous.run();
-		auto.run();
+		auto.sameSideScale();
 
 	}
 

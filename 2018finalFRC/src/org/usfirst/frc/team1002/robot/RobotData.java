@@ -131,7 +131,7 @@ public class RobotData {
 	
 	//Target height for elevator, in clicks above drivebase.
 	public static double elevPositionTarget = 0.0;
-	public static double elevPosition = 0.0;
+	public static double elevPositionClicks = 0.0;
 	public static double elevS1PositionTarget = 0.0;
 	public static double elevS1Position = 0.0;
 	public static double elevS2PositionTarget = 0.0;

@@ -95,7 +95,7 @@ public class EightBitElev {
 
 		RobotData.elevS1Position = elevatorTalon.getSelectedSensorPosition(RobotData.elevPIDLoopIdx);
 		SmartDashboard.putNumber("S1 Position", RobotData.elevS1Position / RobotData.elevClicksPerUnitS1);
-		RobotData.elevDistRemainder = RobotData.elevPositionTarget - RobotData.elevPosition;
+		RobotData.elevDistRemainder = RobotData.elevPositionTarget - RobotData.elevPositionClicks;
 		RobotData.elevS1DistRemainder = RobotData.elevS1PositionTarget - RobotData.elevS1Position;
 
 		RobotData.elevS1OutputMax = Math.max(RobotData.elevS1OutputMax, elevatorTalon.getOutputCurrent());
@@ -149,7 +149,6 @@ public class EightBitElev {
 
 	public double moveTo(double position) {
 		boolean insideLimits = true;
-		RobotData.elevIdle = false;
 
 		double safePosition = Math.min(RobotData.elevMaxHeightUnits, position);
 		safePosition = Math.max(0, safePosition);
@@ -170,16 +169,19 @@ public class EightBitElev {
 	}
 
 	public void internalMoveTo(double position) {
+		RobotData.elevIdle = false;
+
 		SmartDashboard.putNumber("Elevator Target", position);
 		SmartDashboard.putNumber("Elevator Height (units)", position);
 		SmartDashboard.putNumber("Elevator Height (clicks)", inchesToClicks(position));
-
+		RobotData.elevPositionClicks = inchesToClicks(position);
 		elevatorTalon.set(ControlMode.MotionMagic, inchesToClicks(position));
 	}
 
 	public void init() {
 		talonConfig(elevatorTalon);
 		elevatorTalon.setSelectedSensorPosition(13413, RobotData.elevPIDLoopIdx, RobotData.elevTimeoutMs);
+		RobotData.elevPositionClicks = 13413;
 	}
 
 	private int inchesToClicks(double pos) {
@@ -236,6 +238,11 @@ public class EightBitElev {
 		} else {
 			SmartDashboard.putBoolean("Elevator Lower Limit", false);
 		}
+
+		if (Math.abs(elevatorTalon.getSelectedSensorPosition(RobotData.armPIDLoopIdx)
+				- RobotData.elevPositionClicks) <= 1000) {
+			RobotData.elevIdle = true;
+		}
 		// if (upperLim.get()) {
 		// RobotData.elevPositionTarget -= 0.2;
 
@@ -265,6 +272,7 @@ public class EightBitElev {
 		RobotData.elevPositionTarget = 30.0;
 		RobotData.armPositionTarget = -25;
 	}
+
 	public void enableLimitless() {
 		limitless = true;
 	}

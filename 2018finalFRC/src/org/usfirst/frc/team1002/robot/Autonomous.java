@@ -1,6 +1,7 @@
 package org.usfirst.frc.team1002.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Autonomous {
 
@@ -137,7 +138,7 @@ public class Autonomous {
 	int step = 1;
 
 	public void sameSideScale() {
-
+		SmartDashboard.putNumber("SameSideScale:Step #", step);
 		switch (step) {
 		case 1:
 			Robot.drive.autoDrive(SPEED, 10.0, 6.0);
@@ -170,16 +171,17 @@ public class Autonomous {
 			if (!Robot.elev.isIdle()) {
 				break;
 			}
-			// Robot.elev.moveTo(RobotData.elevMaxHeightUnits);
+			Robot.elev.moveTo(20);
 			step++;
 		case 7:
-			if (!Robot.arm.isIdle()) {
+			if (!Robot.arm.isIdle() || Robot.elev.isIdle()) {
 				break;
 			}
-			// Robot.arm.moveTo(20);
+			Robot.elev.moveTo(RobotData.elevMaxHeightUnits);
+			 Robot.arm.moveTo(30);
 			step++;
 		case 8:
-			if (!Robot.drive.isIdle()) {
+			if (!Robot.drive.isIdle() || !Robot.arm.isIdle() || !Robot.elev.isIdle()) {
 				break;
 			}
 			Robot.drive.autoTurn(20, 5);
@@ -192,6 +194,23 @@ public class Autonomous {
 			step++;
 			break;
 		case 10:
+			if(!Robot.drive.isIdle())
+				break;
+			Robot.grab.autoRelease();
+			step++;
+			break;
+		case 11:
+			if(!Robot.grab.isIdle())
+				break;
+			Robot.drive.autoDrive(SPEED, 4,-4.0);
+			step++;
+			break;
+		case 12:
+			if(!Robot.drive.isIdle())
+				break;
+			Robot.arm.moveTo(10);
+			Robot.elev.moveTo(0);
+			step++;
 			break;
 		// dodododododododododododododododooooo
 		}

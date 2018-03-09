@@ -19,6 +19,7 @@ public class RobotArm {
 	public void init() {
 		talonConfig(armTalon);
 		armTalon.setSelectedSensorPosition(-11300, RobotData.armPIDLoopIdx, RobotData.armTimeoutMs);
+		RobotData.armPositionClicks = -11300;
 		// f = new Faults();
 	}
  public static int armCV = 10000;
@@ -66,7 +67,7 @@ public class RobotArm {
 	 */
 	public void checkStatus() {
 		int armPos = armTalon.getSelectedSensorPosition(RobotData.armPIDLoopIdx);
-		if (Math.abs(armPos - RobotData.armPositionClicks) <= 0.3) {
+		if (Math.abs(armPos - RobotData.armPositionClicks) <= 300) {
 			RobotData.armIdle = true;
 		} else {
 			RobotData.armIdle = false;
@@ -83,7 +84,6 @@ public class RobotArm {
 
 	public double moveTo(double angle) {
 		boolean insideLimits = true;
-		RobotData.armIdle = false;
 
 		double safeAngle = Math.max(angle, RobotData.armMinAngle);
 		safeAngle = Math.min(safeAngle, RobotData.armMaxAngle);
@@ -103,6 +103,8 @@ public class RobotArm {
 	}
 
 	private void internalMoveTo(double angle) {
+		RobotData.armIdle = false;
+
 		RobotData.armPositionClicks = degreesToClicks(angle);
 		SmartDashboard.putNumber("MoveTo-Arm Pos-Degrees)", angle);
 		SmartDashboard.putNumber("MoveTo-Arm Pos-Clicks)", RobotData.armPositionClicks);
@@ -126,6 +128,7 @@ public class RobotArm {
 	}
 
 	public boolean isIdle() {
+		SmartDashboard.putBoolean("Arm Idle State", RobotData.armIdle);
 		return RobotData.armIdle;
 	}
 
