@@ -1,89 +1,69 @@
 package org.usfirst.frc.team1002.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Autonomous {
 
-	private static String posIndex;
+	private static int posIndex;
 	private static int targIndex;
 	private static boolean altIndex;
 	private static String FMSString; // three character string from FMS.
-	private static String sideSwitch; // side switch is on.
-	private static String sideScale; // side scale is on.
+	private static int sideSwitch; // side switch is on.
+	private static int sideScale; // side scale is on.
 	private static char handed; // L or R, which direction robot should turn first. Used to reduce repeated
-	private static final double SPEED = 0.3; // code.
+	private static final double SPEED = 0.6; // code.
 	private static boolean switchNear;
 	private static boolean scaleNear;
-	private static boolean debug = true;
+	private static boolean debug = false;
+
+	int step = 1;
+	int turnDir = 1;
 
 	// private static MarioDrive drive = new MarioDrive();
 	// private static EightBitElev elev = new EightBitElev();
 	// private static RobotArm arm = new RobotArm();
 	// private static Grabber grab = new Grabber();
 
+	static final int LEFT = 1;
+	static final int CENTER = 2;
+	static final int RIGHT = 3;
+	static final int SWITCH = 10;
+	static final int SCALE = 11;
+	static final int NONE = 12;
+
 	public void init() {
 		if (debug)
 			return;
 		switch (Robot.posSelected) {
-		case (Robot.posLeft):
-			posIndex = "L";
+		case (LEFT):
+			posIndex = LEFT;
 			break;
-		case (Robot.posCenter):
-			posIndex = "C";
+		case (CENTER):
+			posIndex = CENTER;
 			break;
-		case (Robot.posRight):
-			posIndex = "R";
-			break;
-		}
-
-		switch (Robot.altSelected) {
-		case (Robot.altFalse):
-			altIndex = false;
-			break;
-		case (Robot.altTrue):
-			altIndex = true;
+		case (RIGHT):
+			posIndex = RIGHT;
 			break;
 		}
-		FMSString = DriverStation.getInstance().getGameSpecificMessage();
-		sideSwitch = FMSString.substring(0, 1);
-		sideScale = FMSString.substring(1, 2);
-
-		switch (targIndex) {
-		case (1):
-			if (posIndex.equalsIgnoreCase(sideSwitch)) {
-				if (posIndex == "L") {
-					handed = 'R';
-				} else {
-					handed = 'L';
-				}
-			} else {
-				if (posIndex == "R") {
-					handed = 'L';
-				} else {
-					handed = 'R';
-				}
-			}
+		switch (Robot.targSelected) {
+		case SCALE:
+			targIndex = SCALE;
 			break;
-		case (2):
-			if (posIndex == sideScale) {
-				if (posIndex == "L") {
-					handed = 'R';
-				} else {
-					handed = 'L';
-				}
-			} else {
-				if (posIndex == "R") {
-					handed = 'L';
-				} else {
-					handed = 'R';
-				}
-			}
+		case SWITCH:
+			targIndex = SWITCH;
 			break;
 		}
-		if (Robot.chooserPos.getSelected() == Robot.posCenter) {
-
+		if (posIndex == LEFT) {
+			turnDir = 1;
+		} else if (posIndex == RIGHT) {
+			turnDir = -1;
+		} else {
+			turnDir = 0;
 		}
+		SmartDashboard.putNumber("Robot Position", posIndex);
+		SmartDashboard.putNumber("Target Selected: ", targIndex);
 
 	}
 
@@ -91,16 +71,16 @@ public class Autonomous {
 
 	public void run() {
 		switch (posIndex) {
-		case "R":
+		case RIGHT:
 
-		case "L":
-			if (Robot.targSelected == Robot.targScale) {
+		case LEFT:
+			if (targIndex == SCALE) {
 				if (scaleNear) {
 					sameSideScale();
 				} else {
 					farSideScale();
 				}
-			} else if (Robot.targSelected == Robot.targSwitch) {
+			} else if (targIndex == SWITCH) {
 				if (switchNear) {
 					sameSideSwitch();
 				} else {
@@ -108,33 +88,14 @@ public class Autonomous {
 				}
 			}
 			break;
-		case "C":
-			if (!called) {
-				Robot.drive.autoDrive(SPEED, 7, 10);
-				called = true;
-			}
+		case CENTER:
+			SmartDashboard.putString("Auto Program", "Drive Forward");
+			driveForward();
 			break;
 
 		}
 	}
-
-	private void farSideSwitch() {
-		// TODO Auto-generated method stub
-
-	}
-
-	private void sameSideSwitch() {
-		// TODO Auto-generated method stub
-
-	}
-
-	private void farSideScale() {
-		// TODO Auto-generated method stub
-
-	}
-
-	int turnDir = 1;
-
+	
 	public boolean getAutoRoutine() {
 
 		if (DriverStation.getInstance().getGameSpecificMessage().length() != 3)
@@ -144,214 +105,242 @@ public class Autonomous {
 		// it in init; instead, keep looping this until you get the string, then go
 		// through the algorithm.
 		FMSString = DriverStation.getInstance().getGameSpecificMessage();
-		sideSwitch = FMSString.substring(0, 1);
-		sideScale = FMSString.substring(1, 2);
+		SmartDashboard.putString("FMS String", FMSString);
+		if(FMSString.substring(0,1).equalsIgnoreCase("L"))
+			sideSwitch = LEFT;
+		else
+			sideSwitch = RIGHT;
+		if(FMSString.substring(1,2).equalsIgnoreCase("L"))
+			sideScale = LEFT;
+		else
+			sideScale = RIGHT;
+		SmartDashboard.putNumber("sideScale",sideScale);
+		SmartDashboard.putNumber("sideSwitch",sideSwitch);
 
 		switchNear = (posIndex == sideSwitch);
 		scaleNear = (posIndex == sideScale);
-
-		if (posIndex.equalsIgnoreCase("L")) {
-			turnDir = 1;
-		} else if (posIndex.equalsIgnoreCase("R")) {
-			turnDir = -1;
-		} else {
-			turnDir = 0;
-		}
-
-		switch (Robot.targSelected) {
-		case (Robot.targSwitch):
-			if (switchNear) {
-				switchAutoTester();
-			} else {
-				Robot.drive.autoDrive(SPEED, 7, 10);
-			}
-			break;
-		case (Robot.targScale):
-			targIndex = 2;
-			break;
-		case (Robot.targLine):
-			targIndex = 3;
-			break;
-		}
+		SmartDashboard.putBoolean("switchNear", switchNear);
+		SmartDashboard.putBoolean("scaleNear", scaleNear);
+		
 		return true;
 
 	}
 
-	int step = 1;
 
-	public void sameSideScaleOld() {
-		SmartDashboard.putNumber("SameSideScale:Step #", step);
+	private void farSideSwitch() {
+		// TODO Auto-generated method stub
+		SmartDashboard.putString("Auto Program", "farSideSwitch");
 		switch (step) {
 		case 1:
-			Robot.drive.autoDrive(SPEED, 10.0, 6.0);
-			step++;
-		case 2:
-			if (!Robot.drive.isIdle()) {
-				break;
-			}
-			Robot.drive.autoTurn(-90, 7);
-			step++;
-		case 3:
-			if (!Robot.drive.isIdle()) {
-				break;
-			}
-			Robot.drive.autoDrive(SPEED, 8.0, 2.0);
-			step++;
-		case 4:
-			if (!Robot.drive.isIdle()) {
-				break;
-			}
-			Robot.drive.autoTurn(0, 5);
-			step++;
-		case 5:
-			if (!Robot.drive.isIdle()) {
-				break;
-			}
-			Robot.drive.autoDrive(SPEED, 10.0, 10);
-			step++;
-		case 6:
-			if (!Robot.elev.isIdle()) {
-				break;
-			}
+			Robot.drive.autoDrive(SPEED, 6, 18.0);
 			Robot.elev.moveTo(20);
 			step++;
-		case 7:
-			if (!Robot.arm.isIdle() || Robot.elev.isIdle()) {
+			break;
+		case 2:
+			if (!Robot.drive.isIdle() || !Robot.elev.isIdle())
 				break;
-			}
-			Robot.elev.moveTo(RobotData.elevMaxHeightUnits);
-			Robot.arm.moveTo(30);
-			step++;
-		case 8:
-			if (!Robot.drive.isIdle() || !Robot.arm.isIdle() || !Robot.elev.isIdle()) {
-				break;
-			}
-			Robot.drive.autoTurn(20, 5);
-			step++;
-		case 9:
-			if (!Robot.drive.isIdle()) {
-				break;
-			}
-			Robot.drive.autoDrive(SPEED, 7, 5.5);
+			Robot.drive.autoTurn(90 * turnDir, 4);
 			step++;
 			break;
-		case 10:
+		case 3:
+			if (!Robot.drive.isIdle())
+				break;
+			Robot.drive.autoDrive(SPEED, 6, 18.0);
+			Robot.arm.moveTo(10);
+			Robot.elev.moveTo(27);
+			step++;
+			break;
+		case 4:
+			if (!Robot.drive.isIdle() || !Robot.elev.isIdle() || !Robot.arm.isIdle())
+				break;
+			Robot.drive.autoTurn(-150 * turnDir, 3);
+			step++;
+			break;
+		case 5:
+			if (!Robot.drive.isIdle() || !Robot.elev.isIdle() || !Robot.arm.isIdle())
+				break;
+			Robot.drive.autoDrive(SPEED, 6, 3.0);
+			step++;
+			break;
+		case 6:
 			if (!Robot.drive.isIdle())
 				break;
 			Robot.grab.autoRelease();
 			step++;
 			break;
-		case 11:
+		case 7:
+			if (!Robot.grab.isIdle())
+				break;
+			Robot.drive.autoDrive(SPEED, 4, -6.0);
+			step++;
+			break;
+		case 8:
+			if (Robot.drive.isIdle())
+				break;
+			Robot.elev.moveTo(0);
+			step++;
+			break;
+		case 9:
+			break;
+
+		}
+		// driveForward();
+	}
+
+	private void sameSideSwitch() {
+		SmartDashboard.putString("Auto Program", "sameSideSwitch");
+
+		switch (step) {
+		case 1:
+			if (!Robot.drive.isIdle())
+				break;
+			Robot.drive.autoDrive(0.5, 4, 12.5);
+			Robot.elev.moveTo(20);
+			step++;
+			break;
+		case 2:
+			if (!Robot.drive.isIdle() || !Robot.elev.isIdle()) {
+				break;
+			}
+			Robot.drive.autoTurn(90 * turnDir, 4);
+			Robot.elev.moveTo(26);
+			Robot.arm.moveTo(10);
+			step++;
+			break;
+		case 3:
+			if (!Robot.drive.isIdle() || !Robot.elev.isIdle() || !Robot.arm.isIdle())
+				break;
+			Robot.drive.autoDrive(SPEED, 6, 3.0);
+			step++;
+			break;
+		case 4:
+			if (!Robot.drive.isIdle())
+				break;
+			Robot.grab.autoRelease();
+			step++;
+			break;
+		case 5:
 			if (!Robot.grab.isIdle())
 				break;
 			Robot.drive.autoDrive(SPEED, 4, -4.0);
 			step++;
 			break;
-		case 12:
-			if (!Robot.drive.isIdle())
+		case 6:
+			if (Robot.drive.isIdle())
 				break;
-			Robot.arm.moveTo(10);
 			Robot.elev.moveTo(0);
 			step++;
 			break;
-		// dodododododododododododododododooooo
+		case 7:
+			break;
 		}
+		// TODO Auto-generated method stub
+
 	}
 
-	int switchStep = 1;
-
-	public void switchAutoTester() {
-		switch (switchStep) {
+	private void farSideScale() {
+		// TODO Auto-generated method stub
+		SmartDashboard.putString("Auto Program", "farSideScale");
+		switch (step) {
 		case 1:
-			if (!Robot.drive.isIdle())
-				break;
-			Robot.drive.autoDrive(0.3, 3, 1.5);
-			switchStep++;
+			Robot.drive.autoDrive(SPEED, 6, 18.0);
+			Robot.elev.moveTo(20);
+			step++;
 			break;
 		case 2:
-			int turnSign = (sideSwitch.equalsIgnoreCase("L")) ? -1 : 1;
-			if (!Robot.drive.isIdle())
+			if (!Robot.drive.isIdle() || !Robot.elev.isIdle())
 				break;
-			Robot.drive.autoTurn(35 * turnSign, 2);
-			switchStep++;
+			Robot.drive.autoTurn(90 * turnDir, 4);
+			step++;
 			break;
 		case 3:
 			if (!Robot.drive.isIdle())
 				break;
-			Robot.drive.autoDrive(0.5, 4, 6);
-			switchStep++;
+			Robot.drive.autoDrive(SPEED, 6, 18.5);
+			Robot.arm.moveTo(55);
+			Robot.elev.moveTo(RobotData.elevMaxHeightUnits);
+			step++;
 			break;
 		case 4:
-			double turnSign2 = (sideSwitch.equalsIgnoreCase("L")) ? 1 : -1;
+			if (!Robot.drive.isIdle() || !Robot.elev.isIdle() || !Robot.arm.isIdle())
+				break;
+			Robot.drive.autoTurn(-40 * turnDir, 2);
+			step++;
+			break;
+		case 5:
 			if (!Robot.drive.isIdle())
 				break;
-			Robot.drive.autoTurn(35 * turnSign2, 2);
-			switchStep++;
+			Robot.drive.autoDrive(0.4, 4, 6.0);
+			step++;
 			break;
 		case 6:
-			if (!Robot.drive.isIdle())
+			if (!Robot.drive.isIdle() || !Robot.grab.isIdle())
 				break;
-			Robot.elev.moveTo(10);
-			RobotData.elevPositionTarget = 10;
-			Robot.arm.moveTo(0);
-			RobotData.armPositionTarget = 0;
-			Robot.drive.autoDrive(0.4, 3, 4);
-			switchStep++;
+			Robot.grab.autoRelease();
+			step++;
 			break;
 		case 7:
-			if (!Robot.elev.isIdle() || !Robot.arm.isIdle() || !Robot.drive.isIdle())
+			if (!Robot.grab.isIdle())
 				break;
-			Robot.grab.moveGrabber(1);
-			switchStep++;
+			Robot.drive.autoDrive(0.5, 3, -6.0);
+			step++;
 			break;
 		case 8:
+			if (!Robot.drive.isIdle() || !Robot.elev.isIdle())
+				break;
+			Robot.arm.moveTo(10);
+			Robot.elev.moveTo(0);
+			Robot.drive.autoTurn(-110 * turnDir, 4);
+			step++;
 			break;
-		}
+		case 9:
+			break;
 
+		}
+		// driveForward();
 	}
 
-	int scaleStep = 1;
-
 	public void sameSideScale() {
-		switch (scaleStep) {
+		SmartDashboard.putString("Auto Program", "sameSideScale");
+		switch (step) {
 		case 1:
 			if (!Robot.drive.isIdle())
 				break;
 			Robot.drive.autoDrive(0.5, 4, 10.0);
 			Robot.elev.moveTo(20);
-			scaleStep++;
+			step++;
 			break;
 		case 2:
 			if (!Robot.drive.isIdle() || !Robot.elev.isIdle() || !Robot.arm.isIdle())
 				break;
-			Robot.drive.autoDrive(0.3, 6, 17.75);
+			Robot.drive.autoDrive(0.3, 6, 8.8);
 			Robot.elev.moveTo(RobotData.elevMaxHeightUnits);
 			Robot.arm.moveTo(30);
-			scaleStep++;
+			step++;
 			break;
 		case 3:
 			if (!Robot.drive.isIdle() || !Robot.elev.isIdle() || !Robot.arm.isIdle())
 				break;
-			Robot.drive.autoTurn(20 * turnDir, 2);
-			scaleStep++;
+			Robot.drive.autoTurn(35 * turnDir, 2);
+			step++;
 			break;
 		case 4:
 			if (!Robot.drive.isIdle())
 				break;
 			Robot.drive.autoDrive(0.4, 4, 6.0);
-			scaleStep++;
+			step++;
 			break;
 		case 5:
 			if (!Robot.drive.isIdle() || !Robot.grab.isIdle())
 				break;
 			Robot.grab.autoRelease();
-			scaleStep++;
+			step++;
 			break;
 		case 6:
 			if (!Robot.grab.isIdle())
 				break;
 			Robot.drive.autoDrive(0.5, 3, -6.0);
-			scaleStep++;
+			step++;
 			break;
 		case 7:
 			if (!Robot.drive.isIdle() || !Robot.elev.isIdle())
@@ -359,7 +348,7 @@ public class Autonomous {
 			Robot.arm.moveTo(10);
 			Robot.elev.moveTo(0);
 			Robot.drive.autoTurn(110 * turnDir, 4);
-			scaleStep++;
+			step++;
 			break;
 		case 8:
 			break;
@@ -367,38 +356,13 @@ public class Autonomous {
 		}
 	}
 
-	int switchStep2 = 1;
-
-	public void sideSwitch() {
-		switch (switchStep2) {
-
+	public void driveForward() {
+		switch (step) {
 		case 1:
-			if (!Robot.drive.isIdle())
-				break;
-			Robot.drive.autoDrive(0.5, 3, 13.0);
-			switchStep2++;
+			Robot.drive.autoDrive(SPEED, 5, 10.5);
+			step++;
 			break;
 		case 2:
-			int turnDir = (Robot.chooserPos.getSelected() == Robot.posRight) ? -1 : 1;
-			if (!Robot.drive.isIdle())
-				break;
-			Robot.drive.autoTurn(90 * turnDir, 3);
-			Robot.arm.moveTo(0);
-			switchStep2++;
-			break;
-		case 3:
-			if (!Robot.drive.isIdle() || !Robot.arm.isIdle())
-				break;
-			Robot.drive.autoDrive(0.4, 2, 3.8);
-			switchStep2++;
-			break;
-		case 4:
-			if (!Robot.drive.isIdle())
-				break;
-			Robot.grab.autoRelease();
-			switchStep2++;
-			break;
-		case 5:
 			break;
 		}
 	}

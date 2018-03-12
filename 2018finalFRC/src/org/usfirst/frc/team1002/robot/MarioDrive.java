@@ -53,14 +53,14 @@ public class MarioDrive {
 	public boolean isIdle() {
 		return (currentJob == IDLE);
 	}
-
+	double opScale = 1;
 	public void teleOp() {
 
 		currentJob = TELEOP;
 
-		x = smooth(Robot.driver.getY(GenericHID.Hand.kLeft), 0.22, 0.95);
+		x = smooth(Robot.driver.getY(GenericHID.Hand.kLeft), 0.22, 0.95) * opScale;
 		y = smooth((Robot.driver.getX(GenericHID.Hand.kLeft) * -1), 0.22, 0.95);
-		t = smooth((Robot.driver.getX(GenericHID.Hand.kRight) * -1), 0.22, 0.95);
+		t = smooth((Robot.driver.getX(GenericHID.Hand.kRight) * -1), 0.22, 0.95) * opScale;
 		if (Math.abs(x - prev_x) > maxSpeedDiff) {
 			x = (prev_x + (x - prev_x) / protectedConstant);
 		}

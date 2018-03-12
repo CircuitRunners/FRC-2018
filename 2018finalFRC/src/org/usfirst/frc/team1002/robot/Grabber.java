@@ -76,7 +76,7 @@ public class Grabber {
 	}
 	public void autoRelease() {
 		RobotData.grabIdle = false;
-		endTime = Timer.getFPGATimestamp() + 0.25;
+		endTime = Timer.getFPGATimestamp() + 0.4;
 		direction = OPENING;
 	}
 	public boolean isIdle() {

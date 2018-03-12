@@ -22,8 +22,18 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * creating this project, you must also update the build.properties file in the
  * project.
  */
+
+
+
 public class Robot extends IterativeRobot {
 
+	static final int LEFT = 1;
+	static final int CENTER = 2;
+	static final int RIGHT = 3;
+	static final int SWITCH = 10;
+	static final int SCALE =  11;
+	static final int NONE  = 12;
+	
 	public static final String posLeft = "L";
 	public static final String posCenter = "C";
 	public static final String posRight = "R";
@@ -35,14 +45,14 @@ public class Robot extends IterativeRobot {
 	public static final String altFalse = "Normal";
 	public static final String altTrue = "Alternate";
 	
-	public static String posSelected;
-	public static String targSelected;
-	public static String altSelected;
-	static SendableChooser<String> chooserPos; // Choose the starting position of the robot,
+	public static int posSelected = -1;
+	public static int targSelected = -1;
+	//public static String altSelected;
+	static SendableChooser<Integer> chooserPos = new SendableChooser<>(); // Choose the starting position of the robot,
 																			// with respect to the driver wall.
-	SendableChooser<String> chooserTarg = new SendableChooser<>(); // Choose the target of the robot: switch,
+	SendableChooser<Integer> chooserTarg = new SendableChooser<>(); // Choose the target of the robot: switch,
 																			// scale, or nothing.
-	SendableChooser<String> chooserAlt = new SendableChooser<>(); // Choose if the robot should use an alternate
+	//SendableChooser<String> chooserAlt = new SendableChooser<>(); // Choose if the robot should use an alternate
 																			// path. Intended to be used if we think
 																			// another robot will obstruct ours.
 
@@ -63,21 +73,21 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void robotInit() {
 		
-		chooserPos = new SendableChooser<>();
+
 		
-		chooserPos.addDefault("Left", posLeft);
-		chooserPos.addObject("Center", posCenter);
-		chooserPos.addObject("Right", posRight);
-		chooserTarg.addDefault("Switch", targSwitch);
-		chooserTarg.addObject("Scale", targScale);
-		chooserTarg.addObject("Cross Line", targLine);
-		chooserAlt.addDefault("Normal Mode", altFalse);
-		chooserAlt.addObject("Alternate Mode", altTrue);
+		chooserPos.addDefault("Left", LEFT);
+		chooserPos.addObject("Center", CENTER);
+		chooserPos.addObject("Right", RIGHT);
+		chooserTarg.addDefault("Switch", SWITCH);
+		chooserTarg.addObject("Scale", SCALE);
+		chooserTarg.addObject("Cross Line", NONE);
+		//chooserAlt.addDefault("Normal Mode", altFalse);
+		//chooserAlt.addObject("Alternate Mode", altTrue);
 		SmartDashboard.putData("Starting Position", chooserPos);
 		SmartDashboard.putData("Target", chooserTarg);
-		SmartDashboard.putData("Alternate Mode?", chooserAlt);
+		//SmartDashboard.putData("Alternate Mode?", chooserAlt);
 		
-		//cam.cameraInit();
+		cam.cameraInit();
 		elev.init();
 		arm.init();
 		
@@ -103,12 +113,14 @@ public class Robot extends IterativeRobot {
 		// RobotData.elevPositionTarget = elev.getElevatorPositionUnits();
 		posSelected = chooserPos.getSelected();
 		targSelected = chooserTarg.getSelected();
-		altSelected = chooserAlt.getSelected();
+		//altSelected = chooserAlt.getSelected();
+	SmartDashboard.putNumber("Pos Selected", posSelected);
+	SmartDashboard.putNumber("Target Selected", targSelected);
 		// autoSelected = SmartDashboard.getString("Auto Selector",
 		// defaultAuto);
 		System.out.println("Starting Position: " + posSelected);
 		System.out.println("Target Selected: " + targSelected);
-		System.out.println("Autonomous Mode: " + altSelected);
+		//System.out.println("Autonomous Mode: " + altSelected);
 		auto.init();
 		
 		// elev.setElevatorPositionUnits(elev.getElevatorPositionUnits());
@@ -189,6 +201,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("Right Encoder Count", drive.encR.get());
 		SmartDashboard.putNumber("Left Encoder Distance", drive.encL.getDistance());
 		SmartDashboard.putNumber("Right Encoder Distance", drive.encR.getDistance());
+		SmartDashboard.putNumber("Gyro Count Degrees", drive.gyro.getAngle());
 
 		// elev.display();
 	}
@@ -284,5 +297,8 @@ public class Robot extends IterativeRobot {
 			elev.enableLimitless();
 			arm.enableLimitless();
 		}
+		drive.opScale = 1;
+		if(driver.getTriggerAxis(GenericHID.Hand.kRight) >0.5)
+			drive.opScale /= 2;
 	}
 }
