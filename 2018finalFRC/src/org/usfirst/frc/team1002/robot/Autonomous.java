@@ -1,18 +1,15 @@
 package org.usfirst.frc.team1002.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Autonomous {
 
 	private static int posIndex;
 	private static int targIndex;
-	private static boolean altIndex;
 	private static String FMSString; // three character string from FMS.
 	private static int sideSwitch; // side switch is on.
 	private static int sideScale; // side scale is on.
-	private static char handed; // L or R, which direction robot should turn first. Used to reduce repeated
 	private static final double SPEED = 0.6; // code.
 	private static boolean switchNear;
 	private static boolean scaleNear;
@@ -133,7 +130,7 @@ public class Autonomous {
 		switch (step) {
 		case 1:
 			Robot.drive.autoDrive(SPEED, 6, 18.0);
-			RobotData.elevPositionTarget = Robot.elev.moveTo(20);
+			RobotData.elevPositionTarget = Robot.elev.moveTo(20, 1.0);
 			step++;
 			break;
 		case 2:
@@ -146,8 +143,8 @@ public class Autonomous {
 			if (!Robot.drive.isIdle())
 				break;
 			Robot.drive.autoDrive(SPEED, 6, 18.0);
-			RobotData.armPositionTarget = Robot.arm.moveTo(10);
-			RobotData.elevPositionTarget = Robot.elev.moveTo(27);
+			RobotData.armPositionTarget = Robot.arm.moveTo(10, 1.0);
+			RobotData.elevPositionTarget = Robot.elev.moveTo(27, 1.0);
 			step++;
 			break;
 		case 4:
@@ -177,7 +174,7 @@ public class Autonomous {
 		case 8:
 			if (Robot.drive.isIdle())
 				break;
-			RobotData.elevPositionTarget = Robot.elev.moveTo(0);
+			RobotData.elevPositionTarget = Robot.elev.moveTo(0, 1.0);
 			step++;
 			break;
 		case 9:
@@ -195,7 +192,7 @@ public class Autonomous {
 			if (!Robot.drive.isIdle())
 				break;
 			Robot.drive.autoDrive(0.5, 4, 12.5);
-			RobotData.elevPositionTarget = Robot.elev.moveTo(20);
+			RobotData.elevPositionTarget = Robot.elev.moveTo(20, 1.0);
 			step++;
 			break;
 		case 2:
@@ -203,8 +200,8 @@ public class Autonomous {
 				break;
 			}
 			Robot.drive.autoTurn(90 * turnDir, 4);
-			RobotData.elevPositionTarget = Robot.elev.moveTo(26);
-			RobotData.armPositionTarget = Robot.arm.moveTo(10);
+			RobotData.elevPositionTarget = Robot.elev.moveTo(26, 1.0);
+			RobotData.armPositionTarget = Robot.arm.moveTo(10, 1.0);
 			step++;
 			break;
 		case 3:
@@ -228,7 +225,7 @@ public class Autonomous {
 		case 6:
 			if (Robot.drive.isIdle())
 				break;
-			RobotData.elevPositionTarget = Robot.elev.moveTo(0);
+			RobotData.elevPositionTarget = Robot.elev.moveTo(0, 1.0);
 			step++;
 			break;
 		case 7:
@@ -244,7 +241,7 @@ public class Autonomous {
 		switch (step) {
 		case 1:
 			Robot.drive.autoDrive(SPEED, 6, 18.0);
-			RobotData.elevPositionTarget = Robot.elev.moveTo(20);
+			RobotData.elevPositionTarget = Robot.elev.moveTo(20, 1.0);
 			step++;
 			break;
 		case 2:
@@ -257,8 +254,8 @@ public class Autonomous {
 			if (!Robot.drive.isIdle())
 				break;
 			Robot.drive.autoDrive(SPEED, 6, 18.5);
-			RobotData.armPositionTarget = Robot.arm.moveTo(55);
-			RobotData.elevPositionTarget = Robot.elev.moveTo(RobotData.elevMaxHeightUnits);
+			RobotData.armPositionTarget = Robot.arm.moveTo(55, 1.0);
+			RobotData.elevPositionTarget = Robot.elev.moveTo(RobotData.elevMaxHeightUnits, 1.0);
 			step++;
 			break;
 		case 4:
@@ -288,8 +285,8 @@ public class Autonomous {
 		case 8:
 			if (!Robot.drive.isIdle() || !Robot.elev.isIdle())
 				break;
-			RobotData.armPositionTarget = Robot.arm.moveTo(10);
-			RobotData.elevPositionTarget = Robot.elev.moveTo(0);
+			RobotData.armPositionTarget = Robot.arm.moveTo(10, 1.0);
+			RobotData.elevPositionTarget = Robot.elev.moveTo(0, 1.0);
 			Robot.drive.autoTurn(-110 * turnDir, 4);
 			step++;
 			break;
@@ -307,15 +304,15 @@ public class Autonomous {
 			if (!Robot.drive.isIdle())
 				break;
 			Robot.drive.autoDrive(0.5, 4, 10.0);
-			RobotData.elevPositionTarget = Robot.elev.moveTo(20);
+			RobotData.elevPositionTarget = Robot.elev.moveTo(20, 1.0);
 			step++;
 			break;
 		case 2:
 			if (!Robot.drive.isIdle() || !Robot.elev.isIdle() || !Robot.arm.isIdle())
 				break;
 			Robot.drive.autoDrive(0.3, 6, 8.8);
-			RobotData.elevPositionTarget = Robot.elev.moveTo(RobotData.elevMaxHeightUnits);
-			RobotData.armPositionTarget = Robot.arm.moveTo(30);
+			RobotData.elevPositionTarget = Robot.elev.moveTo(RobotData.elevMaxHeightUnits, 1.0);
+			RobotData.armPositionTarget = Robot.arm.moveTo(30, 1.0);
 			step++;
 			break;
 		case 3:
@@ -345,8 +342,8 @@ public class Autonomous {
 		case 7:
 			if (!Robot.drive.isIdle() || !Robot.elev.isIdle())
 				break;
-			RobotData.armPositionTarget = Robot.arm.moveTo(10);
-			RobotData.elevPositionTarget = Robot.elev.moveTo(0);
+			RobotData.armPositionTarget = Robot.arm.moveTo(10, 1.0);
+			RobotData.elevPositionTarget = Robot.elev.moveTo(0, 1.0);
 			Robot.drive.autoTurn(110 * turnDir, 4);
 			step++;
 			break;

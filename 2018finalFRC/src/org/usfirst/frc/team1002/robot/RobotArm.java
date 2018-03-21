@@ -1,7 +1,6 @@
 package org.usfirst.frc.team1002.robot;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.Faults;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -10,6 +9,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class RobotArm {
 	TalonSRX armTalon;
+	double speedFactor = 1.0;
 	// Faults f;
 
 	public RobotArm() {
@@ -22,7 +22,7 @@ public class RobotArm {
 		RobotData.armPositionClicks = -11300;
 		// f = new Faults();
 	}
- public static int armCV = 10000;
+ public int armCV = 10000;
 	public void talonConfig(TalonSRX thisTalon) {
 		/* first choose the sensor */
 		thisTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, RobotData.elevPIDLoopIdx,
@@ -46,14 +46,11 @@ public class RobotArm {
 		thisTalon.config_kP(0, 0.4, RobotData.armTimeoutMs);
 		thisTalon.config_kI(0, 0, RobotData.armTimeoutMs);
 		thisTalon.config_kD(0, 0, RobotData.armTimeoutMs);
-		/* set acceleration and vcruise velocity - see documentation */
-		thisTalon.configMotionCruiseVelocity(RobotData.armCruiseVel, RobotData.armTimeoutMs);
-		thisTalon.configMotionAcceleration(RobotData.armCruiseAccel, RobotData.armTimeoutMs);
+		/* set acceleration and cruise velocity - see documentation */
+		thisTalon.configMotionCruiseVelocity(armCV, RobotData.armTimeoutMs);
+		thisTalon.configMotionAcceleration(armCV, RobotData.armTimeoutMs);
 		/* zero the sensor */
 		thisTalon.setSelectedSensorPosition(0, RobotData.armPIDLoopIdx, RobotData.armTimeoutMs);
-
-		thisTalon.configMotionCruiseVelocity((int) RobotData.armCruiseVel, RobotData.armTimeoutMs);
-		thisTalon.configMotionAcceleration((int) RobotData.armCruiseAccel, RobotData.armTimeoutMs);
 
 	}
 
@@ -82,9 +79,12 @@ public class RobotArm {
 
 	boolean limitless = true;
 
-	public double moveTo(double angle) {
+	public double moveTo(double angle, double speedfactor) {
 		boolean insideLimits = true;
 
+		double sf = Math.min(1,  speedFactor);
+		sf = Math.max(0, sf);
+		
 		double safeAngle = Math.max(angle, RobotData.armMinAngle);
 		safeAngle = Math.min(safeAngle, RobotData.armMaxAngle);
 
@@ -93,18 +93,24 @@ public class RobotArm {
 		if (limitless) {
 			if (insideLimits)
 				limitless = false;
-			internalMoveTo(angle);
+			internalMoveTo(angle, sf);
 			return angle;
 		} else {
-			internalMoveTo(safeAngle);
+			internalMoveTo(safeAngle, sf);
 			return safeAngle;
 		}
 
 	}
 
-	private void internalMoveTo(double angle) {
+	private void internalMoveTo(double angle, double sf) {
 		RobotData.armIdle = false;
-
+		
+		if(speedFactor != sf) {
+			speedFactor = sf;
+			armCV = (int) (armCV * sf);
+			armTalon.configMotionCruiseVelocity(armCV, RobotData.armTimeoutMs);
+			armTalon.configMotionAcceleration(armCV, RobotData.armTimeoutMs);
+		}
 		RobotData.armPositionClicks = degreesToClicks(angle);
 		SmartDashboard.putNumber("MoveTo-Arm Pos-Degrees)", angle);
 		SmartDashboard.putNumber("MoveTo-Arm Pos-Clicks)", RobotData.armPositionClicks);

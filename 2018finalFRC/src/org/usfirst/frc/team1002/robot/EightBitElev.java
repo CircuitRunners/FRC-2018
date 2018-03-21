@@ -1,26 +1,27 @@
 package org.usfirst.frc.team1002.robot;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.Faults;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
-import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.DigitalInput;
+//import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class EightBitElev {
 	private TalonSRX elevatorTalon;
-	private DigitalInput upperLim;
+	// private DigitalInput upperLim;
 	private String myName = "EightBitElevator";
 	boolean isCascade = true;
+	double speedFactor = 1.0;
+	int elevCV = 15000;
 
 	public EightBitElev() {
 		elevatorTalon = new TalonSRX(RobotData.elevS1TalonPort);
-		upperLim = new DigitalInput(5);
+		// upperLim = new DigitalInput(5);
+
 	}
 
 	public double getElevatorPositionUnits() {
@@ -53,8 +54,8 @@ public class EightBitElev {
 		thisTalon.config_kI(0, 0, RobotData.elevTimeoutMs);
 		thisTalon.config_kD(0, 0, RobotData.elevTimeoutMs);
 		/* set acceleration and vcruise velocity - see documentation */
-		thisTalon.configMotionCruiseVelocity(15000, RobotData.elevTimeoutMs);
-		thisTalon.configMotionAcceleration(15000, RobotData.elevTimeoutMs);
+		thisTalon.configMotionCruiseVelocity(elevCV, RobotData.elevTimeoutMs);
+		thisTalon.configMotionAcceleration(elevCV, RobotData.elevTimeoutMs);
 		/* zero the sensor */
 		thisTalon.setSelectedSensorPosition(0, RobotData.elevPIDLoopIdx, RobotData.elevTimeoutMs);
 
@@ -147,8 +148,11 @@ public class EightBitElev {
 
 	boolean limitless = true;
 
-	public double moveTo(double position) {
+	public double moveTo(double position, double speedfactor) {
 		boolean insideLimits = true;
+
+		double sf = Math.min(speedFactor, 1);
+		sf = Math.max(0, sf);
 
 		double safePosition = Math.min(RobotData.elevMaxHeightUnits, position);
 		safePosition = Math.max(0, safePosition);
@@ -159,23 +163,31 @@ public class EightBitElev {
 		if (limitless) {
 			if (insideLimits)
 				limitless = false;
-			internalMoveTo(position);
+			internalMoveTo(position, sf);
 			return position;
 		} else {
-			internalMoveTo(safePosition);
+			internalMoveTo(safePosition, sf);
 			return safePosition;
 		}
 
 	}
 
-	public void internalMoveTo(double position) {
+	public void internalMoveTo(double position, double sf) {
 		RobotData.elevIdle = false;
+		if (sf != speedFactor) {
+			speedFactor = sf;
+			elevCV = (int) (elevCV * sf);
+			elevatorTalon.configMotionCruiseVelocity(elevCV, RobotData.armTimeoutMs);
+			elevatorTalon.configMotionAcceleration(elevCV, RobotData.armTimeoutMs);
+		}
+
+		RobotData.elevPositionClicks = inchesToClicks(position);
+		elevatorTalon.set(ControlMode.MotionMagic, inchesToClicks(position));
 
 		SmartDashboard.putNumber("Elevator Target", position);
 		SmartDashboard.putNumber("Elevator Height (units)", position);
 		SmartDashboard.putNumber("Elevator Height (clicks)", inchesToClicks(position));
-		RobotData.elevPositionClicks = inchesToClicks(position);
-		elevatorTalon.set(ControlMode.MotionMagic, inchesToClicks(position));
+
 	}
 
 	public void init() {
