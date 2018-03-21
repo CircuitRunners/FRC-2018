@@ -24,7 +24,7 @@ public class MarioDrive {
 		else if (aValue < deadBand)
 			return 0;
 		else
-			return aValue * aValue * aValue * (value/aValue);
+			return aValue * aValue * aValue * (value / aValue);
 	}
 
 	ADXRS450_Gyro gyro;
@@ -53,7 +53,22 @@ public class MarioDrive {
 	public boolean isIdle() {
 		return (currentJob == IDLE);
 	}
+
 	double opScale = 1;
+
+	private double safety(double cmdVal, double prevVal, double maxChange) {
+		double diff = cmdVal - prevVal;
+		if (Math.abs(diff) < maxChange) {
+			return cmdVal;
+		} else {
+			if (diff > 0) {
+				return prevVal + maxChange;
+			} else {
+				return prevVal - maxChange;
+			}
+		}
+	}
+
 	public void teleOp() {
 
 		currentJob = TELEOP;
@@ -61,20 +76,17 @@ public class MarioDrive {
 		x = smooth(Robot.driver.getY(GenericHID.Hand.kLeft), 0.22, 0.95) * opScale;
 		y = smooth((Robot.driver.getX(GenericHID.Hand.kLeft) * -1), 0.22, 0.95);
 		t = smooth((Robot.driver.getX(GenericHID.Hand.kRight) * -1), 0.22, 0.95) * opScale;
-		if (Math.abs(x - prev_x) > maxSpeedDiff) {
-			x = (prev_x + (x - prev_x) / protectedConstant);
-		}
-		if (Math.abs(y - prev_y) > maxSpeedDiff) {
-			y = (prev_y + (y - prev_y) / protectedConstant);
-		}
-		if (Math.abs(t - prev_t) > maxSpeedDiff) {
-			t = (prev_t + (t - prev_t) / protectedConstant);
-		}
+
+		x = safety(x, prev_x, maxSpeedDiff);
+		y = safety(y, prev_y, maxSpeedDiff);
+		t = safety(t, prev_t, maxSpeedDiff);
 
 		marioDrive.driveCartesian(y, x, t);
+
 		prev_x = x;
 		prev_y = y;
 		prev_t = t;
+
 		SmartDashboard.putNumber("teleCount", count++);
 		SmartDashboard.putNumber("Controller Left/Right", x);
 		SmartDashboard.putNumber("Controller Forward/Reverse", -y);
@@ -105,8 +117,8 @@ public class MarioDrive {
 		case IDLE:
 			break;
 		case TELEOP:
-			double speed = encL.getRate() * (5280/3600);
-			SmartDashboard.putNumber("Speed MPH",  speed);
+			double speed = encL.getRate() * (5280 / 3600);
+			SmartDashboard.putNumber("Speed MPH", speed);
 			break;
 		case AUTODRIVE:
 			checkStatusAD();
@@ -190,6 +202,7 @@ public class MarioDrive {
 		endTime = Timer.getFPGATimestamp() + time;
 		desiredHeading = turn;
 	}
+
 	double DZone(double input) {
 		if (input > 0.9)
 			return 1;

@@ -47,6 +47,7 @@ public class Robot extends IterativeRobot {
 	
 	public static int posSelected = -1;
 	public static int targSelected = -1;
+	public static boolean wasDisabled = false;
 	//public static String altSelected;
 	static SendableChooser<Integer> chooserPos = new SendableChooser<>(); // Choose the starting position of the robot,
 																			// with respect to the driver wall.
@@ -158,6 +159,10 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
+		if(wasDisabled) {
+			RobotData.elevPositionTarget = elev.getElevatorPositionUnits();
+			RobotData.armPositionTarget = arm.getArmPosition();
+		}
 		double lastElevPos = RobotData.elevPositionTarget;
 		double lastArmPos = RobotData.armPositionTarget;
 		getControllers();
@@ -204,6 +209,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("Gyro Count Degrees", drive.gyro.getAngle());
 
 		// elev.display();
+		wasDisabled = true;
 	}
 
 	double smoothIncrement(double value, double deadBand, double max) {
