@@ -7,6 +7,8 @@
 
 package org.usfirst.frc.team1002.robot;
 
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
@@ -66,6 +68,7 @@ public class Robot extends IterativeRobot {
 	static PowerDistributionPanel pdp = new PowerDistributionPanel(0);
 	static Autonomous auto = new Autonomous();
 	static CameraControl cam = new CameraControl();
+	static DigitalInput resetGyro = new DigitalInput(9);
 
 	/**
 	 * This function is run when the robot is first started up and should be used
@@ -201,6 +204,13 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void disabledPeriodic() {
+		if(!resetGyro.get()) {
+
+			Timer.delay(0.5);
+			drive.gyro = new ADXRS450_Gyro();
+			drive.gyro.reset();
+		}
+			
 		SmartDashboard.putNumber("Left Encoder Count", drive.encL.get());
 		SmartDashboard.putNumber("Right Encoder Count", drive.encR.get());
 		SmartDashboard.putNumber("Left Encoder Distance", drive.encL.getDistance());
