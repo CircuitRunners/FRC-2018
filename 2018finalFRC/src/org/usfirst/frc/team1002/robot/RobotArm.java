@@ -9,8 +9,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class RobotArm {
 	TalonSRX armTalon;
-	double speedFactor = 1.0;
-	// Faults f;
+	int speedFactor = 100;
+    // Faults f;
 
 	public RobotArm() {
 		armTalon = new TalonSRX(RobotData.armTalonPort);
@@ -23,6 +23,7 @@ public class RobotArm {
 		// f = new Faults();
 	}
  public int armCV = 10000;
+ int maxArmCV = 10000;
 	public void talonConfig(TalonSRX thisTalon) {
 		/* first choose the sensor */
 		thisTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, RobotData.elevPIDLoopIdx,
@@ -79,10 +80,10 @@ public class RobotArm {
 
 	boolean limitless = true;
 
-	public double moveTo(double angle, double speedfactor) {
+	public double moveTo(double angle, int speedfactor) {
 		boolean insideLimits = true;
 
-		double sf = Math.min(1,  speedFactor);
+		int sf = Math.min(100,  speedFactor);
 		sf = Math.max(0, sf);
 		
 		double safeAngle = Math.max(angle, RobotData.armMinAngle);
@@ -102,12 +103,12 @@ public class RobotArm {
 
 	}
 
-	private void internalMoveTo(double angle, double sf) {
+	private void internalMoveTo(double angle, int sf) {
 		RobotData.armIdle = false;
 		
 		if(speedFactor != sf) {
 			speedFactor = sf;
-			armCV = (int) (armCV * sf);
+			armCV =(int) (maxArmCV * (sf/100.0));
 			armTalon.configMotionCruiseVelocity(armCV, RobotData.armTimeoutMs);
 			armTalon.configMotionAcceleration(armCV, RobotData.armTimeoutMs);
 		}

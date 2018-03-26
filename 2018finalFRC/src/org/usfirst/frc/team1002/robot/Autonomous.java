@@ -125,12 +125,11 @@ public class Autonomous {
 
 
 	private void farSideSwitch() {
-		// TODO Auto-generated method stub
 		SmartDashboard.putString("Auto Program", "farSideSwitch");
 		switch (step) {
 		case 1:
 			Robot.drive.autoDrive(SPEED, 6, 18.0);
-			RobotData.elevPositionTarget = Robot.elev.moveTo(20, 1.0);
+			RobotData.elevPositionTarget = Robot.elev.moveTo(20, 100);
 			step++;
 			break;
 		case 2:
@@ -143,8 +142,8 @@ public class Autonomous {
 			if (!Robot.drive.isIdle())
 				break;
 			Robot.drive.autoDrive(SPEED, 6, 18.0);
-			RobotData.armPositionTarget = Robot.arm.moveTo(10, 1.0);
-			RobotData.elevPositionTarget = Robot.elev.moveTo(27, 1.0);
+			RobotData.armPositionTarget = Robot.arm.moveTo(10, 100);
+			RobotData.elevPositionTarget = Robot.elev.moveTo(27, 100);
 			step++;
 			break;
 		case 4:
@@ -174,7 +173,7 @@ public class Autonomous {
 		case 8:
 			if (Robot.drive.isIdle())
 				break;
-			RobotData.elevPositionTarget = Robot.elev.moveTo(0, 1.0);
+			RobotData.elevPositionTarget = Robot.elev.moveTo(0, 100);
 			step++;
 			break;
 		case 9:
@@ -192,7 +191,7 @@ public class Autonomous {
 			if (!Robot.drive.isIdle())
 				break;
 			Robot.drive.autoDrive(0.5, 4, 12.5);
-			RobotData.elevPositionTarget = Robot.elev.moveTo(20, 1.0);
+			RobotData.elevPositionTarget = Robot.elev.moveTo(20, 100);
 			step++;
 			break;
 		case 2:
@@ -200,8 +199,8 @@ public class Autonomous {
 				break;
 			}
 			Robot.drive.autoTurn(90 * turnDir, 4);
-			RobotData.elevPositionTarget = Robot.elev.moveTo(26, 1.0);
-			RobotData.armPositionTarget = Robot.arm.moveTo(10, 1.0);
+			RobotData.elevPositionTarget = Robot.elev.moveTo(26, 100);
+			RobotData.armPositionTarget = Robot.arm.moveTo(10, 100);
 			step++;
 			break;
 		case 3:
@@ -225,23 +224,21 @@ public class Autonomous {
 		case 6:
 			if (Robot.drive.isIdle())
 				break;
-			RobotData.elevPositionTarget = Robot.elev.moveTo(0, 1.0);
+			RobotData.elevPositionTarget = Robot.elev.moveTo(0, 100);
 			step++;
 			break;
 		case 7:
 			break;
 		}
-		// TODO Auto-generated method stub
-
+		
 	}
 
 	private void farSideScale() {
-		// TODO Auto-generated method stub
-		SmartDashboard.putString("Auto Program", "farSideScale");
+				SmartDashboard.putString("Auto Program", "farSideScale");
 		switch (step) {
 		case 1:
 			Robot.drive.autoDrive(SPEED, 6, 18.0);
-			RobotData.elevPositionTarget = Robot.elev.moveTo(20, 1.0);
+			RobotData.elevPositionTarget = Robot.elev.moveTo(20, 100);
 			step++;
 			break;
 		case 2:
@@ -254,8 +251,8 @@ public class Autonomous {
 			if (!Robot.drive.isIdle())
 				break;
 			Robot.drive.autoDrive(SPEED, 6, 18.5);
-			RobotData.armPositionTarget = Robot.arm.moveTo(55, 1.0);
-			RobotData.elevPositionTarget = Robot.elev.moveTo(RobotData.elevMaxHeightUnits, 1.0);
+			RobotData.armPositionTarget = Robot.arm.moveTo(55, 100);
+			RobotData.elevPositionTarget = Robot.elev.moveTo(RobotData.elevMaxHeightUnits, 100);
 			step++;
 			break;
 		case 4:
@@ -285,8 +282,8 @@ public class Autonomous {
 		case 8:
 			if (!Robot.drive.isIdle() || !Robot.elev.isIdle())
 				break;
-			RobotData.armPositionTarget = Robot.arm.moveTo(10, 1.0);
-			RobotData.elevPositionTarget = Robot.elev.moveTo(0, 1.0);
+			RobotData.armPositionTarget = Robot.arm.moveTo(10, 100);
+			RobotData.elevPositionTarget = Robot.elev.moveTo(0, 100);
 			Robot.drive.autoTurn(-110 * turnDir, 4);
 			step++;
 			break;
@@ -304,15 +301,15 @@ public class Autonomous {
 			if (!Robot.drive.isIdle())
 				break;
 			Robot.drive.autoDrive(0.5, 4, 10.0);
-			RobotData.elevPositionTarget = Robot.elev.moveTo(20, 1.0);
+			RobotData.elevPositionTarget = Robot.elev.moveTo(20, 100);
 			step++;
 			break;
 		case 2:
 			if (!Robot.drive.isIdle() || !Robot.elev.isIdle() || !Robot.arm.isIdle())
 				break;
 			Robot.drive.autoDrive(0.3, 6, 8.8);
-			RobotData.elevPositionTarget = Robot.elev.moveTo(RobotData.elevMaxHeightUnits, 1.0);
-			RobotData.armPositionTarget = Robot.arm.moveTo(30, 1.0);
+			RobotData.elevPositionTarget = Robot.elev.moveTo(RobotData.elevMaxHeightUnits, 100);
+			RobotData.armPositionTarget = Robot.arm.moveTo(30, 100);
 			step++;
 			break;
 		case 3:
@@ -342,8 +339,8 @@ public class Autonomous {
 		case 7:
 			if (!Robot.drive.isIdle() || !Robot.elev.isIdle())
 				break;
-			RobotData.armPositionTarget = Robot.arm.moveTo(10, 1.0);
-			RobotData.elevPositionTarget = Robot.elev.moveTo(0, 1.0);
+			RobotData.armPositionTarget = Robot.arm.moveTo(10, 100);
+			RobotData.elevPositionTarget = Robot.elev.moveTo(0, 100);
 			Robot.drive.autoTurn(110 * turnDir, 4);
 			step++;
 			break;

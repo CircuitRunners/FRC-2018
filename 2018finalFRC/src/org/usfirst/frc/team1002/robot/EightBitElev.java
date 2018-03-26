@@ -15,8 +15,9 @@ public class EightBitElev {
 	// private DigitalInput upperLim;
 	private String myName = "EightBitElevator";
 	boolean isCascade = true;
-	double speedFactor = 1.0;
+	int speedFactor = 100;
 	int elevCV = 15000;
+	int maxElevCV = 15000;
 
 	public EightBitElev() {
 		elevatorTalon = new TalonSRX(RobotData.elevS1TalonPort);
@@ -148,10 +149,10 @@ public class EightBitElev {
 
 	boolean limitless = true;
 
-	public double moveTo(double position, double speedfactor) {
+	public double moveTo(double position, int speedfactor) {
 		boolean insideLimits = true;
 
-		double sf = Math.min(speedFactor, 1);
+		int sf = Math.min(speedFactor, 1);
 		sf = Math.max(0, sf);
 
 		double safePosition = Math.min(RobotData.elevMaxHeightUnits, position);
@@ -172,11 +173,11 @@ public class EightBitElev {
 
 	}
 
-	public void internalMoveTo(double position, double sf) {
+	public void internalMoveTo(double position, int sf) {
 		RobotData.elevIdle = false;
 		if (sf != speedFactor) {
 			speedFactor = sf;
-			elevCV = (int) (elevCV * sf);
+			elevCV = (int) (maxElevCV * (sf / 100.0));
 			elevatorTalon.configMotionCruiseVelocity(elevCV, RobotData.armTimeoutMs);
 			elevatorTalon.configMotionAcceleration(elevCV, RobotData.armTimeoutMs);
 		}
