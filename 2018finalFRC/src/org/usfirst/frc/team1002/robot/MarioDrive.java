@@ -115,17 +115,21 @@ public class MarioDrive {
 	public void checkStatus() {
 		switch (currentJob) {
 		case IDLE:
+			SmartDashboard.putString("Drive State", "IDLE");
 			break;
 		case TELEOP:
 			double speed = encL.getRate() * (5280 / 3600);
 			SmartDashboard.putNumber("Speed MPH", speed);
+			SmartDashboard.putString("Drive State", "TELEOP");
 			break;
 		case AUTODRIVE:
 			checkStatusAD();
 			displayAD();
+			SmartDashboard.putString("Drive State", "AUTODRIVE");
 			break;
 		case AUTOTURN:
 			this.checkStatusAT();
+			SmartDashboard.putString("Drive State", "AUTOTURN");
 			break;
 		}
 	}
@@ -172,7 +176,7 @@ public class MarioDrive {
 		displayAD();
 	}
 
-	public void autoDrive(double speed, double time, double dist) {
+	public void autoDrive(double dist, double speed, double time) {
 
 		currentJob = AUTODRIVE;
 

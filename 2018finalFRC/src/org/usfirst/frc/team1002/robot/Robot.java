@@ -145,7 +145,7 @@ public class Robot extends IterativeRobot {
 		grab.checkStatus();
 
 		auto.run();
-
+		SmartDashboard.putNumber("Auto Step",auto.step);
 	}
 
 	@Override
@@ -170,9 +170,9 @@ public class Robot extends IterativeRobot {
 		getControllers();
 
 		if (lastElevPos != RobotData.elevPositionTarget)
-			RobotData.elevPositionTarget = elev.moveTo(RobotData.elevPositionTarget, 70);
+			RobotData.elevPositionTarget = elev.moveTo(RobotData.elevPositionTarget, 80);
 		if (lastArmPos != RobotData.armPositionTarget)
-			RobotData.armPositionTarget = arm.moveTo(RobotData.armPositionTarget, 70);
+			RobotData.armPositionTarget = arm.moveTo(RobotData.armPositionTarget, 10);
 
 		drive.teleOp();
 
@@ -190,7 +190,7 @@ public class Robot extends IterativeRobot {
 		elev.display();
 		if (driver.getXButton()) {
 
-			drive.autoDrive(0.25, 15.0, 10.0);
+			drive.autoDrive(10.0, 0.25, 15.0);
 
 		}
 		if (driver.getAButton()) {
@@ -207,7 +207,7 @@ public class Robot extends IterativeRobot {
 		if(!resetGyro.get()) {
 
 			Timer.delay(0.5);
-			drive.gyro = new ADXRS450_Gyro();
+			drive.gyro.calibrate();
 			drive.gyro.reset();
 		}
 			

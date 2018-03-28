@@ -60,9 +60,7 @@ public class RobotArm {
 		SmartDashboard.putNumber("Arm desired encoder count", RobotData.armPositionClicks);
 	}
 
-	/**
-	 * 
-	 */
+	
 	public void checkStatus() {
 		int armPos = armTalon.getSelectedSensorPosition(RobotData.armPIDLoopIdx);
 		if (Math.abs(armPos - RobotData.armPositionClicks) <= 300) {
@@ -135,7 +133,7 @@ public class RobotArm {
 	}
 
 	public boolean isIdle() {
-		SmartDashboard.putBoolean("Arm Idle State", RobotData.armIdle);
+		SmartDashboard.putBoolean("Arm Idle", RobotData.armIdle);
 		return RobotData.armIdle;
 	}
 

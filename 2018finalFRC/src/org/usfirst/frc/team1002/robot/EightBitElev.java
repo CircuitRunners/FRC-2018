@@ -152,7 +152,7 @@ public class EightBitElev {
 	public double moveTo(double position, int speedfactor) {
 		boolean insideLimits = true;
 
-		int sf = Math.min(speedFactor, 1);
+		int sf = Math.min(speedFactor, 100);
 		sf = Math.max(0, sf);
 
 		double safePosition = Math.min(RobotData.elevMaxHeightUnits, position);
@@ -274,6 +274,7 @@ public class EightBitElev {
 	}
 
 	public boolean isIdle() {
+		SmartDashboard.putBoolean("Elev Idle", RobotData.elevIdle);
 		return RobotData.elevIdle;
 	}
 

@@ -128,7 +128,7 @@ public class Autonomous {
 		SmartDashboard.putString("Auto Program", "farSideSwitch");
 		switch (step) {
 		case 1:
-			Robot.drive.autoDrive(SPEED, 6, 18.0);
+			Robot.drive.autoDrive(18.0, SPEED, 6);
 			RobotData.elevPositionTarget = Robot.elev.moveTo(20, 100);
 			step++;
 			break;
@@ -141,7 +141,7 @@ public class Autonomous {
 		case 3:
 			if (!Robot.drive.isIdle())
 				break;
-			Robot.drive.autoDrive(SPEED, 6, 18.0);
+			Robot.drive.autoDrive(18.0, SPEED, 6);
 			RobotData.armPositionTarget = Robot.arm.moveTo(10, 100);
 			RobotData.elevPositionTarget = Robot.elev.moveTo(27, 100);
 			step++;
@@ -155,7 +155,7 @@ public class Autonomous {
 		case 5:
 			if (!Robot.drive.isIdle() || !Robot.elev.isIdle() || !Robot.arm.isIdle())
 				break;
-			Robot.drive.autoDrive(SPEED, 6, 3.0);
+			Robot.drive.autoDrive(3.0, SPEED, 6);
 			step++;
 			break;
 		case 6:
@@ -167,7 +167,7 @@ public class Autonomous {
 		case 7:
 			if (!Robot.grab.isIdle())
 				break;
-			Robot.drive.autoDrive(SPEED, 4, -6.0);
+			Robot.drive.autoDrive(-6.0, SPEED, 4);
 			step++;
 			break;
 		case 8:
@@ -190,7 +190,7 @@ public class Autonomous {
 		case 1:
 			if (!Robot.drive.isIdle())
 				break;
-			Robot.drive.autoDrive(0.5, 4, 12.5);
+			Robot.drive.autoDrive(11, 0.5, 4);
 			RobotData.elevPositionTarget = Robot.elev.moveTo(20, 100);
 			step++;
 			break;
@@ -206,7 +206,7 @@ public class Autonomous {
 		case 3:
 			if (!Robot.drive.isIdle() || !Robot.elev.isIdle() || !Robot.arm.isIdle())
 				break;
-			Robot.drive.autoDrive(SPEED, 6, 3.0);
+			Robot.drive.autoDrive(1.3, SPEED, 6);
 			step++;
 			break;
 		case 4:
@@ -218,7 +218,7 @@ public class Autonomous {
 		case 5:
 			if (!Robot.grab.isIdle())
 				break;
-			Robot.drive.autoDrive(SPEED, 4, -4.0);
+			Robot.drive.autoDrive(-0.1, 0.4, 4);
 			step++;
 			break;
 		case 6:
@@ -237,7 +237,7 @@ public class Autonomous {
 				SmartDashboard.putString("Auto Program", "farSideScale");
 		switch (step) {
 		case 1:
-			Robot.drive.autoDrive(SPEED, 6, 18.0);
+			Robot.drive.autoDrive(15.5, SPEED, 6);
 			RobotData.elevPositionTarget = Robot.elev.moveTo(20, 100);
 			step++;
 			break;
@@ -250,21 +250,21 @@ public class Autonomous {
 		case 3:
 			if (!Robot.drive.isIdle())
 				break;
-			Robot.drive.autoDrive(SPEED, 6, 18.5);
-			RobotData.armPositionTarget = Robot.arm.moveTo(55, 100);
+			Robot.drive.autoDrive(15, SPEED, 6);
+			RobotData.armPositionTarget = Robot.arm.moveTo(30, 100);
 			RobotData.elevPositionTarget = Robot.elev.moveTo(RobotData.elevMaxHeightUnits, 100);
 			step++;
 			break;
 		case 4:
 			if (!Robot.drive.isIdle() || !Robot.elev.isIdle() || !Robot.arm.isIdle())
 				break;
-			Robot.drive.autoTurn(-40 * turnDir, 2);
+			Robot.drive.autoTurn(-60 * turnDir, 2);
 			step++;
 			break;
 		case 5:
 			if (!Robot.drive.isIdle())
 				break;
-			Robot.drive.autoDrive(0.4, 4, 6.0);
+			Robot.drive.autoDrive(3, 0.4, 4);
 			step++;
 			break;
 		case 6:
@@ -276,7 +276,7 @@ public class Autonomous {
 		case 7:
 			if (!Robot.grab.isIdle())
 				break;
-			Robot.drive.autoDrive(0.5, 3, -6.0);
+			Robot.drive.autoDrive(-6.0, 0.5, 3);
 			step++;
 			break;
 		case 8:
@@ -300,14 +300,14 @@ public class Autonomous {
 		case 1:
 			if (!Robot.drive.isIdle())
 				break;
-			Robot.drive.autoDrive(0.5, 4, 10.0);
+			Robot.drive.autoDrive(10.0, 0.5, 4);
 			RobotData.elevPositionTarget = Robot.elev.moveTo(20, 100);
 			step++;
 			break;
 		case 2:
 			if (!Robot.drive.isIdle() || !Robot.elev.isIdle() || !Robot.arm.isIdle())
 				break;
-			Robot.drive.autoDrive(0.3, 6, 8.8);
+			Robot.drive.autoDrive(8.8, 0.3, 6);
 			RobotData.elevPositionTarget = Robot.elev.moveTo(RobotData.elevMaxHeightUnits, 100);
 			RobotData.armPositionTarget = Robot.arm.moveTo(30, 100);
 			step++;
@@ -315,13 +315,13 @@ public class Autonomous {
 		case 3:
 			if (!Robot.drive.isIdle() || !Robot.elev.isIdle() || !Robot.arm.isIdle())
 				break;
-			Robot.drive.autoTurn(35 * turnDir, 2);
+			Robot.drive.autoTurn(35 * turnDir, 3);
 			step++;
 			break;
 		case 4:
 			if (!Robot.drive.isIdle())
 				break;
-			Robot.drive.autoDrive(0.4, 4, 6.0);
+			Robot.drive.autoDrive(3.3, 0.4, 4);
 			step++;
 			break;
 		case 5:
@@ -333,7 +333,7 @@ public class Autonomous {
 		case 6:
 			if (!Robot.grab.isIdle())
 				break;
-			Robot.drive.autoDrive(0.5, 3, -6.0);
+			Robot.drive.autoDrive(-6.0, 0.5, 3);
 			step++;
 			break;
 		case 7:
@@ -353,7 +353,7 @@ public class Autonomous {
 	public void driveForward() {
 		switch (step) {
 		case 1:
-			Robot.drive.autoDrive(SPEED, 5, 10.5);
+			Robot.drive.autoDrive(10.5, SPEED, 5);
 			step++;
 			break;
 		case 2:
