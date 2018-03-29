@@ -7,7 +7,6 @@
 
 package org.usfirst.frc.team1002.robot;
 
-import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.IterativeRobot;
@@ -145,7 +144,7 @@ public class Robot extends IterativeRobot {
 		grab.checkStatus();
 
 		auto.run();
-		SmartDashboard.putNumber("Auto Step",auto.step);
+		SmartDashboard.putNumber("Auto Step", auto.step);
 	}
 
 	@Override
@@ -204,13 +203,13 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void disabledPeriodic() {
-		if(!resetGyro.get()) {
+		if (!resetGyro.get()) {
 
 			Timer.delay(0.5);
 			drive.gyro.calibrate();
 			drive.gyro.reset();
 		}
-			
+
 		SmartDashboard.putNumber("Left Encoder Count", drive.encL.get());
 		SmartDashboard.putNumber("Right Encoder Count", drive.encR.get());
 		SmartDashboard.putNumber("Left Encoder Distance", drive.encL.getDistance());
@@ -230,8 +229,8 @@ public class Robot extends IterativeRobot {
 
 	boolean lastTimeElevIncrement = false;
 	boolean lastTimeArmIncrement = false;
-	static double elevIncrement = ((elev.maxElevCV * elev.speedFactor/100.0) / RobotData.elevClicksPerUnitS1) / 50;
-	static double armIncrement = ((arm.maxArmCV * arm.speedFactor/100.0) / RobotData.armClicksPerUnit) / 50;
+	static double elevIncrement = ((elev.maxElevCV * elev.speedFactor / 100.0) / RobotData.elevClicksPerUnitS1) / 50;
+	static double armIncrement = ((arm.maxArmCV * arm.speedFactor / 100.0) / RobotData.armClicksPerUnit) / 50;
 
 	public void getControllers() {
 		/*
@@ -269,5 +268,15 @@ public class Robot extends IterativeRobot {
 		drive.opScale = 1;
 		if (driver.getTriggerAxis(GenericHID.Hand.kRight) > 0.5)
 			drive.opScale /= 2;
+		if (operator.getAButton()) {
+			RobotData.elevPositionTarget = elev.moveTo(RobotData.elevMaxHeightUnits, 100);
+			RobotData.armPositionTarget = arm.moveTo(30, 100);
+		} else if (operator.getXButton()) {
+			RobotData.elevPositionTarget = elev.moveTo(0, 100);
+		arm.enableLimitless();
+			RobotData.armPositionTarget = arm.moveTo(-15, 100);
+		} else if (operator.getYButton())
+			RobotData.elevPositionTarget = elev.moveTo(15, 100);
 	}
+
 }

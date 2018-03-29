@@ -17,7 +17,7 @@ public class EightBitElev {
 	boolean isCascade = true;
 	int speedFactor = 100;
 	int elevCV = 15000;
-	int maxElevCV = 15000;
+	int maxElevCV = 18000;
 
 	public EightBitElev() {
 		elevatorTalon = new TalonSRX(RobotData.elevS1TalonPort);
