@@ -19,7 +19,7 @@ public class RobotArm {
 	public void init() {
 		talonConfig(armTalon);
 		armTalon.setSelectedSensorPosition(-11300, RobotData.armPIDLoopIdx, RobotData.armTimeoutMs);
-		RobotData.armPositionClicks = -11300;
+		RobotData.armPositionClicks = -11300 + 1950;
 		// f = new Faults();
 	}
  public int armCV = 10000;
@@ -58,6 +58,9 @@ public class RobotArm {
 	void displayArmStatus() {
 		SmartDashboard.putNumber("Arm Desired Angle", RobotData.armPositionTarget);
 		SmartDashboard.putNumber("Arm desired encoder count", RobotData.armPositionClicks);
+		SmartDashboard.putNumber("Arm Amperage Pull",armTalon.getOutputCurrent());
+		SmartDashboard.putNumber("Arm Voltage Draw", armTalon.getMotorOutputVoltage());
+		SmartDashboard.putNumber("Arm MotorController Temperature", armTalon.getTemperature());
 	}
 
 	

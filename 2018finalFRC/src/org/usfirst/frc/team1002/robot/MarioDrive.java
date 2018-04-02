@@ -123,7 +123,7 @@ public class MarioDrive {
 			SmartDashboard.putString("Drive State", "TELEOP");
 			break;
 		case AUTODRIVE:
-			checkStatusAD();
+			revisedCheckStatusAD();//Testing new auto drive algorithm
 			displayAD();
 			SmartDashboard.putString("Drive State", "AUTODRIVE");
 			break;
@@ -134,9 +134,12 @@ public class MarioDrive {
 		}
 	}
 
+	final double TURNSPEED = 0.4;
+
 	void checkStatusAT() {
 		double twist = 0.0;
 		currentHeading = gyro.getAngle();
+		SmartDashboard.putNumber("Gyro Count Degrees", currentHeading);
 		degChange = (desiredHeading - currentHeading);
 		if (Math.abs(degChange) < 1) {
 			currentJob = IDLE;
@@ -146,11 +149,12 @@ public class MarioDrive {
 		if (currentTime > endTime) {
 			currentJob = IDLE;
 			marioDrive.stopMotor();
+			System.out.println("AutoTurn timed out. Desired Heading: " + desiredHeading);
 		}
 		if (degChange < 0.0)
-			twist = 0.3;
+			twist = TURNSPEED;
 		else
-			twist = -0.3;
+			twist = -TURNSPEED;
 
 		marioDrive.driveCartesian(0.0, 0.0, twist);
 
@@ -165,6 +169,7 @@ public class MarioDrive {
 		if (currentTime > endTime) {
 			currentJob = IDLE;
 			marioDrive.stopMotor();
+			System.out.println("AutoDrive timed out. desired Distance: " + desiredDistance);
 		}
 		currentHeading = gyro.getAngle();
 		degChange = ((desiredHeading - currentHeading) * -1) / 50;
@@ -176,23 +181,27 @@ public class MarioDrive {
 		displayAD();
 	}
 
+	boolean forward = true;
+
 	public void autoDrive(double dist, double speed, double time) {
 
 		currentJob = AUTODRIVE;
 
 		speed *= -1;
 
-		boolean forward = true;
+		forward = true;
+
+		if (dist < 0)
+			forward = false;
+		if (!forward) {
+			speed *= -1;
+			nearby *= -1;
+		}
 
 		endTime = Timer.getFPGATimestamp() + time;
 
 		encL.reset();
 		encR.reset();
-
-		if (dist < 0)
-			forward = false;
-		if (!forward)
-			speed *= -1;
 
 		desiredSpeed = speed;
 		desiredDistance = dist;
@@ -218,4 +227,58 @@ public class MarioDrive {
 			return input;
 	}
 
+	double rampSpeed = 0;
+	double rampInc = 0.005;
+	double nearby = 0.8;
+
+	void revisedCheckStatusAD() {
+		if (Math.min(Math.abs(encL.getDistance()), Math.abs(encR.getDistance())) > Math.abs(desiredDistance)) {
+			currentJob = IDLE;
+			marioDrive.stopMotor();
+		}
+
+		currentTime = Timer.getFPGATimestamp();
+
+		if (currentTime > endTime) {
+			currentJob = IDLE;
+			marioDrive.stopMotor();
+			System.out.println("AutoDrive timed out. desired Distance: " + desiredDistance);
+		}
+
+		currentHeading = gyro.getAngle();
+
+		degChange = ((desiredHeading - currentHeading) * -1) / 50;
+		if (forward) {
+			if (Math.min(encL.getDistance(), encR.getDistance()) < nearby) {
+				rampSpeed += rampInc;
+				rampSpeed = Math.min(rampSpeed, desiredSpeed);
+			} else if (Math.min(encL.getDistance(), encR.getDistance()) >= nearby
+					|| Math.min(encL.getDistance(), encR.getDistance()) < desiredDistance - nearby) {
+				rampSpeed = desiredSpeed;
+			} else {
+				rampSpeed -= rampInc;
+				rampSpeed = Math.max(0, rampSpeed);
+			}
+		}
+		if (!forward) {
+			if (Math.min(encL.getDistance(), encR.getDistance()) > nearby) {
+				rampSpeed -= rampInc;
+				rampSpeed = Math.min(rampSpeed, desiredSpeed);
+			} else if (Math.min(encL.getDistance(), encR.getDistance()) <= nearby
+					|| Math.min(encL.getDistance(), encR.getDistance()) > desiredDistance - nearby) {
+				rampSpeed = desiredSpeed;
+			} else {
+				rampSpeed += rampInc;
+				rampSpeed = Math.max(0, rampSpeed);
+			}
+		}
+		marioDrive.driveCartesian(0.0, rampSpeed, degChange);
+
+		SmartDashboard.putNumber("Desired Speed", desiredSpeed);
+		SmartDashboard.putNumber("Ramp Speed", rampSpeed);
+		SmartDashboard.putNumber("Degree Change", degChange);
+
+		currentTime = Timer.getFPGATimestamp();
+		displayAD();
+	}
 }

@@ -112,39 +112,6 @@ public class EightBitElev {
 		double AbtnS1cvMax = Math.max(RobotData.elevS1CVMax,
 				elevatorTalon.getSelectedSensorVelocity(RobotData.elevPIDLoopIdx));
 		SmartDashboard.putNumber("Max Velocity A Button", AbtnS1cvMax);
-
-		/* smart dash plots */
-		// SmartDashboard.putNumber("Elevator S2 SensorVel",
-		// stageTwoTalon.getSelectedSensorVelocity(RobotData.elevPIDLoopIdx));
-		// SmartDashboard.putNumber("Elevator S2 SensorPos",
-		// stageTwoTalon.getSelectedSensorPosition(RobotData.elevPIDLoopIdx));
-
-		// SmartDashboard.putNumber("Elevator S2 MotorOutputPercent",
-		// stageTwoTalon.getMotorOutputPercent());
-
-		// SmartDashboard.putNumber("Elevator S2 Talon Current",
-		// stageTwoTalon.getOutputCurrent());
-
-		/* print the Active Trajectory Point Motion Magic is going towards */
-		// SmartDashboard.putNumber("Elevator S2 ActTrajVelocity",
-		// stageTwoTalon.getActiveTrajectoryVelocity());
-		// SmartDashboard.putNumber("Elevator S2 ActTrajPosition",
-		// stageTwoTalon.getActiveTrajectoryPosition());
-		// SmartDashboard.putNumber("Elevator S2 ActTrajHeading",
-		// stageTwoTalon.getActiveTrajectoryHeading());
-
-		// RobotData.elevS2Position =
-		// stageTwoTalon.getSelectedSensorPosition(RobotData.elevPIDLoopIdx);
-
-		// RobotData.elevS2OutputMax = Math.max(RobotData.elevS2OutputMax,
-		// stageTwoTalon.getOutputCurrent());
-		// double elevS2cvMax = Math.max(RobotData.elevS2CVMax,
-		// stageTwoTalon.getSelectedSensorVelocity(RobotData.elevPIDLoopIdx));
-		// SmartDashboard.putNumber("Elevator Max Velocity", elevS2cvMax);
-
-		// double AbtnS2cvMax = Math.max(RobotData.elevS2CVMax,
-		// stageTwoTalon.getSelectedSensorVelocity(RobotData.elevPIDLoopIdx));
-		// SmartDashboard.putNumber("Max Velocity A Button", AbtnS2cvMax);
 	}
 
 	boolean limitless = true;
@@ -282,12 +249,13 @@ public class EightBitElev {
 		RobotData.elevPositionTarget = positionUnits;
 	}
 
-	public void storedPosition() {
-		RobotData.elevPositionTarget = 30.0;
-		RobotData.armPositionTarget = -25;
-	}
-
 	public void enableLimitless() {
 		limitless = true;
+	}
+	
+	public void displayElevStatus() {
+		SmartDashboard.putNumber("Elevator Amperage Pull",elevatorTalon.getOutputCurrent());
+		SmartDashboard.putNumber("Elevator Voltage Draw", elevatorTalon.getMotorOutputVoltage());
+		SmartDashboard.putNumber("Elevator MotorController Temperature", elevatorTalon.getTemperature());
 	}
 }

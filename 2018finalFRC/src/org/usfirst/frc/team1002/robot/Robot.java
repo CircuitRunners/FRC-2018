@@ -88,7 +88,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putData("Target", chooserTarg);
 		// SmartDashboard.putData("Alternate Mode?", chooserAlt);
 
-		cam.cameraInit();
+		//cam.cameraInit();
 		elev.init();
 		arm.init();
 
@@ -179,6 +179,9 @@ public class Robot extends IterativeRobot {
 		arm.checkStatus();
 		elev.checkStatus();
 
+		arm.displayArmStatus();
+		elev.displayElevStatus();
+
 	}
 
 	/**
@@ -268,15 +271,21 @@ public class Robot extends IterativeRobot {
 		drive.opScale = 1;
 		if (driver.getTriggerAxis(GenericHID.Hand.kRight) > 0.5)
 			drive.opScale /= 2;
-		if (operator.getAButton()) {
+		if (operator.getYButton()) {
 			RobotData.elevPositionTarget = elev.moveTo(RobotData.elevMaxHeightUnits, 100);
 			RobotData.armPositionTarget = arm.moveTo(30, 100);
-		} else if (operator.getXButton()) {
+		} else if (operator.getAButton()) {
 			RobotData.elevPositionTarget = elev.moveTo(0, 100);
-		arm.enableLimitless();
+			arm.enableLimitless();
 			RobotData.armPositionTarget = arm.moveTo(-15, 100);
-		} else if (operator.getYButton())
+		} else if (operator.getXButton()) {
 			RobotData.elevPositionTarget = elev.moveTo(15, 100);
+
+		} else if (operator.getBButton()) {
+			RobotData.elevPositionTarget = elev.moveTo(10, 100);
+			RobotData.armPositionTarget = arm.moveTo(0, 100);
+		}
+
 	}
 
 }
