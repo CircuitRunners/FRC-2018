@@ -87,11 +87,14 @@ public class Autonomous {
 			}
 			break;
 		case CENTER:
-			if(sideScale == RIGHT)
-				turnDir = -1;
-			else
-				turnDir = 1;
-			centerSwitch();
+			if (targIndex == SCALE) {
+				if (sideScale == RIGHT) {
+					turnDir = -1;
+				} else {
+					turnDir = 1;
+				}
+				centerSwitch();
+			}
 			break;
 
 		}
@@ -427,7 +430,7 @@ public class Autonomous {
 			step++;
 			break;
 		case 6:
-			if(!Robot.drive.isIdle())
+			if (!Robot.drive.isIdle())
 				break;
 			Robot.grab.autoRelease();
 			step++;
