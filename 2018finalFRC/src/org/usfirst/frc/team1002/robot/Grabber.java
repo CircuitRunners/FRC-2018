@@ -1,5 +1,6 @@
 package org.usfirst.frc.team1002.robot;
 
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -12,44 +13,48 @@ public class Grabber {
 	double direction;
 	final double OPENING = 0;
 	final double CLOSING = 1;
-	
-	VictorSP grabberMotor;
+
+	VictorSP grabberMotorLeft;
+	VictorSP grabberMotorRight;
 	public double maxAmperage = 0;
 
 	public Grabber() {
-		grabberMotor = new VictorSP(5);
+		grabberMotorLeft = new VictorSP(2);
+		grabberMotorRight = new VictorSP(5);
 	}
 
 	static final double GRABBERPOWER = 0.8;
+
 	public void display() {
 		maxAmperage = Math.max(maxAmperage, Robot.pdp.getCurrent(0));
 		SmartDashboard.putNumber("Grabber Amperage", Robot.pdp.getCurrent(0));
 	}
 
 	public void checkStatus() {
-		
+
 		currentTime = Timer.getFPGATimestamp();
-		
+
 		if (direction == OPENING) {
 			if (currentTime < endTime) {// Later if limit switch added, edit this if statement to check.
-				grabberMotor.set(GRABBERPOWER);
+				grabberMotorLeft.set(grabPower);
 			} else {
-				grabberMotor.stopMotor();
+				grabberMotorLeft.stopMotor();
 				RobotData.grabIdle = true;
 			}
 		} else if (direction == CLOSING) {
 			if (currentTime < endTime) {// Later if limit switch added, edit this if statement to check.
-				grabberMotor.set(-GRABBERPOWER);
+				grabberMotorLeft.set(-grabPower);
 			} else {
-				grabberMotor.stopMotor();
+				grabberMotorLeft.stopMotor();
 				RobotData.grabIdle = true;
 			}
 		}
 	}
 
+	double grabPower = 0.0;
 
-	public void moveGrabber(int angle) {
-
+	public void moveGrabber(int angle, double power) {
+		grabPower = power;
 		switch (angle) {
 		case 1:
 			RobotData.grabIdle = false;
@@ -66,18 +71,79 @@ public class Grabber {
 			break;
 		default:
 			RobotData.grabIdle = false;
-			grabberMotor.set(0);
+			grabberMotorLeft.set(0);
 			RobotData.grabIdle = true;
 			break;
 		}
 
 	}
+
 	public void autoRelease() {
 		RobotData.grabIdle = false;
 		endTime = Timer.getFPGATimestamp() + 0.4;
 		direction = OPENING;
 	}
+
 	public boolean isIdle() {
 		return RobotData.grabIdle;
+	}
+
+	double l = 0;
+	double r = 0;
+
+	void revisedMoveGrabber(double left, double right) {
+		RobotData.grabIdle = false;
+		l = left;
+		r = -right;
+		// endTime = Timer.getFPGATimestamp() + 0.025;
+	}
+
+	void revisedCheckStatus() {
+		currentTime = Timer.getFPGATimestamp();
+		if ((Robot.driver.getTriggerAxis(GenericHID.Hand.kLeft) < 0.08
+				&& Robot.driver.getTriggerAxis(GenericHID.Hand.kRight) < 0.08)
+				&& (Robot.operator.getTriggerAxis(GenericHID.Hand.kLeft) < 0.08
+						&& Robot.operator.getTriggerAxis(GenericHID.Hand.kRight) < 0.08)) {
+			grabberMotorLeft.stopMotor();
+			grabberMotorRight.stopMotor();
+
+			RobotData.grabIdle = true;
+		} else {
+			grabberMotorLeft.set(l);
+			grabberMotorRight.set(r);
+
+		}
+	}
+
+	void autoCheckStatus() {
+		currentTime = Timer.getFPGATimestamp();
+		if (currentTime > endTime) {
+			grabberMotorLeft.stopMotor();
+			grabberMotorRight.stopMotor();
+			System.out.println("Grabber Timed out.");
+			RobotData.grabIdle = true;
+
+		} else {
+			grabberMotorLeft.set(l);
+			grabberMotorRight.set(r);
+		}
+
+	}
+
+	void revisedAutoRelease() {
+
+	}
+
+	void eject() {
+		RobotData.grabIdle = false;
+		int count = 0;
+		while(count < 100) {
+		grabberMotorLeft.set(0.4);
+		grabberMotorRight.set(-0.4);
+		count++;
+		}
+		grabberMotorLeft.stopMotor();
+		grabberMotorRight.stopMotor();
+		RobotData.grabIdle = true;
 	}
 }

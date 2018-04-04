@@ -88,7 +88,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putData("Target", chooserTarg);
 		// SmartDashboard.putData("Alternate Mode?", chooserAlt);
 
-		//cam.cameraInit();
+		// cam.cameraInit();
 		elev.init();
 		arm.init();
 
@@ -141,7 +141,7 @@ public class Robot extends IterativeRobot {
 		drive.checkStatus();
 		arm.checkStatus();
 		elev.checkStatus();
-		grab.checkStatus();
+		// grab.autoCheckStatus();
 
 		auto.run();
 		SmartDashboard.putNumber("Auto Step", auto.step);
@@ -174,8 +174,10 @@ public class Robot extends IterativeRobot {
 			RobotData.armPositionTarget = arm.moveTo(RobotData.armPositionTarget, 10);
 
 		drive.teleOp();
+		// grab.revisedMoveGrabber(operator.getTriggerAxis(GenericHID.Hand.kLeft),
+		// operator.getTriggerAxis(GenericHID.Hand.kRight));
+		// grab.revisedCheckStatus();
 
-		grab.checkStatus();
 		arm.checkStatus();
 		elev.checkStatus();
 
@@ -192,7 +194,7 @@ public class Robot extends IterativeRobot {
 		elev.display();
 		if (driver.getXButton()) {
 
-			drive.autoDrive(10.0, 0.25, 15.0);
+			drive.autoTurn(90, 11);
 
 		}
 		if (driver.getAButton()) {
@@ -250,27 +252,21 @@ public class Robot extends IterativeRobot {
 		/*
 		 * Grabber Operation Code ++++++++++++++++++++++++++++++++++++++++++
 		 */
+
 		SmartDashboard.putString("GrabberStat", "--");
-		if (operator.getBumper(GenericHID.Hand.kLeft)) {
-			grab.moveGrabber(1);
-			SmartDashboard.putString("GrabberStat", "1");
-		} else if (operator.getBumper(GenericHID.Hand.kRight)) {
-			grab.moveGrabber(-1);
-			SmartDashboard.putString("GrabberStat", "-1");
-		} else if (driver.getBumper(GenericHID.Hand.kLeft)) {
-			grab.moveGrabber(1);
-			SmartDashboard.putString("GrabberStat", "1");
-		} else if (driver.getBumper(GenericHID.Hand.kRight)) {
-			grab.moveGrabber(-1);
-			SmartDashboard.putString("GrabberStat", "-1");
-		}
-		if (operator.getTriggerAxis(GenericHID.Hand.kRight) > 0.5) {
-			elev.enableLimitless();
-			arm.enableLimitless();
-		}
 		drive.opScale = 1;
-		if (driver.getTriggerAxis(GenericHID.Hand.kRight) > 0.5)
-			drive.opScale /= 2;
+		if (operator.getBumper(GenericHID.Hand.kLeft)) {
+			grab.grabberMotorLeft.set(0.4);
+			grab.grabberMotorRight.set(-0.4);
+		} else if (driver.getBumper(GenericHID.Hand.kLeft)) {
+			grab.grabberMotorLeft.set(0.4);
+			grab.grabberMotorRight.set(-0.4);
+
+		} else {
+			grab.grabberMotorLeft.set(-driver.getTriggerAxis(GenericHID.Hand.kLeft));
+			grab.grabberMotorRight.set(driver.getTriggerAxis(GenericHID.Hand.kRight));
+		}
+
 		if (operator.getYButton()) {
 			RobotData.elevPositionTarget = elev.moveTo(RobotData.elevMaxHeightUnits, 100);
 			RobotData.armPositionTarget = arm.moveTo(30, 100);
@@ -284,6 +280,14 @@ public class Robot extends IterativeRobot {
 		} else if (operator.getBButton()) {
 			RobotData.elevPositionTarget = elev.moveTo(10, 100);
 			RobotData.armPositionTarget = arm.moveTo(0, 100);
+		}
+		if (driver.getBumper(GenericHID.Hand.kRight)) {
+			drive.opScale /= 2;
+		}
+		if (operator.getBumper(GenericHID.Hand.kRight)) {
+			elev.enableLimitless();
+			arm.enableLimitless();
+
 		}
 
 	}
