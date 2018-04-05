@@ -19,7 +19,7 @@ public class RobotArm {
 	public void init() {
 		talonConfig(armTalon);
 		armTalon.setSelectedSensorPosition(-11300, RobotData.armPIDLoopIdx, RobotData.armTimeoutMs);
-		RobotData.armPositionClicks = -11300 + 1950;
+		RobotData.armPositionClicks = -11300 - 1950 + 1187;
 		// f = new Faults();
 	}
  public int armCV = 10000;

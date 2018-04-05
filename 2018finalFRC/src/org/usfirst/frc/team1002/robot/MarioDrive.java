@@ -134,7 +134,7 @@ public class MarioDrive {
 		}
 	}
 
-	final double TURNSPEED = 0.4;
+	final double TURNSPEED = 0.5;
 
 	void checkStatusAT() {
 		double twist = 0.0;
@@ -227,10 +227,11 @@ public class MarioDrive {
 	}
 
 	double rampSpeed = 0;
-	double rampInc = 0.005;
-	double nearby = 1.5;
+	double rampInc = 0.02;
+	double nearby = 2.75;
 
 	void revisedCheckStatusAD() {
+		double distTravelled = Math.min(encL.getDistance(), encR.getDistance());
 		if (Math.min(Math.abs(encL.getDistance()), Math.abs(encR.getDistance())) > Math.abs(desiredDistance)) {
 			currentJob = IDLE;
 			marioDrive.stopMotor();
@@ -254,8 +255,8 @@ public class MarioDrive {
 				if (Math.min(encL.getDistance(), encR.getDistance()) < nearby) {
 					rampSpeed += rampInc;
 					rampSpeed = Math.min(rampSpeed, desiredSpeed);
-				} else if (Math.min(encL.getDistance(), encR.getDistance()) >= nearby
-						|| Math.min(encL.getDistance(), encR.getDistance()) < desiredDistance - nearby) {
+				} else if (distTravelled >= nearby
+						|| distTravelled < desiredDistance - nearby) {
 					rampSpeed = desiredSpeed;
 				} else {
 					rampSpeed -= rampInc;
@@ -263,11 +264,11 @@ public class MarioDrive {
 				}
 			}
 			if (!forward) {
-				if (Math.min(encL.getDistance(), encR.getDistance()) > nearby) {
+				if (distTravelled > nearby) {
 					rampSpeed -= rampInc;
 					rampSpeed = Math.min(rampSpeed, desiredSpeed);
-				} else if (Math.min(encL.getDistance(), encR.getDistance()) <= nearby
-						|| Math.min(encL.getDistance(), encR.getDistance()) > desiredDistance - nearby) {
+				} else if (distTravelled <= nearby
+						|| distTravelled > desiredDistance - nearby) {
 					rampSpeed = desiredSpeed;
 				} else {
 					rampSpeed += rampInc;

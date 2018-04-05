@@ -88,7 +88,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putData("Target", chooserTarg);
 		// SmartDashboard.putData("Alternate Mode?", chooserAlt);
 
-		// cam.cameraInit();
+		cam.cameraInit();
 		elev.init();
 		arm.init();
 
@@ -141,7 +141,7 @@ public class Robot extends IterativeRobot {
 		drive.checkStatus();
 		arm.checkStatus();
 		elev.checkStatus();
-		// grab.autoCheckStatus();
+		grab.autoCheckStatus();
 
 		auto.run();
 		SmartDashboard.putNumber("Auto Step", auto.step);
@@ -194,16 +194,16 @@ public class Robot extends IterativeRobot {
 		elev.display();
 		if (driver.getXButton()) {
 
-			drive.autoTurn(90, 11);
+			drive.autoDrive(-2,0.3, 16);
 
 		}
 		if (driver.getAButton()) {
-			auto.sameSideScale();
+			grab.intake(2);
 		}
 		drive.checkStatus();
 		elev.checkStatus();
 		arm.checkStatus();
-		grab.checkStatus();
+		grab.autoCheckStatus();
 
 	}
 
@@ -243,8 +243,8 @@ public class Robot extends IterativeRobot {
 		 * the loop
 		 */
 
-		RobotData.elevPositionTarget -= smoothIncrement(operator.getY(GenericHID.Hand.kRight), 0.2, elevIncrement);
-		RobotData.armPositionTarget -= smoothIncrement(operator.getY(GenericHID.Hand.kLeft), 0.2, armIncrement);
+		RobotData.elevPositionTarget -= smoothIncrement(operator.getY(GenericHID.Hand.kLeft), 0.2, elevIncrement);
+		RobotData.armPositionTarget -= smoothIncrement(operator.getY(GenericHID.Hand.kRight), 0.2, armIncrement);
 
 		SmartDashboard.putNumber("ARM TARGET", RobotData.armPositionTarget);
 		SmartDashboard.putNumber("ELEV TARGET", RobotData.elevPositionTarget); // else if (lastTimeArmIncrement) {
@@ -255,16 +255,19 @@ public class Robot extends IterativeRobot {
 
 		SmartDashboard.putString("GrabberStat", "--");
 		drive.opScale = 1;
-		if (operator.getBumper(GenericHID.Hand.kLeft)) {
-			grab.grabberMotorLeft.set(0.4);
+		if (operator.getBumper(GenericHID.Hand.kLeft)) {//std eject
+			grab.grabberMotorLeft.set(-0.4);
 			grab.grabberMotorRight.set(-0.4);
-		} else if (driver.getBumper(GenericHID.Hand.kLeft)) {
-			grab.grabberMotorLeft.set(0.4);
+		} else if (driver.getBumper(GenericHID.Hand.kLeft)) {//std eject
+			grab.grabberMotorLeft.set(-0.4);
 			grab.grabberMotorRight.set(-0.4);
 
-		} else {
+		} else if(driver.getTriggerAxis(GenericHID.Hand.kLeft) > 0.4) {//variable eject
 			grab.grabberMotorLeft.set(-driver.getTriggerAxis(GenericHID.Hand.kLeft));
-			grab.grabberMotorRight.set(driver.getTriggerAxis(GenericHID.Hand.kRight));
+			grab.grabberMotorRight.set(-driver.getTriggerAxis(GenericHID.Hand.kLeft));
+		} else {//variable intake
+			grab.grabberMotorLeft.set(operator.getTriggerAxis(GenericHID.Hand.kLeft));
+			grab.grabberMotorRight.set(operator.getTriggerAxis(GenericHID.Hand.kRight));
 		}
 
 		if (operator.getYButton()) {

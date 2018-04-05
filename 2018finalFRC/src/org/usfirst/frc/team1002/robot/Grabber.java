@@ -21,6 +21,7 @@ public class Grabber {
 	public Grabber() {
 		grabberMotorLeft = new VictorSP(2);
 		grabberMotorRight = new VictorSP(5);
+		grabberMotorLeft.setInverted(true);
 	}
 
 	static final double GRABBERPOWER = 0.8;
@@ -91,59 +92,44 @@ public class Grabber {
 	double l = 0;
 	double r = 0;
 
-	void revisedMoveGrabber(double left, double right) {
-		RobotData.grabIdle = false;
-		l = left;
-		r = -right;
-		// endTime = Timer.getFPGATimestamp() + 0.025;
-	}
-
-	void revisedCheckStatus() {
-		currentTime = Timer.getFPGATimestamp();
-		if ((Robot.driver.getTriggerAxis(GenericHID.Hand.kLeft) < 0.08
-				&& Robot.driver.getTriggerAxis(GenericHID.Hand.kRight) < 0.08)
-				&& (Robot.operator.getTriggerAxis(GenericHID.Hand.kLeft) < 0.08
-						&& Robot.operator.getTriggerAxis(GenericHID.Hand.kRight) < 0.08)) {
-			grabberMotorLeft.stopMotor();
-			grabberMotorRight.stopMotor();
-
-			RobotData.grabIdle = true;
-		} else {
-			grabberMotorLeft.set(l);
-			grabberMotorRight.set(r);
-
-		}
-	}
+	int INTAKE = 99;
+	int EJECT = 100;
+	int objective = 0;
 
 	void autoCheckStatus() {
 		currentTime = Timer.getFPGATimestamp();
-		if (currentTime > endTime) {
-			grabberMotorLeft.stopMotor();
-			grabberMotorRight.stopMotor();
-			System.out.println("Grabber Timed out.");
-			RobotData.grabIdle = true;
-
-		} else {
-			grabberMotorLeft.set(l);
-			grabberMotorRight.set(r);
+		if (objective == INTAKE) {
+			if (currentTime > endTime) {
+				grabberMotorLeft.stopMotor();
+				grabberMotorRight.stopMotor();
+				RobotData.grabIdle = true;
+			} else {
+				grabberMotorLeft.set(0.6);
+				grabberMotorRight.set(0.6);
+			}
+		}
+		if (objective == EJECT) {
+			if (currentTime > endTime) {
+				grabberMotorLeft.stopMotor();
+				grabberMotorRight.stopMotor();
+				RobotData.grabIdle = true;
+			} else {
+				grabberMotorLeft.set(-0.4);
+				grabberMotorRight.set(-0.4);
+			}
 		}
 
 	}
 
-	void revisedAutoRelease() {
-
-	}
-
-	void eject() {
+	void eject(double time) {
 		RobotData.grabIdle = false;
-		int count = 0;
-		while(count < 100) {
-		grabberMotorLeft.set(0.4);
-		grabberMotorRight.set(-0.4);
-		count++;
-		}
-		grabberMotorLeft.stopMotor();
-		grabberMotorRight.stopMotor();
-		RobotData.grabIdle = true;
+		objective = EJECT;
+		endTime = Timer.getFPGATimestamp() + time;
+	}
+
+	void intake( double time) {
+		RobotData.grabIdle = false;
+		objective = INTAKE;
+		endTime = Timer.getFPGATimestamp() + time;
 	}
 }
