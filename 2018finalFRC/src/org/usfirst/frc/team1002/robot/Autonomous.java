@@ -30,7 +30,8 @@ public class Autonomous {
 	static final int RIGHT = 3;
 	static final int SWITCH = 10;
 	static final int SCALE = 11;
-	static final int SWITCHSCALE = 22;
+	static final int SWITCHORSCALE = 22;
+	static final int SWITCHANDSCALE = 23;
 	static final int NONE = 12;
 
 	public void init() {
@@ -57,8 +58,10 @@ public class Autonomous {
 		case SWITCH:
 			targIndex = SWITCH;
 			break;
-		case SWITCHSCALE:
-			targIndex = SWITCHSCALE;
+		case SWITCHORSCALE:
+			targIndex = SWITCHORSCALE;
+		case SWITCHANDSCALE:
+			targIndex = SWITCHANDSCALE;
 		}
 		if (posIndex == LEFT) {
 			turnDir = 1;
@@ -91,7 +94,7 @@ public class Autonomous {
 				} else {
 					farSideSwitch();
 				}
-			} else if (targIndex == SWITCHSCALE) {
+			} else if (targIndex == SWITCHORSCALE) {
 				if (switchNear)
 					sameSideSwitch();
 				else if (scaleNear) {
@@ -100,6 +103,16 @@ public class Autonomous {
 					farSideScale();
 				}
 
+			} else if(targIndex == SWITCHANDSCALE) {
+				if(switchNear) {
+					if(scaleNear) {
+						scaleAndSwitch();
+					}
+				} else if(scaleNear) {
+					sameSideScale();
+				} else {
+					farSideScale();
+				}
 			}
 			break;
 		case CENTER:
@@ -464,7 +477,7 @@ public class Autonomous {
 			beginStep();
 			RobotData.armPositionTarget = Robot.arm.moveTo(-25, 100, 5);
 			RobotData.elevPositionTarget = Robot.elev.moveTo(0, 100, 5);
-			Robot.drive.autoTurn(148 * turnDir, 4);
+			Robot.drive.autoTurn(152 * turnDir, 4);
 			step++;
 			break;
 		case 8:
@@ -612,6 +625,140 @@ public class Autonomous {
 			break;
 
 		}
+	}
+
+	public void scaleAndSwitch() {
+		SmartDashboard.putString("Auto Program", "switchAndScale");
+		switch (step) {
+		case 1:
+			beginStep();
+			startingTime = Timer.getFPGATimestamp();
+			SmartDashboard.putNumber("Time Elapsed", 0);
+			Robot.drive.autoDrive(11, 0.5, 4);
+			RobotData.elevPositionTarget = Robot.elev.moveTo(20, 100, 5);
+			step++;
+			break;
+		case 2:
+			if (!Robot.drive.isIdle() || !Robot.elev.isIdle())
+				break;
+			beginStep();
+
+			Robot.drive.autoTurn(90 * turnDir, 4);
+			RobotData.elevPositionTarget = Robot.elev.moveTo(15, 100, 3);
+			RobotData.armPositionTarget = Robot.arm.moveTo(0, 100, 2);
+			step++;
+			break;
+		case 3:
+			if (!Robot.drive.isIdle() || !Robot.elev.isIdle() || !Robot.arm.isIdle())
+				break;
+			beginStep();
+			Robot.drive.autoDrive(0.5, SWITCHSPEED / 2, 6);
+			step++;
+			break;
+		case 4:
+			if (!Robot.drive.isIdle())
+				break;
+			beginStep();
+			Robot.grab.eject(0.3, 1);
+			step++;
+			break;
+		case 5:
+			if (!Robot.grab.isIdle())
+				break;
+			beginStep();
+			Robot.drive.autoDrive(-1.5, SWITCHSPEED / 2, 4);
+			step++;
+			break;
+		case 6:
+			if (!Robot.drive.isIdle())
+				break;
+			beginStep();
+			Robot.drive.autoTurn(0, 4);
+			RobotData.armPositionTarget = Robot.arm.moveTo(-25, 100, 2);
+			RobotData.elevPositionTarget = Robot.elev.moveTo(0, 100, 3);
+			step++;
+			break;
+		case 7:
+			if (!Robot.drive.isIdle() || !Robot.elev.isIdle() || !Robot.arm.isIdle())
+				break;
+			beginStep();
+			Robot.drive.autoDrive(3, SCALESPEED, 3);
+			step++;
+			break;
+		case 8:
+			if (!Robot.drive.isIdle())
+				break;
+			beginStep();
+			Robot.drive.autoTurn(110 * turnDir, 3);
+			step++;
+			break;
+		case 9:
+			if (!Robot.drive.isIdle())
+				break;
+			beginStep();
+			Robot.drive.autoDrive(1.5, SCALESPEED / 2, 3);
+			Robot.grab.intake(0.5, 0.5);
+			step++;
+			break;
+		case 10:
+			if (!Robot.drive.isIdle() || !Robot.grab.isIdle())
+				break;
+			beginStep();
+			Robot.drive.autoDrive(-1.5, SCALESPEED / 2, 3);
+			Robot.grab.intake(0.8, 0.5);
+			step++;
+			break;
+		case 11:
+			if (!Robot.drive.isIdle())
+				break;
+			beginStep();
+			Robot.drive.autoTurn(0, 3);
+			RobotData.elevPositionTarget = Robot.elev.moveTo(RobotData.elevMaxHeightUnits, 100, 4);
+			RobotData.armPositionTarget = Robot.arm.moveTo(70, 100, 4);
+			step++;
+			break;
+		case 12:
+			if (!Robot.drive.isIdle() || !Robot.elev.isIdle() || !Robot.arm.isIdle())
+				break;
+			beginStep();
+			Robot.drive.autoDrive(6.2, SCALESPEED, 3);
+			step++;
+			break;
+		case 13:
+			if (!Robot.drive.isIdle())
+				break;
+			beginStep();
+			Robot.drive.autoTurn(35 * turnDir, 3);
+
+			step++;
+			break;
+		case 14:
+			if (!Robot.drive.isIdle())
+				break;
+			beginStep();
+			Robot.drive.autoDrive(1, SCALESPEED / 2, 3);
+			Robot.grab.eject(0.7, 0.5);
+			step++;
+			break;
+		case 15:
+			if (!Robot.drive.isIdle() || !Robot.grab.isIdle())
+				break;
+			beginStep();
+			Robot.drive.autoDrive(-2, SCALESPEED, 3);
+			RobotData.elevPositionTarget = Robot.elev.moveTo(0, 100, 4);
+			RobotData.armPositionTarget = Robot.arm.moveTo(-25, 100, 4);
+			step++;
+			break;
+		case 16:
+			if (!Robot.drive.isIdle() || !Robot.elev.isIdle() || !Robot.arm.isIdle())
+				break;
+			SmartDashboard.putNumber("Time Elapsed", Timer.getFPGATimestamp() - startingTime);
+			step++;
+			break;
+		case 17:
+			break;
+		}
+
 	}
 
 	boolean delayed = false;
