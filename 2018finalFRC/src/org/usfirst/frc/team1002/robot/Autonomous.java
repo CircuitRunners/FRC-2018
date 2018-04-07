@@ -11,7 +11,8 @@ public class Autonomous {
 	private static String FMSString; // three character string from FMS.
 	private static int sideSwitch; // side switch is on.
 	private static int sideScale; // side scale is on.
-	private static final double SPEED = 0.8; // code.
+	private static final double SCALESPEED = 0.8; // code.
+	private static final double SWITCHSPEED = 0.6;
 	private static boolean switchNear;
 	private static boolean scaleNear;
 	private static boolean debug = false;
@@ -29,11 +30,15 @@ public class Autonomous {
 	static final int RIGHT = 3;
 	static final int SWITCH = 10;
 	static final int SCALE = 11;
+	static final int SWITCHSCALE = 22;
 	static final int NONE = 12;
 
 	public void init() {
-		if (debug)
+		if (debug) {
+			posIndex = Robot.posSelected;
+			targIndex = Robot.targSelected;
 			return;
+		}
 		switch (Robot.posSelected) {
 		case (LEFT):
 			posIndex = LEFT;
@@ -52,6 +57,8 @@ public class Autonomous {
 		case SWITCH:
 			targIndex = SWITCH;
 			break;
+		case SWITCHSCALE:
+			targIndex = SWITCHSCALE;
 		}
 		if (posIndex == LEFT) {
 			turnDir = 1;
@@ -84,16 +91,29 @@ public class Autonomous {
 				} else {
 					farSideSwitch();
 				}
+			} else if (targIndex == SWITCHSCALE) {
+				if (switchNear)
+					sameSideSwitch();
+				else if (scaleNear) {
+					sameSideScale();
+				} else {
+					farSideScale();
+				}
+
 			}
 			break;
 		case CENTER:
-			if (targIndex == SCALE) {
+			if (targIndex == SWITCH) {
 				if (sideScale == RIGHT) {
 					turnDir = -1;
+					centerSwitch();
 				} else {
 					turnDir = 1;
+					centerSwitch();
 				}
-				centerSwitch();
+
+			} else {
+				driveForward();
 			}
 			break;
 
@@ -139,8 +159,8 @@ public class Autonomous {
 			beginStep();
 			startingTime = Timer.getFPGATimestamp();
 			SmartDashboard.putNumber("Time Elapsed", 0);
-			Robot.drive.autoDrive(17.6, SPEED, 6);
-			RobotData.elevPositionTarget = Robot.elev.moveTo(20, 100);
+			Robot.drive.autoDrive(17.6, SWITCHSPEED, 6);
+			RobotData.elevPositionTarget = Robot.elev.moveTo(20, 100, 5);
 			step++;
 			break;
 		case 2:
@@ -154,9 +174,9 @@ public class Autonomous {
 			if (!Robot.drive.isIdle())
 				break;
 			beginStep();
-			Robot.drive.autoDrive(12.5, SPEED, 6);
-			RobotData.armPositionTarget = Robot.arm.moveTo(10, 100);
-			RobotData.elevPositionTarget = Robot.elev.moveTo(15, 100);
+			Robot.drive.autoDrive(11, SWITCHSPEED, 6);
+			RobotData.armPositionTarget = Robot.arm.moveTo(0, 100, 5);
+			RobotData.elevPositionTarget = Robot.elev.moveTo(15, 100, 5);
 			step++;
 			break;
 		case 4:
@@ -170,28 +190,29 @@ public class Autonomous {
 			if (!Robot.drive.isIdle() || !Robot.elev.isIdle() || !Robot.arm.isIdle())
 				break;
 			beginStep();
-			Robot.drive.autoDrive(.5, SPEED / 2, 6);
+			Robot.drive.autoDrive(.5, SWITCHSPEED / 2, 6);
 			step++;
 			break;
 		case 6:
 			if (!Robot.drive.isIdle())
 				break;
 			beginStep();
-			Robot.grab.eject(0.6);
+			Robot.grab.eject(0.6, 1);
 			step++;
 			break;
 		case 7:
 			if (!Robot.grab.isIdle())
 				break;
 			beginStep();
-			// Robot.drive.autoDrive(-6.0, SPEED, 4);
+			Robot.drive.autoDrive(-6.0, SWITCHSPEED, 4);
 			step++;
 			break;
 		case 8:
 			if (!Robot.drive.isIdle())
 				break;
 			beginStep();
-			// RobotData.elevPositionTarget = Robot.elev.moveTo(0, 100);
+			RobotData.elevPositionTarget = Robot.elev.moveTo(0, 100, 5);
+			RobotData.armPositionTarget = Robot.arm.moveTo(-25, 100, 5);
 			step++;
 			break;
 		case 9:
@@ -216,7 +237,7 @@ public class Autonomous {
 			startingTime = Timer.getFPGATimestamp();
 			SmartDashboard.putNumber("Time Elapsed", 0);
 			Robot.drive.autoDrive(11, 0.5, 4);
-			RobotData.elevPositionTarget = Robot.elev.moveTo(20, 100);
+			RobotData.elevPositionTarget = Robot.elev.moveTo(20, 100, 5);
 			step++;
 			break;
 		case 2:
@@ -225,36 +246,37 @@ public class Autonomous {
 			beginStep();
 
 			Robot.drive.autoTurn(90 * turnDir, 4);
-			RobotData.elevPositionTarget = Robot.elev.moveTo(15, 100);
-			RobotData.armPositionTarget = Robot.arm.moveTo(10, 100);
+			RobotData.elevPositionTarget = Robot.elev.moveTo(15, 100, 3);
+			RobotData.armPositionTarget = Robot.arm.moveTo(0, 100, 3);
 			step++;
 			break;
 		case 3:
 			if (!Robot.drive.isIdle() || !Robot.elev.isIdle() || !Robot.arm.isIdle())
 				break;
 			beginStep();
-			Robot.drive.autoDrive(1.3, SPEED / 2, 6);
+			Robot.drive.autoDrive(0.5, SWITCHSPEED / 2, 6);
 			step++;
 			break;
 		case 4:
 			if (!Robot.drive.isIdle())
 				break;
 			beginStep();
-			Robot.grab.eject(0.6);
+			Robot.grab.eject(0.6, 0.6);
 			step++;
 			break;
 		case 5:
 			if (!Robot.grab.isIdle())
 				break;
 			beginStep();
-			Robot.drive.autoDrive(-0.5, SPEED / 2, 4);
+			Robot.drive.autoDrive(-1.5, SWITCHSPEED / 2, 4);
 			step++;
 			break;
 		case 6:
 			if (Robot.drive.isIdle())
 				break;
 			beginStep();
-			RobotData.elevPositionTarget = Robot.elev.moveTo(0, 100);
+			RobotData.elevPositionTarget = Robot.elev.moveTo(0, 100, 5);
+			RobotData.armPositionTarget = Robot.arm.moveTo(-25, 100, 5);
 			step++;
 			break;
 		case 7:
@@ -273,8 +295,8 @@ public class Autonomous {
 		case 1:
 			startingTime = Timer.getFPGATimestamp();
 			SmartDashboard.putNumber("Time Elapsed", 0);
-			Robot.drive.autoDrive(16.3, SPEED, 6);
-			RobotData.elevPositionTarget = Robot.elev.moveTo(20, 100);
+			Robot.drive.autoDrive(16.3, SCALESPEED, 6);
+			RobotData.elevPositionTarget = Robot.elev.moveTo(20, 100, 5);
 			step++;
 			break;
 		case 2:
@@ -288,9 +310,9 @@ public class Autonomous {
 			if (!Robot.drive.isIdle())
 				break;
 			beginStep();
-			Robot.drive.autoDrive(12.75, SPEED, 6);
-			RobotData.armPositionTarget = Robot.arm.moveTo(30, 100);
-			RobotData.elevPositionTarget = Robot.elev.moveTo(RobotData.elevMaxHeightUnits, 100);
+			Robot.drive.autoDrive(12.75, SCALESPEED, 6);
+			RobotData.armPositionTarget = Robot.arm.moveTo(30, 100, 5);
+			RobotData.elevPositionTarget = Robot.elev.moveTo(RobotData.elevMaxHeightUnits, 100, 5);
 			step++;
 			break;
 		case 4:
@@ -304,29 +326,29 @@ public class Autonomous {
 			if (!Robot.drive.isIdle())
 				break;
 			beginStep();
-			Robot.drive.autoDrive(1.3, SPEED / 2, 4);// drive forward to deliver 1st block
+			Robot.drive.autoDrive(1.3, SCALESPEED / 2, 4);// drive forward to deliver 1st block
 			step++;
 			break;
 		case 6:
 			if (!Robot.drive.isIdle() || !Robot.grab.isIdle())
 				break;
 			beginStep();
-			Robot.grab.eject(0.6);
+			Robot.grab.eject(0.6, 0.4);
 			step++;
 			break;
 		case 7:
 			if (!Robot.grab.isIdle())
 				break;
 			beginStep();
-			Robot.drive.autoDrive(-1.75, SPEED / 2, 3);
+			Robot.drive.autoDrive(-1.75, SCALESPEED / 2, 3);
 			step++;
 			break;
 		case 8:
 			if (!Robot.drive.isIdle())
 				break;
 			beginStep();
-			RobotData.armPositionTarget = Robot.arm.moveTo(-20, 100);
-			RobotData.elevPositionTarget = Robot.elev.moveTo(0, 100);
+			RobotData.armPositionTarget = Robot.arm.moveTo(-25, 100, 5);
+			RobotData.elevPositionTarget = Robot.elev.moveTo(0, 100, 5);
 			Robot.drive.autoTurn(-165 * turnDir, 4);
 			step++;
 			break;
@@ -335,45 +357,45 @@ public class Autonomous {
 				break;
 			beginStep();
 
-			Robot.drive.autoDrive(1, SPEED / 2, 5);// drive forward to get block
-			//Robot.grab.intake(1.6);
-			//step++;
+			Robot.drive.autoDrive(1, SCALESPEED / 2, 5);// drive forward to get block
+			Robot.grab.intake(1.6, 0.4);
+			step++;
 			break;
 		case 10:
 			if (!Robot.drive.isIdle() || !Robot.grab.isIdle())
 				break;
 			beginStep();
 			Robot.drive.autoTurn(-10 * turnDir, 5);
-			Robot.elev.moveTo(RobotData.elevMaxHeightUnits, 100);
-			Robot.arm.moveTo(30, 100);
+			Robot.elev.moveTo(RobotData.elevMaxHeightUnits, 100, 5);
+			Robot.arm.moveTo(30, 100, 5);
 			step++;
 			break;
 		case 11:
 			if (!Robot.drive.isIdle() || !Robot.elev.isIdle() || !Robot.arm.isIdle())
 				break;
 			beginStep();
-			Robot.drive.autoDrive(0.3, SPEED / 3, 3);
+			Robot.drive.autoDrive(0.3, SCALESPEED / 3, 3);
 			step++;
 			break;
 		case 12:
 			if (!Robot.drive.isIdle() || !Robot.elev.isIdle())
 				break;
 			beginStep();
-			Robot.grab.eject(0.5);
+			Robot.grab.eject(0.4, 0.6);
 			step++;
 			break;
 		case 13:
 			if (!Robot.grab.isIdle())
 				break;
 			beginStep();
-			Robot.drive.autoDrive(-1.75, SPEED, 3);
+			Robot.drive.autoDrive(-1.75, SCALESPEED, 3);
 			step++;
 			break;
 		case 14:
 			if (!Robot.drive.isIdle())
 				break;
-			RobotData.armPositionTarget = Robot.arm.moveTo(-20, 100);
-			RobotData.elevPositionTarget = Robot.elev.moveTo(0, 100);
+			RobotData.armPositionTarget = Robot.arm.moveTo(-25, 100, 5);
+			RobotData.elevPositionTarget = Robot.elev.moveTo(0, 100, 5);
 			step++;
 			break;
 		case 15:
@@ -395,17 +417,17 @@ public class Autonomous {
 			beginStep();
 			startingTime = Timer.getFPGATimestamp();
 			SmartDashboard.putNumber("Time Elapsed", 0);
-			Robot.drive.autoDrive(10.0, SPEED, 4);
-			RobotData.elevPositionTarget = Robot.elev.moveTo(20, 100);
+			Robot.drive.autoDrive(6.0, SCALESPEED, 4);
+			RobotData.elevPositionTarget = Robot.elev.moveTo(20, 100, 5);
 			step++;
 			break;
 		case 2:
-			if (!Robot.drive.isIdle() || !Robot.elev.isIdle() || !Robot.arm.isIdle())
+			if (!Robot.drive.isIdle() || !Robot.elev.isIdle())
 				break;
 			beginStep();
-			Robot.drive.autoDrive(8.8, SPEED, 6);
-			RobotData.elevPositionTarget = Robot.elev.moveTo(RobotData.elevMaxHeightUnits, 100);
-			RobotData.armPositionTarget = Robot.arm.moveTo(30, 100);
+			Robot.drive.autoDrive(8, SCALESPEED, 6);
+			RobotData.elevPositionTarget = Robot.elev.moveTo(RobotData.elevMaxHeightUnits, 100, 5);
+			RobotData.armPositionTarget = Robot.arm.moveTo(30, 100, 5);
 			step++;
 			break;
 		case 3:
@@ -419,74 +441,75 @@ public class Autonomous {
 			if (!Robot.drive.isIdle())
 				break;
 			beginStep();
-			Robot.drive.autoDrive(3.3, SPEED / 2, 4);
+			Robot.drive.autoDrive(1, SCALESPEED / 2, 4);
 			step++;
 			break;
 		case 5:
-			if (!Robot.drive.isIdle() || !Robot.grab.isIdle())
+			if (!Robot.drive.isIdle())
 				break;
 			beginStep();
-			Robot.grab.eject(0.6);
+			Robot.grab.eject(0.6, 0.4);
 			step++;
 			break;
 		case 6:
 			if (!Robot.grab.isIdle())
 				break;
 			beginStep();
-			Robot.drive.autoDrive(-3.3, SPEED, 3);
+			Robot.drive.autoDrive(-2, SCALESPEED / 2, 3);
 			step++;
 			break;
 		case 7:
-			if (!Robot.drive.isIdle() || !Robot.elev.isIdle())
+			if (!Robot.drive.isIdle())
 				break;
 			beginStep();
-			RobotData.armPositionTarget = Robot.arm.moveTo(-10, 100);
-			RobotData.elevPositionTarget = Robot.elev.moveTo(0, 100);
-			Robot.drive.autoTurn(110 * turnDir, 4);
+			RobotData.armPositionTarget = Robot.arm.moveTo(-25, 100, 5);
+			RobotData.elevPositionTarget = Robot.elev.moveTo(0, 100, 5);
+			Robot.drive.autoTurn(148 * turnDir, 4);
 			step++;
 			break;
 		case 8:
 			if (!Robot.drive.isIdle() || !Robot.elev.isIdle() || !Robot.arm.isIdle())
 				break;
 			beginStep();
-			Robot.drive.autoDrive(4, SPEED, 5);
-			Robot.grab.intake(0.6);
+			Robot.drive.autoDrive(2, SCALESPEED / 2, 5);
+			Robot.grab.intake(2, 0.75);
 			step++;
 			break;
 		case 9:
 			if (!Robot.drive.isIdle() || !Robot.grab.isIdle())
 				break;
 			beginStep();
-			Robot.drive.autoDrive(-4, SPEED, 3);
+			Robot.drive.autoDrive(-1.5, SCALESPEED / 2, 3);
+			Robot.elev.moveTo(RobotData.elevMaxHeightUnits, 100, 5);
 			step++;
 			break;
 		case 10:
-			if (!Robot.drive.isIdle())
+			if (!Robot.drive.isIdle() || !Robot.elev.isIdle())
 				break;
 			beginStep();
 			Robot.drive.autoTurn(35 * turnDir, 4);
-			Robot.elev.moveTo(RobotData.elevMaxHeightUnits, 100);
-			Robot.arm.moveTo(30, 100);
+			Robot.arm.moveTo(30, 100, 5);
+			step++;
 			break;
 		case 11:
-			if (!Robot.drive.isIdle() || !Robot.elev.isIdle() || !Robot.arm.isIdle())
+			if (!Robot.drive.isIdle() || !Robot.arm.isIdle())
 				break;
 			beginStep();
-			Robot.drive.autoDrive(3.3, SPEED / 2, 6);
+			Robot.drive.autoDrive(1, SCALESPEED / 2, 6);
 			step++;
 			break;
 		case 12:
 			if (!Robot.drive.isIdle())
 				break;
 			beginStep();
-			Robot.grab.eject(0.6);
+			Robot.grab.eject(0.6, 0.8);
 			step++;
 			break;
 		case 13:
 			if (!Robot.grab.isIdle())
 				break;
 			beginStep();
-			Robot.drive.autoDrive(-4, SPEED, 4);
+			Robot.drive.autoDrive(-3.5, SCALESPEED / 2, 4);
 			step++;
 			break;
 		case 14:
@@ -494,8 +517,8 @@ public class Autonomous {
 				break;
 			beginStep();
 			Robot.drive.autoTurn(90 * turnDir, 3);
-			Robot.elev.moveTo(0, 100);
-			Robot.arm.moveTo(-10, 100);
+			Robot.elev.moveTo(0, 100, 5);
+			Robot.arm.moveTo(-25, 100, 5);
 			step++;
 			break;
 		case 15:
@@ -513,7 +536,8 @@ public class Autonomous {
 		case 1:
 			startingTime = Timer.getFPGATimestamp();
 			SmartDashboard.putNumber("Time Elapsed", 0);
-			Robot.drive.autoDrive(10.5, SPEED, 5);
+			Robot.drive.autoDrive(10.5, SCALESPEED, 5);
+			RobotData.elevPositionTarget = Robot.elev.moveTo(15, 100, 5);
 			step++;
 			break;
 		case 2:
@@ -531,11 +555,13 @@ public class Autonomous {
 			if (!Robot.drive.isIdle())
 				break;
 			beginStep();
-			Robot.drive.autoDrive(2, SPEED, 4);
+			Robot.drive.autoDrive(2, SWITCHSPEED, 4);
+			RobotData.elevPositionTarget = Robot.elev.moveTo(15, 100, 5);
+			RobotData.armPositionTarget = Robot.arm.moveTo(0, 100, 5);
 			step++;
 			break;
 		case 2:
-			if (!Robot.drive.isIdle())
+			if (!Robot.drive.isIdle() || !Robot.elev.isIdle() || !Robot.arm.isIdle())
 				break;
 			beginStep();
 			Robot.drive.autoTurn(45 * turnDir, 4);
@@ -545,7 +571,7 @@ public class Autonomous {
 			if (!Robot.drive.isIdle())
 				break;
 			beginStep();
-			Robot.drive.autoDrive(6, SPEED, 7);
+			Robot.drive.autoDrive(6, SWITCHSPEED, 7);
 			step++;
 			break;
 		case 4:
@@ -559,18 +585,32 @@ public class Autonomous {
 			if (!Robot.drive.isIdle())
 				break;
 			beginStep();
-			Robot.drive.autoDrive(2, SPEED / 2, 4);
+			Robot.drive.autoDrive(2, SWITCHSPEED / 2, 4);
 			step++;
 			break;
 		case 6:
 			if (!Robot.drive.isIdle())
 				break;
 			beginStep();
-			Robot.grab.eject(0.6);
+			Robot.grab.eject(0.6, 0.6);
 			step++;
 			break;
 		case 7:
+			if (!Robot.grab.isIdle())
+				break;
+			beginStep();
+			Robot.drive.autoDrive(-2, SWITCHSPEED, 3);
+			RobotData.elevPositionTarget = Robot.elev.moveTo(0, 100, 5);
+			RobotData.armPositionTarget = Robot.arm.moveTo(-25, 100, 5);
+			step++;
 			break;
+		case 8:
+			SmartDashboard.putNumber("Time Elapsed", Timer.getFPGATimestamp() - startingTime);
+			step++;
+			break;
+		case 9:
+			break;
+
 		}
 	}
 

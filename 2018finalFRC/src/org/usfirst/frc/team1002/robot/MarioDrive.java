@@ -92,6 +92,8 @@ public class MarioDrive {
 		SmartDashboard.putNumber("Controller Forward/Reverse", -y);
 		SmartDashboard.putNumber("Controller Twist", t);
 		SmartDashboard.putNumber("Gyro Count Degrees", gyro.getAngle());
+		SmartDashboard.putNumber("Right Encoder Count",encR.get());
+		SmartDashboard.putNumber("Left Encoder Count", encL.get());
 	}
 
 	double desiredHeading = 0;
@@ -181,29 +183,26 @@ public class MarioDrive {
 	}
 
 	boolean forward = true;
+	double absSpeed = 0;
+	double absDistance = 0;
 
 	public void autoDrive(double dist, double speed, double time) {
 
 		currentJob = AUTODRIVE;
 
-		speed *= -1;
-
 		forward = true;
 
 		if (dist < 0)
 			forward = false;
-		if (!forward) {
-			speed *= -1;
-			nearby *= -1;
-		}
-
 		endTime = Timer.getFPGATimestamp() + time;
 
 		encL.reset();
 		encR.reset();
-
+		rampSpeed = 0.2;
 		desiredSpeed = speed;
+		absSpeed = Math.abs(speed);
 		desiredDistance = dist;
+		absDistance = Math.abs(dist);
 		desiredHeading = gyro.getAngle();
 	}
 
@@ -231,10 +230,11 @@ public class MarioDrive {
 	double nearby = 2.75;
 
 	void revisedCheckStatusAD() {
-		double distTravelled = Math.min(encL.getDistance(), encR.getDistance());
-		if (Math.min(Math.abs(encL.getDistance()), Math.abs(encR.getDistance())) > Math.abs(desiredDistance)) {
+		double absDistTravelled = Math.abs(Math.min(encL.getDistance(), encR.getDistance()));
+		if (absDistTravelled > Math.abs(desiredDistance)) {
 			currentJob = IDLE;
 			marioDrive.stopMotor();
+			System.out.println("AutoDrive:"+desiredDistance+" ft. sucessful.");
 		}
 
 		currentTime = Timer.getFPGATimestamp();
@@ -249,34 +249,20 @@ public class MarioDrive {
 
 		degChange = ((desiredHeading - currentHeading) * -1) / 50;
 		if (desiredDistance < nearby) {
-			rampSpeed = desiredSpeed;
+			rampSpeed = desiredSpeed;//if the total distance is less than the nearby distance no ramp occurs.
 		} else {
-			if (forward) {
-				if (Math.min(encL.getDistance(), encR.getDistance()) < nearby) {
-					rampSpeed += rampInc;
-					rampSpeed = Math.min(rampSpeed, desiredSpeed);
-				} else if (distTravelled >= nearby
-						|| distTravelled < desiredDistance - nearby) {
-					rampSpeed = desiredSpeed;
-				} else {
-					rampSpeed -= rampInc;
-					rampSpeed = Math.max(0, rampSpeed);
-				}
-			}
-			if (!forward) {
-				if (distTravelled > nearby) {
-					rampSpeed -= rampInc;
-					rampSpeed = Math.min(rampSpeed, desiredSpeed);
-				} else if (distTravelled <= nearby
-						|| distTravelled > desiredDistance - nearby) {
-					rampSpeed = desiredSpeed;
-				} else {
-					rampSpeed += rampInc;
-					rampSpeed = Math.max(0, rampSpeed);
-				}
+			if (absDistTravelled < nearby) {
+				rampSpeed += rampInc;
+				rampSpeed = Math.min(rampSpeed, absSpeed);
+			} else if (absDistTravelled >= nearby && absDistTravelled < absDistance - nearby) {
+				rampSpeed = absSpeed;
+			} else {
+				rampSpeed -= rampInc;
+				rampSpeed = Math.max(0.2, rampSpeed);
 			}
 		}
-		marioDrive.driveCartesian(0.0, rampSpeed, degChange);
+
+		marioDrive.driveCartesian(0.0, forward? -rampSpeed : rampSpeed, degChange);
 
 		SmartDashboard.putNumber("Desired Speed", desiredSpeed);
 		SmartDashboard.putNumber("Ramp Speed", rampSpeed);

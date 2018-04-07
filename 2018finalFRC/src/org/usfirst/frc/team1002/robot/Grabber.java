@@ -102,34 +102,38 @@ public class Grabber {
 			if (currentTime > endTime) {
 				grabberMotorLeft.stopMotor();
 				grabberMotorRight.stopMotor();
+				intakeSpeed = 0.0;
 				RobotData.grabIdle = true;
 			} else {
-				grabberMotorLeft.set(0.6);
-				grabberMotorRight.set(0.6);
+				grabberMotorLeft.set(intakeSpeed);
+				grabberMotorRight.set(intakeSpeed);
 			}
 		}
 		if (objective == EJECT) {
 			if (currentTime > endTime) {
 				grabberMotorLeft.stopMotor();
 				grabberMotorRight.stopMotor();
+				ejectSpeed = 0.0;
 				RobotData.grabIdle = true;
 			} else {
-				grabberMotorLeft.set(-0.4);
-				grabberMotorRight.set(-0.4);
+				grabberMotorLeft.set(ejectSpeed);
+				grabberMotorRight.set(ejectSpeed);
 			}
 		}
 
 	}
-
-	void eject(double time) {
+	double ejectSpeed = 0.0;
+	void eject(double time, double speed) {
 		RobotData.grabIdle = false;
 		objective = EJECT;
 		endTime = Timer.getFPGATimestamp() + time;
+		ejectSpeed = -speed;
 	}
-
-	void intake( double time) {
+	double intakeSpeed = 0.0;
+	void intake(double time, double speed) {
 		RobotData.grabIdle = false;
 		objective = INTAKE;
 		endTime = Timer.getFPGATimestamp() + time;
+		intakeSpeed = speed;
 	}
 }

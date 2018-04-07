@@ -31,6 +31,7 @@ public class Robot extends IterativeRobot {
 	static final int RIGHT = 3;
 	static final int SWITCH = 10;
 	static final int SCALE = 11;
+	static final int SWITCHSCALE = 22;
 	static final int NONE = 12;
 
 	public static final String posLeft = "L";
@@ -81,6 +82,7 @@ public class Robot extends IterativeRobot {
 		chooserPos.addObject("Right", RIGHT);
 		chooserTarg.addDefault("Switch", SWITCH);
 		chooserTarg.addObject("Scale", SCALE);
+		chooserTarg.addObject("switch/scale", SWITCHSCALE);
 		chooserTarg.addObject("Cross Line", NONE);
 		// chooserAlt.addDefault("Normal Mode", altFalse);
 		// chooserAlt.addObject("Alternate Mode", altTrue);
@@ -169,9 +171,9 @@ public class Robot extends IterativeRobot {
 		getControllers();
 
 		if (lastElevPos != RobotData.elevPositionTarget)
-			RobotData.elevPositionTarget = elev.moveTo(RobotData.elevPositionTarget, 80);
+			RobotData.elevPositionTarget = elev.moveTo(RobotData.elevPositionTarget, 80, 5);
 		if (lastArmPos != RobotData.armPositionTarget)
-			RobotData.armPositionTarget = arm.moveTo(RobotData.armPositionTarget, 10);
+			RobotData.armPositionTarget = arm.moveTo(RobotData.armPositionTarget, 10, 5);
 
 		drive.teleOp();
 		// grab.revisedMoveGrabber(operator.getTriggerAxis(GenericHID.Hand.kLeft),
@@ -198,7 +200,7 @@ public class Robot extends IterativeRobot {
 
 		}
 		if (driver.getAButton()) {
-			grab.intake(2);
+			grab.eject(5, 0.5);
 		}
 		drive.checkStatus();
 		elev.checkStatus();
@@ -271,18 +273,18 @@ public class Robot extends IterativeRobot {
 		}
 
 		if (operator.getYButton()) {
-			RobotData.elevPositionTarget = elev.moveTo(RobotData.elevMaxHeightUnits, 100);
-			RobotData.armPositionTarget = arm.moveTo(30, 100);
+			RobotData.elevPositionTarget = elev.moveTo(RobotData.elevMaxHeightUnits, 100, 5);
+			RobotData.armPositionTarget = arm.moveTo(75, 100, 5);
 		} else if (operator.getAButton()) {
-			RobotData.elevPositionTarget = elev.moveTo(0, 100);
+			RobotData.elevPositionTarget = elev.moveTo(0, 100, 5);
 			arm.enableLimitless();
-			RobotData.armPositionTarget = arm.moveTo(-15, 100);
+			RobotData.armPositionTarget = arm.moveTo(-30, 100, 5);
 		} else if (operator.getXButton()) {
-			RobotData.elevPositionTarget = elev.moveTo(15, 100);
-
+			RobotData.elevPositionTarget = elev.moveTo(15, 100, 5);
+			RobotData.armPositionTarget = arm.moveTo(0, 100, 5);
 		} else if (operator.getBButton()) {
-			RobotData.elevPositionTarget = elev.moveTo(10, 100);
-			RobotData.armPositionTarget = arm.moveTo(0, 100);
+			RobotData.elevPositionTarget = elev.moveTo(10, 100, 5);
+			RobotData.armPositionTarget = arm.moveTo(0, 100, 5);
 		}
 		if (driver.getBumper(GenericHID.Hand.kRight)) {
 			drive.opScale /= 2;

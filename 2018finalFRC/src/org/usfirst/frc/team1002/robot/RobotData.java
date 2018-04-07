@@ -121,7 +121,7 @@ public class RobotData {
 	public static final double elevCruiseVel = 10000.0;
 	public static final double elevCruiseAccel = 5000.0;
 	//Max height of the Elevator stages in inches.
-	public static final double elevMaxHeightUnits= 33.0;
+	public static final double elevMaxHeightUnits= 35.0;
 	public static final double elevStageTwoMaxUnits = 40;
 	//Maximum height of two stages, in clicks.
 	public static final double elevStageOneMax = elevMaxHeightUnits * elevClicksPerUnitS1;
@@ -182,8 +182,8 @@ public class RobotData {
 	//Desired position of the arm, in clicks.
 	public static double armPositionClicks = 0.0;
 	
-	public static double armMaxAngle = 70;
-	public static double armMinAngle = -20;
+	public static double armMaxAngle = 65;
+	public static double armMinAngle = -30;
 	//Is the arm not doing anything?
 	public static boolean armIdle = true;
 	

@@ -115,10 +115,10 @@ public class EightBitElev {
 	}
 
 	boolean limitless = true;
-
-	public double moveTo(double position, int speedfactor) {
+	double maxTime = 0;
+	public double moveTo(double position, int speedfactor, double time) {
 		boolean insideLimits = true;
-
+		maxTime = Timer.getFPGATimestamp() + time;
 		int sf = Math.min(speedFactor, 100);
 		sf = Math.max(0, sf);
 
@@ -159,9 +159,10 @@ public class EightBitElev {
 	}
 
 	public void init() {
+		int startPos = 13413 - 1816;
 		talonConfig(elevatorTalon);
-		elevatorTalon.setSelectedSensorPosition(13413, RobotData.elevPIDLoopIdx, RobotData.elevTimeoutMs);
-		RobotData.elevPositionClicks = 13413;
+		elevatorTalon.setSelectedSensorPosition(startPos, RobotData.elevPIDLoopIdx, RobotData.elevTimeoutMs);
+		RobotData.elevPositionClicks = startPos;
 	}
 
 	private int inchesToClicks(double pos) {
@@ -203,9 +204,10 @@ public class EightBitElev {
 					+ pulseWidthUs); // Always add your name
 		}
 	}
-
+	double currentTime = 0;
 	public void checkStatus() {
 		checkEncoder(elevatorTalon);
+		currentTime = Timer.getFPGATimestamp();-
 		double nowPos = clicksToInches(elevatorTalon.getSelectedSensorPosition(RobotData.armPIDLoopIdx));
 		SmartDashboard.putNumber("Elevator Position", nowPos);
 		if (Math.abs(nowPos - RobotData.elevStageOneMax) < 1) {
@@ -220,7 +222,7 @@ public class EightBitElev {
 		}
 
 		if (Math.abs(elevatorTalon.getSelectedSensorPosition(RobotData.armPIDLoopIdx)
-				- RobotData.elevPositionClicks) <= 1000) {
+				- RobotData.elevPositionClicks) <= 1000 || currentTime > maxTime) {
 			RobotData.elevIdle = true;
 		}
 		// if (upperLim.get()) {
@@ -252,9 +254,9 @@ public class EightBitElev {
 	public void enableLimitless() {
 		limitless = true;
 	}
-	
+
 	public void displayElevStatus() {
-		SmartDashboard.putNumber("Elevator Amperage Pull",elevatorTalon.getOutputCurrent());
+		SmartDashboard.putNumber("Elevator Amperage Pull", elevatorTalon.getOutputCurrent());
 		SmartDashboard.putNumber("Elevator Voltage Draw", elevatorTalon.getMotorOutputVoltage());
 		SmartDashboard.putNumber("Elevator MotorController Temperature", elevatorTalon.getTemperature());
 	}

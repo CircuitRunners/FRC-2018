@@ -5,6 +5,7 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class RobotArm {
@@ -17,9 +18,10 @@ public class RobotArm {
 	}
 
 	public void init() {
+		int startPos = -11300;
 		talonConfig(armTalon);
-		armTalon.setSelectedSensorPosition(-11300, RobotData.armPIDLoopIdx, RobotData.armTimeoutMs);
-		RobotData.armPositionClicks = -11300 - 1950 + 1187;
+		armTalon.setSelectedSensorPosition(startPos , RobotData.armPIDLoopIdx, RobotData.armTimeoutMs);
+		RobotData.armPositionClicks = startPos;
 		// f = new Faults();
 	}
  public int armCV = 10000;
@@ -63,10 +65,11 @@ public class RobotArm {
 		SmartDashboard.putNumber("Arm MotorController Temperature", armTalon.getTemperature());
 	}
 
-	
+	double currentTime = 0;
 	public void checkStatus() {
 		int armPos = armTalon.getSelectedSensorPosition(RobotData.armPIDLoopIdx);
-		if (Math.abs(armPos - RobotData.armPositionClicks) <= 300) {
+		currentTime = Timer.getFPGATimestamp();
+		if (Math.abs(armPos - RobotData.armPositionClicks) <= 300 || currentTime > maxTime) {
 			RobotData.armIdle = true;
 		} else {
 			RobotData.armIdle = false;
@@ -80,10 +83,10 @@ public class RobotArm {
 	}
 
 	boolean limitless = true;
-
-	public double moveTo(double angle, int speedfactor) {
+	double maxTime = 0;
+	public double moveTo(double angle, int speedfactor, double time) {
 		boolean insideLimits = true;
-
+		maxTime = Timer.getFPGATimestamp() + time;
 		int sf = Math.min(100,  speedFactor);
 		sf = Math.max(0, sf);
 		
