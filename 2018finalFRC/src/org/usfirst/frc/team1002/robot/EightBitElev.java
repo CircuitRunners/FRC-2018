@@ -207,7 +207,7 @@ public class EightBitElev {
 	double currentTime = 0;
 	public void checkStatus() {
 		checkEncoder(elevatorTalon);
-		currentTime = Timer.getFPGATimestamp();-
+		currentTime = Timer.getFPGATimestamp();
 		double nowPos = clicksToInches(elevatorTalon.getSelectedSensorPosition(RobotData.armPIDLoopIdx));
 		SmartDashboard.putNumber("Elevator Position", nowPos);
 		if (Math.abs(nowPos - RobotData.elevStageOneMax) < 1) {
