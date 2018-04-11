@@ -25,40 +25,38 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 
 public class Robot extends IterativeRobot {
-
+	
+	static final int NONE = 0;
 	static final int LEFT = 1;
 	static final int CENTER = 2;
 	static final int RIGHT = 3;
-	static final int SWITCH = 10;
-	static final int SCALE = 11;
-	static final int SWITCHORSCALE = 22;
-	static final int SWITCHANDSCALE = 23;
-	static final int NONE = 12;
-
-	public static final String posLeft = "L";
-	public static final String posCenter = "C";
-	public static final String posRight = "R";
-
-	public static final String targSwitch = "Switch";
-	public static final String targScale = "Scale";
-	public static final String targLine = "None";
-
-	public static final String altFalse = "Normal";
-	public static final String altTrue = "Alternate";
-
+	static final int SWITCH = 4;
+	static final int SCALE = 5;
+	static final int SWITCHORSCALE = 6;
+	static final int SWITCHANDSCALE = 7;
+	static final int FARSWITCHANDSCALE = 8;
+	static final int NEAREST = 9;
+	static final int FURTHEST = 10;
+	static final int ONEBLOCK = 11;
+	static final int TWOBLOCK = 12;
+	static final int THREEBLOCK = 13;
+	
+	
 	public static int posSelected = -1;
 	public static int targSelected = -1;
+	public static int prefSelected = -1;
+	public static int blockSelected = -1;
 	public static boolean wasDisabled = false;
 	// public static String altSelected;
 	static SendableChooser<Integer> chooserPos = new SendableChooser<>(); // Choose the starting position of the robot,
 																			// with respect to the driver wall.
 	SendableChooser<Integer> chooserTarg = new SendableChooser<>(); // Choose the target of the robot: switch,
 																	// scale, or nothing.
-	// SendableChooser<String> chooserAlt = new SendableChooser<>(); // Choose if
-	// the robot should use an alternate
-	// path. Intended to be used if we think
-	// another robot will obstruct ours.
+	SendableChooser<Integer> chooserPreference = new SendableChooser<>();
 
+	SendableChooser<Integer> chooserBlock = new SendableChooser<>();
+	
+	
 	public static XboxController driver = new XboxController(RobotData.driverPort);
 	public static XboxController operator = new XboxController(RobotData.operatorPort);
 
@@ -81,17 +79,22 @@ public class Robot extends IterativeRobot {
 		chooserPos.addDefault("Left", LEFT);
 		chooserPos.addObject("Center", CENTER);
 		chooserPos.addObject("Right", RIGHT);
-		chooserTarg.addDefault("Switch", SWITCH);
-		chooserTarg.addObject("Scale", SCALE);
+		//chooserTarg.addDefault("Switch", SWITCH);
+		//chooserTarg.addObject("Scale", SCALE);
 		chooserTarg.addObject("switch or Scale", SWITCHORSCALE);
 		chooserTarg.addObject("Switch and Scale", SWITCHANDSCALE);
+		//chooserTarg.addObject("Far Switch and Scale", FARSWITCHANDSCALE);
 		chooserTarg.addObject("Cross Line", NONE);
-		// chooserAlt.addDefault("Normal Mode", altFalse);
-		// chooserAlt.addObject("Alternate Mode", altTrue);
+		chooserPreference.addObject("Nearest", NEAREST);
+		chooserPreference.addObject("Furthest", FURTHEST);
+		chooserPreference.addObject("Switch",SWITCH);
+		chooserPreference.addObject("Scale", SCALE);
+		chooserBlock.addObject("One Block", ONEBLOCK);
+		chooserBlock.addObject("Two Block", TWOBLOCK);
+		chooserBlock.addObject("Three Block", THREEBLOCK);
 		SmartDashboard.putData("Starting Position", chooserPos);
 		SmartDashboard.putData("Target", chooserTarg);
-		// SmartDashboard.putData("Alternate Mode?", chooserAlt);
-
+		
 		cam.cameraInit();
 		elev.init();
 		arm.init();
@@ -115,27 +118,26 @@ public class Robot extends IterativeRobot {
 	public void autonomousInit() {
 		drive.gyro.reset();
 		RobotData.armPositionTarget = arm.getArmPosition();
-		// RobotData.elevPositionTarget = elev.getElevatorPositionUnits();
+
 		posSelected = chooserPos.getSelected();
 		targSelected = chooserTarg.getSelected();
-		// altSelected = chooserAlt.getSelected();
+		prefSelected = chooserPreference.getSelected();
+		blockSelected = chooserBlock.getSelected();
+
 		SmartDashboard.putNumber("Pos Selected", posSelected);
 		SmartDashboard.putNumber("Target Selected", targSelected);
-		// autoSelected = SmartDashboard.getString("Auto Selector",
-		// defaultAuto);
 		System.out.println("Starting Position: " + posSelected);
 		System.out.println("Target Selected: " + targSelected);
 		// System.out.println("Autonomous Mode: " + altSelected);
 		auto.init();
 
-		// elev.setElevatorPositionUnits(elev.getElevatorPositionUnits());
 	}
 
+
+	boolean hasFMS = false;
 	/**
 	 * This function is called periodically during autonomous.
 	 */
-	boolean hasFMS = false;
-
 	@Override
 	public void autonomousPeriodic() {
 		while (!hasFMS) {
@@ -151,16 +153,16 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("Auto Step", auto.step);
 	}
 
-	@Override
-	public void teleopInit() {
-		RobotData.armIdle = true;
-		RobotData.elevIdle = true;
-		RobotData.grabIdle = true;
-		drive.currentJob = 0;// IDLE
-		RobotData.armPositionTarget = arm.getArmPosition();
-		RobotData.elevPositionTarget = elev.getElevatorPositionUnits();
+	//@Override
+	//public void teleopInit() {
+		//RobotData.armIdle = true;
+		//RobotData.elevIdle = true;
+		//RobotData.grabIdle = true;
+		//drive.currentJob = 0;// IDLE
+		//RobotData.armPositionTarget = arm.getArmPosition();
+		//RobotData.elevPositionTarget = elev.getElevatorPositionUnits();
 		// RobotData.elevPositionTarget = elev.getElevatorPositionUnits();
-	}
+	//}
 
 	/**
 	 * This function is called periodically during operator control.
@@ -182,10 +184,6 @@ public class Robot extends IterativeRobot {
 			RobotData.armPositionTarget = arm.moveTo(RobotData.armPositionTarget, 10, 5);
 
 		drive.teleOp();
-		// grab.revisedMoveGrabber(operator.getTriggerAxis(GenericHID.Hand.kLeft),
-		// operator.getTriggerAxis(GenericHID.Hand.kRight));
-		// grab.revisedCheckStatus();
-
 		arm.checkStatus();
 		elev.checkStatus();
 
@@ -202,7 +200,7 @@ public class Robot extends IterativeRobot {
 		elev.display();
 		if (driver.getXButton()) {
 
-			drive.autoDrive(-2, 0.3, 16);
+			drive.autoTurn(90, 0.5, 4);
 
 		}
 		if (driver.getAButton()) {
@@ -256,26 +254,29 @@ public class Robot extends IterativeRobot {
 
 		SmartDashboard.putNumber("ARM TARGET", RobotData.armPositionTarget);
 		SmartDashboard.putNumber("ELEV TARGET", RobotData.elevPositionTarget); // else if (lastTimeArmIncrement) {
-
-		/*
-		 * Grabber Operation Code ++++++++++++++++++++++++++++++++++++++++++
-		 */
-
-		SmartDashboard.putString("GrabberStat", "--");
+		
 		drive.opScale = 1;
-		if (operator.getBumper(GenericHID.Hand.kLeft)) {// std eject
-			grab.grabberMotorLeft.set(-0.25);
-			grab.grabberMotorRight.set(-0.25);
-		} else if (driver.getBumper(GenericHID.Hand.kLeft)) {// std eject
-			grab.grabberMotorLeft.set(-0.25);
-			grab.grabberMotorRight.set(-0.25);
 
+		if (driver.getBumper(GenericHID.Hand.kLeft)) {// std eject
+			grab.grabberMotorLeft.set(-0.35);
+			grab.grabberMotorRight.set(-0.35);
+
+		} else if(operator.getBumper(GenericHID.Hand.kLeft)) {
+			grab.grabberMotorLeft.set(0.75);
+			grab.grabberMotorRight.set(-0.75);
+			
+		} else if(operator.getBumper(GenericHID.Hand.kRight)) {
+			grab.grabberMotorLeft.set(-0.75);
+			grab.grabberMotorRight.set(0.75);
 		} else if (driver.getTriggerAxis(GenericHID.Hand.kLeft) > 0.1) {// variable eject
 			grab.grabberMotorLeft.set(-driver.getTriggerAxis(GenericHID.Hand.kLeft));
 			grab.grabberMotorRight.set(-driver.getTriggerAxis(GenericHID.Hand.kLeft));
-		} else {// variable intake
+		} else if(operator.getTriggerAxis(GenericHID.Hand.kLeft) > 0.1 || operator.getTriggerAxis(GenericHID.Hand.kRight) > 0.1) {// variable intake
 			grab.grabberMotorLeft.set(operator.getTriggerAxis(GenericHID.Hand.kLeft));
 			grab.grabberMotorRight.set(operator.getTriggerAxis(GenericHID.Hand.kRight));
+		} else {
+			grab.grabberMotorLeft.set(0.25);
+			grab.grabberMotorRight.set(0.25);
 		}
 
 		if (operator.getYButton()) {
@@ -288,14 +289,11 @@ public class Robot extends IterativeRobot {
 		} else if (operator.getXButton()) {
 			RobotData.elevPositionTarget = elev.moveTo(15, 100, 5);
 			RobotData.armPositionTarget = arm.moveTo(0, 100, 5);
-		} else if (operator.getBButton()) {
-			RobotData.elevPositionTarget = elev.moveTo(10, 100, 5);
-			RobotData.armPositionTarget = arm.moveTo(0, 100, 5);
 		}
 		if (driver.getBumper(GenericHID.Hand.kRight)) {
 			drive.opScale /= 2;
 		}
-		if (operator.getBumper(GenericHID.Hand.kRight)) {
+		if (operator.getBButton()) {
 			elev.enableLimitless();
 			arm.enableLimitless();
 

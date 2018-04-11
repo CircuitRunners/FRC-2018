@@ -136,8 +136,9 @@ public class MarioDrive {
 		}
 	}
 
-	final double TURNSPEED = 0.5;
-
+	double TURNSPEED = 0.5;
+	double closeTurn = TURNSPEED / 2;
+	double correctionCounter = 0;
 	void checkStatusAT() {
 		double twist = 0.0;
 		currentHeading = gyro.getAngle();
@@ -149,9 +150,15 @@ public class MarioDrive {
 			marioDrive.stopMotor();
 			System.out.println("AutoTurn timed out. Desired Heading: " + desiredHeading);
 		} else if (Math.abs(degChange) < 1) {
+			correctionCounter++;
+			TURNSPEED = closeTurn;
+		} else {
+			correctionCounter = 0;
+		}
+		if(correctionCounter >= 20) {
 			currentJob = IDLE;
 			marioDrive.stopMotor();
-		} else {
+		}else {
 			if (degChange < -1)
 				twist = TURNSPEED;
 			if (degChange > 1)
@@ -206,10 +213,10 @@ public class MarioDrive {
 		desiredHeading = gyro.getAngle();
 	}
 
-	public void autoTurn(double turn, double time) {
+	public void autoTurn(double turn, double speed, double time) {
 
 		currentJob = AUTOTURN;
-
+		TURNSPEED = speed;
 		endTime = Timer.getFPGATimestamp() + time;
 		desiredHeading = turn;
 	}

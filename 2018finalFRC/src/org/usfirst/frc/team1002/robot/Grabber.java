@@ -99,8 +99,8 @@ public class Grabber {
 		currentTime = Timer.getFPGATimestamp();
 		if (objective == INTAKE) {
 			if (currentTime > endTime) {
-				grabberMotorLeft.stopMotor();
-				grabberMotorRight.stopMotor();
+				grabberMotorLeft.set(0.2);
+				grabberMotorRight.set(0.2);
 				intakeSpeed = 0.0;
 				RobotData.grabIdle = true;
 			} else {
@@ -121,14 +121,18 @@ public class Grabber {
 		}
 
 	}
+
 	double ejectSpeed = 0.0;
+
 	void eject(double time, double speed) {
 		RobotData.grabIdle = false;
 		objective = EJECT;
 		endTime = Timer.getFPGATimestamp() + time;
 		ejectSpeed = -speed;
 	}
+
 	double intakeSpeed = 0.0;
+
 	void intake(double time, double speed) {
 		RobotData.grabIdle = false;
 		objective = INTAKE;
