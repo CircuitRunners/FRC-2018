@@ -32,14 +32,17 @@ public class Robot extends IterativeRobot {
 	static final int RIGHT = 3;
 	static final int SWITCH = 4;
 	static final int SCALE = 5;
-	static final int SWITCHORSCALE = 6;
-	static final int SWITCHANDSCALE = 7;
-	static final int FARSWITCHANDSCALE = 8;
-	static final int NEAREST = 9;
-	static final int FURTHEST = 10;
-	static final int ONEBLOCK = 11;
-	static final int TWOBLOCK = 12;
-	static final int THREEBLOCK = 13;
+	static final int SWITCHORSCALESWITCHPREF = 6;
+	static final int SWITCHORSCALESCALEPREF = 7;
+	static final int SWITCHANDSCALE = 8;
+	static final int FARSWITCHANDSCALE = 9;
+	static final int NEAREST = 10;
+	static final int FURTHEST = 11;
+	static final int ONEBLOCK = 12;
+	static final int TWOBLOCK = 13;
+	static final int THREEBLOCK = 14;
+	static final int ALLPREFSCALE = 15;
+	static final int ALLPREFSWITCH = 16;
 	
 	
 	public static int posSelected = -1;
@@ -50,8 +53,8 @@ public class Robot extends IterativeRobot {
 	// public static String altSelected;
 	static SendableChooser<Integer> chooserPos = new SendableChooser<>(); // Choose the starting position of the robot,
 																			// with respect to the driver wall.
-	SendableChooser<Integer> chooserTarg = new SendableChooser<>(); // Choose the target of the robot: switch,
-																	// scale, or nothing.
+	SendableChooser<Integer> chooserTarg = new SendableChooser<>();
+	
 	SendableChooser<Integer> chooserPreference = new SendableChooser<>();
 
 	SendableChooser<Integer> chooserBlock = new SendableChooser<>();
@@ -79,22 +82,25 @@ public class Robot extends IterativeRobot {
 		chooserPos.addDefault("Left", LEFT);
 		chooserPos.addObject("Center", CENTER);
 		chooserPos.addObject("Right", RIGHT);
+		
 		//chooserTarg.addDefault("Switch", SWITCH);
 		//chooserTarg.addObject("Scale", SCALE);
-		chooserTarg.addObject("switch or Scale", SWITCHORSCALE);
-		chooserTarg.addObject("Switch and Scale", SWITCHANDSCALE);
 		//chooserTarg.addObject("Far Switch and Scale", FARSWITCHANDSCALE);
-		chooserTarg.addObject("Cross Line", NONE);
-		chooserPreference.addObject("Nearest", NEAREST);
-		chooserPreference.addObject("Furthest", FURTHEST);
-		chooserPreference.addObject("Switch",SWITCH);
-		chooserPreference.addObject("Scale", SCALE);
-		chooserBlock.addObject("One Block", ONEBLOCK);
-		chooserBlock.addObject("Two Block", TWOBLOCK);
-		chooserBlock.addObject("Three Block", THREEBLOCK);
-		SmartDashboard.putData("Starting Position", chooserPos);
-		SmartDashboard.putData("Target", chooserTarg);
 		
+		chooserTarg.addObject("switch or Scale(switch Pref)", SWITCHORSCALESWITCHPREF);//done
+		chooserTarg.addObject("Switch or Scale(Scale Pref)", SWITCHORSCALESCALEPREF);//done
+		chooserTarg.addObject("Switch and Scale", SWITCHANDSCALE);//done
+		chooserTarg.addDefault("Cross Line", NONE);
+		
+		chooserPreference.addObject("Nearest", NEAREST);//done
+		chooserPreference.addObject("Furthest", FURTHEST);//done
+		chooserPreference.addObject("Switch",SWITCH);//done
+		chooserPreference.addDefault("Scale", SCALE);//done
+		
+		chooserBlock.addDefault("One Block", ONEBLOCK);//done
+		chooserBlock.addObject("Two Block", TWOBLOCK);//done
+		chooserBlock.addObject("Three Block", THREEBLOCK);//done
+
 		cam.cameraInit();
 		elev.init();
 		arm.init();
