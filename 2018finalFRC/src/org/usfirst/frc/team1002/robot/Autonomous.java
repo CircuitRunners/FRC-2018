@@ -21,9 +21,12 @@ public class Autonomous {
 
 	int step = 1;
 	int turnDir = 1;
-
+	boolean log = true;
+	double startingTime;
+	
 	public void init() {
 		step = 1;
+		log = true;
 		posIndex = Robot.posSelected;
 		targIndex = Robot.targSelected;
 		prefIndex = Robot.prefSelected;
@@ -81,7 +84,7 @@ public class Autonomous {
 					} else {
 						driveForward();
 					}
-				} else if(targIndex == Robot.NONE) {
+				} else if (targIndex == Robot.NONE) {
 					driveForward();
 				}
 			} else if (prefIndex == Robot.NEAREST) {
@@ -107,11 +110,11 @@ public class Autonomous {
 					} else {
 						driveForward();
 					}
-				} else if(targIndex == Robot.NONE) {
+				} else if (targIndex == Robot.NONE) {
 					driveForward();
 				}
 			}
-
+			break;
 		case Robot.CENTER:
 			if (prefIndex == Robot.SWITCH) {
 				if (sideScale == Robot.RIGHT) {
@@ -130,7 +133,7 @@ public class Autonomous {
 		}
 	}
 
-	public void sameSideSwitchBlock() {
+	private void sameSideSwitchBlock() {
 		if (blockIndex == Robot.ONEBLOCK) {
 			sameSideSwitch1Block();
 		} else if (blockIndex == Robot.TWOBLOCK) {
@@ -140,7 +143,7 @@ public class Autonomous {
 		}
 	}
 
-	public void farSideSwitchBlock() {
+	private void farSideSwitchBlock() {
 		if (blockIndex == Robot.ONEBLOCK) {
 			farSideSwitch1Block();
 		} else if (blockIndex == Robot.TWOBLOCK) {
@@ -150,7 +153,7 @@ public class Autonomous {
 		}
 	}
 
-	public void sameSideScaleBlock() {
+	private void sameSideScaleBlock() {
 		if (blockIndex == Robot.ONEBLOCK) {
 			sameSideScale1Block();
 		} else if (blockIndex == Robot.TWOBLOCK) {
@@ -160,7 +163,7 @@ public class Autonomous {
 		}
 	}
 
-	public void farSideScaleBlock() {
+	private void farSideScaleBlock() {
 		if (blockIndex == Robot.ONEBLOCK) {
 			farSideScale1Block();
 		} else if (blockIndex == Robot.TWOBLOCK) {
@@ -202,6 +205,10 @@ public class Autonomous {
 
 	private void sameSideScaleAndSwitch() {
 		SmartDashboard.putString("Auto Program", "sameSideScaleAndSwitch");
+		if (log) {
+			System.out.println("Executing sameSideScaleAndSwitch.");
+			log = false;
+		}
 		switch (step) {
 		case 1:
 			if (!Robot.drive.isIdle())
@@ -299,7 +306,12 @@ public class Autonomous {
 
 	}
 
-	public void farSideSwitchAndScale() {
+	private void farSideSwitchAndScale() {
+		SmartDashboard.putString("Auto Program", "farSideScaleAndSwitch");
+		if (log) {
+			System.out.println("Executing farSideScaleAndSwitch.");
+			log = false;
+		}
 		switch (step) {
 		case 1:
 			startingTime = Timer.getFPGATimestamp();
@@ -396,6 +408,10 @@ public class Autonomous {
 
 	private void farSideScale1Block() {
 		SmartDashboard.putString("Auto Program", "farSideScale1Block");
+		if (log) {
+			System.out.println("Executing farSideScale1Block.");
+			log = false;
+		}
 		switch (step) {
 		case 1:
 			startingTime = Timer.getFPGATimestamp();
@@ -478,6 +494,10 @@ public class Autonomous {
 
 	private void farSideScale2Block() {
 		SmartDashboard.putString("Auto Program", "farSideScale2Block");
+		if (log) {
+			System.out.println("Executing farSideScale2Block.");
+			log = false;
+		}
 		switch (step) {
 		case 1:
 			startingTime = Timer.getFPGATimestamp();
@@ -597,12 +617,20 @@ public class Autonomous {
 	}
 
 	private void farSideScale3Block(/* needs work, honestly last priority */) {
-		// TODO Auto-generated method stub
+		SmartDashboard.putString("Auto Program", "FarSideScale3Block");
+		if (log) {
+			System.out.println("Executing farSideScale3Block.");
+			log = false;
+		}
 
 	}
 
 	private void sameSideScale1Block() {
 		SmartDashboard.putString("Auto Program", "sameSideScale1Block");
+		if (log) {
+			System.out.println("Executing sameSideScale1Block.");
+			log = false;
+		}
 		switch (step) {
 		case 1:
 			if (!Robot.drive.isIdle())
@@ -684,8 +712,12 @@ public class Autonomous {
 		}
 	}
 
-	public void sameSideScale2Block() {
+	private void sameSideScale2Block() {
 		SmartDashboard.putString("Auto Program", "sameSideScale2Block");
+		if (log) {
+			System.out.println("Executing sameSideScale2Block.");
+			log = false;
+		}
 		switch (step) {
 		case 1:
 			beginStep();
@@ -810,8 +842,12 @@ public class Autonomous {
 		}
 	}
 
-	public void sameSideScale3Block(/* needs more work, more confident in it being possible */) {// heh heh maybe
+	private void sameSideScale3Block(/* needs more work, more confident in it being possible */) {// heh heh maybe
 		SmartDashboard.putString("Auto Program", "sameSideScale3Block");
+		if (log) {
+			System.out.println("Executing sameSideScale3Block.");
+			log = false;
+		}
 		switch (step) {
 		case 1:
 			if (!Robot.drive.isIdle())
@@ -942,6 +978,10 @@ public class Autonomous {
 
 	private void farSideSwitch1Block() {
 		SmartDashboard.putString("Auto Program", "farSideSwitch1Block");
+		if (log) {
+			System.out.println("Executing farSideSwitch1Block.");
+			log = false;
+		}
 		switch (step) {
 		case 1:
 			beginStep();
@@ -1275,10 +1315,14 @@ public class Autonomous {
 
 	}
 
-	double startingTime;
 
-	public void driveForward() {
+
+	private void driveForward() {
 		SmartDashboard.putString("Auto Program", "Drive Forward");
+		if (log) {
+			System.out.println("Executing DriveForward.");
+			log = false;
+		}
 		switch (step) {
 		case 1:
 			startingTime = Timer.getFPGATimestamp();
@@ -1296,8 +1340,12 @@ public class Autonomous {
 		}
 	}
 
-	public void centerSwitch() {
+	private void centerSwitch() {
 		SmartDashboard.putString("Auto Program", "CenterSwitch");
+		if (log) {
+			System.out.println("Executing centerSwitch.");
+			log = false;
+		}
 		switch (step) {
 		case 1:
 			if (!Robot.drive.isIdle())
@@ -1364,6 +1412,10 @@ public class Autonomous {
 
 	public void scaleAndSwitch() {
 		SmartDashboard.putString("Auto Program", "scaleAndSwitch");
+		if (log) {
+			System.out.println("Executing scaleAndSwitch.");
+			log = false;
+		}
 		switch (step) {
 		case 1:
 			beginStep();
