@@ -155,7 +155,7 @@ public class MarioDrive {
 		} else {
 			correctionCounter = 0;
 		}
-		if(correctionCounter >= 20) {
+		if(correctionCounter >= 10) {
 			currentJob = IDLE;
 			marioDrive.stopMotor();
 		}else {
@@ -276,6 +276,6 @@ public class MarioDrive {
 		SmartDashboard.putNumber("Degree Change", degChange);
 
 		currentTime = Timer.getFPGATimestamp();
-		displayAD();
+		//displayAD();
 	}
 }

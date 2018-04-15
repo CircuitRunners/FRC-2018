@@ -25,7 +25,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 
 public class Robot extends IterativeRobot {
-	
+
 	static final int NONE = 0;
 	static final int LEFT = 1;
 	static final int CENTER = 2;
@@ -43,8 +43,7 @@ public class Robot extends IterativeRobot {
 	static final int THREEBLOCK = 14;
 	static final int ALLPREFSCALE = 15;
 	static final int ALLPREFSWITCH = 16;
-	
-	
+
 	public static int posSelected = -1;
 	public static int targSelected = -1;
 	public static int prefSelected = -1;
@@ -53,13 +52,12 @@ public class Robot extends IterativeRobot {
 	// public static String altSelected;
 	static SendableChooser<Integer> chooserPos = new SendableChooser<>(); // Choose the starting position of the robot,
 																			// with respect to the driver wall.
-	SendableChooser<Integer> chooserTarg = new SendableChooser<>();
-	
-	SendableChooser<Integer> chooserPreference = new SendableChooser<>();
+	static SendableChooser<Integer> chooserTarg = new SendableChooser<>();
 
-	SendableChooser<Integer> chooserBlock = new SendableChooser<>();
-	
-	
+	static SendableChooser<Integer> chooserPreference = new SendableChooser<>();
+
+	static SendableChooser<Integer> chooserBlock = new SendableChooser<>();
+
 	public static XboxController driver = new XboxController(RobotData.driverPort);
 	public static XboxController operator = new XboxController(RobotData.operatorPort);
 
@@ -82,25 +80,26 @@ public class Robot extends IterativeRobot {
 		chooserPos.addDefault("Left", LEFT);
 		chooserPos.addObject("Center", CENTER);
 		chooserPos.addObject("Right", RIGHT);
-		
-		//chooserTarg.addDefault("Switch", SWITCH);
-		//chooserTarg.addObject("Scale", SCALE);
-		//chooserTarg.addObject("Far Switch and Scale", FARSWITCHANDSCALE);
-		
-		chooserTarg.addObject("switch or Scale(switch Pref)", SWITCHORSCALESWITCHPREF);//done
-		chooserTarg.addObject("Switch or Scale(Scale Pref)", SWITCHORSCALESCALEPREF);//done
-		chooserTarg.addObject("Switch and Scale", SWITCHANDSCALE);//done
-		chooserTarg.addDefault("Cross Line", NONE);
-		
-		chooserPreference.addObject("Nearest", NEAREST);//done
-		chooserPreference.addObject("Furthest", FURTHEST);//done
-		chooserPreference.addObject("Switch",SWITCH);//done
-		chooserPreference.addDefault("Scale", SCALE);//done
-		
-		chooserBlock.addDefault("One Block", ONEBLOCK);//done
-		chooserBlock.addObject("Two Block", TWOBLOCK);//done
-		chooserBlock.addObject("Three Block", THREEBLOCK);//done
+		SmartDashboard.putData("Robot Position", chooserPos);
+		// chooserTarg.addDefault("Switch", SWITCH);
+		// chooserTarg.addObject("Scale", SCALE);
+		// chooserTarg.addObject("Far Switch and Scale", FARSWITCHANDSCALE);
 
+		chooserTarg.addObject("switch or Scale(switch Pref)", SWITCHORSCALESWITCHPREF);// done
+		chooserTarg.addObject("Switch or Scale(Scale Pref)", SWITCHORSCALESCALEPREF);// done
+		chooserTarg.addObject("Switch and Scale", SWITCHANDSCALE);// done
+		chooserTarg.addDefault("Cross Line", NONE);
+		SmartDashboard.putData("Chooser Target", chooserTarg);
+		chooserPreference.addObject("Nearest", NEAREST);// done
+		chooserPreference.addObject("Furthest", FURTHEST);// done
+		chooserPreference.addObject("Switch", SWITCH);// done
+		chooserPreference.addDefault("Scale", SCALE);// done
+		SmartDashboard.putData("Chooser Preference", chooserPreference);
+		chooserBlock.addDefault("One Block", ONEBLOCK);// done
+		chooserBlock.addObject("Two Block", TWOBLOCK);// done
+		chooserBlock.addObject("Three Block", THREEBLOCK);// done
+		SmartDashboard.putData("Chooser Block", chooserBlock);
+		
 		cam.cameraInit();
 		elev.init();
 		arm.init();
@@ -139,8 +138,8 @@ public class Robot extends IterativeRobot {
 
 	}
 
-
 	boolean hasFMS = false;
+
 	/**
 	 * This function is called periodically during autonomous.
 	 */
@@ -159,16 +158,16 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("Auto Step", auto.step);
 	}
 
-	//@Override
-	//public void teleopInit() {
-		//RobotData.armIdle = true;
-		//RobotData.elevIdle = true;
-		//RobotData.grabIdle = true;
-		//drive.currentJob = 0;// IDLE
-		//RobotData.armPositionTarget = arm.getArmPosition();
-		//RobotData.elevPositionTarget = elev.getElevatorPositionUnits();
-		// RobotData.elevPositionTarget = elev.getElevatorPositionUnits();
-	//}
+	// @Override
+	// public void teleopInit() {
+	// RobotData.armIdle = true;
+	// RobotData.elevIdle = true;
+	// RobotData.grabIdle = true;
+	// drive.currentJob = 0;// IDLE
+	// RobotData.armPositionTarget = arm.getArmPosition();
+	// RobotData.elevPositionTarget = elev.getElevatorPositionUnits();
+	// RobotData.elevPositionTarget = elev.getElevatorPositionUnits();
+	// }
 
 	/**
 	 * This function is called periodically during operator control.
@@ -260,33 +259,37 @@ public class Robot extends IterativeRobot {
 
 		SmartDashboard.putNumber("ARM TARGET", RobotData.armPositionTarget);
 		SmartDashboard.putNumber("ELEV TARGET", RobotData.elevPositionTarget); // else if (lastTimeArmIncrement) {
-		
+
 		drive.opScale = 1;
 
 		if (driver.getBumper(GenericHID.Hand.kLeft)) {// std eject
-			grab.grabberMotorLeft.set(-0.35);
-			grab.grabberMotorRight.set(-0.35);
+			grab.grabberMotorLeft.set(-0.45);
+			grab.grabberMotorRight.set(-0.45);
 
-		} else if(operator.getBumper(GenericHID.Hand.kLeft)) {
+		} else if (operator.getBumper(GenericHID.Hand.kLeft)) {
 			grab.grabberMotorLeft.set(0.75);
 			grab.grabberMotorRight.set(-0.75);
-			
-		} else if(operator.getBumper(GenericHID.Hand.kRight)) {
+
+		} else if (operator.getBumper(GenericHID.Hand.kRight)) {
 			grab.grabberMotorLeft.set(-0.75);
 			grab.grabberMotorRight.set(0.75);
 		} else if (driver.getTriggerAxis(GenericHID.Hand.kLeft) > 0.1) {// variable eject
 			grab.grabberMotorLeft.set(-driver.getTriggerAxis(GenericHID.Hand.kLeft));
 			grab.grabberMotorRight.set(-driver.getTriggerAxis(GenericHID.Hand.kLeft));
-		} else if(operator.getTriggerAxis(GenericHID.Hand.kLeft) > 0.1 || operator.getTriggerAxis(GenericHID.Hand.kRight) > 0.1) {// variable intake
+		} else if (operator.getTriggerAxis(GenericHID.Hand.kLeft) > 0.1
+				|| operator.getTriggerAxis(GenericHID.Hand.kRight) > 0.1) {// variable intake
 			grab.grabberMotorLeft.set(operator.getTriggerAxis(GenericHID.Hand.kLeft));
 			grab.grabberMotorRight.set(operator.getTriggerAxis(GenericHID.Hand.kRight));
-		} else {
+		} else if(!driver.getBumper(GenericHID.Hand.kRight)){
 			grab.grabberMotorLeft.set(0.25);
 			grab.grabberMotorRight.set(0.25);
+		} else { 
+			grab.grabberMotorLeft.set(0.0);
+			grab.grabberMotorRight.set(0.0);
 		}
 
 		if (operator.getYButton()) {
-			RobotData.elevPositionTarget = elev.moveTo(RobotData.elevMaxHeightUnits, 100, 5);
+			RobotData.elevPositionTarget = elev.moveTo(RobotData.elevMaxHeightUnits - 2, 100, 5);
 			RobotData.armPositionTarget = arm.moveTo(75, 100, 5);
 		} else if (operator.getAButton()) {
 			RobotData.elevPositionTarget = elev.moveTo(0, 100, 5);
@@ -296,7 +299,7 @@ public class Robot extends IterativeRobot {
 			RobotData.elevPositionTarget = elev.moveTo(15, 100, 5);
 			RobotData.armPositionTarget = arm.moveTo(0, 100, 5);
 		}
-		if (driver.getBumper(GenericHID.Hand.kRight)) {
+		if (driver.getTriggerAxis(GenericHID.Hand.kRight) > 0.2) {
 			drive.opScale /= 2;
 		}
 		if (operator.getBButton()) {

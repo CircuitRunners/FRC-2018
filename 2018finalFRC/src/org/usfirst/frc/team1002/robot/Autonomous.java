@@ -23,7 +23,7 @@ public class Autonomous {
 	int turnDir = 1;
 
 	public void init() {
-
+		step = 1;
 		posIndex = Robot.posSelected;
 		targIndex = Robot.targSelected;
 		prefIndex = Robot.prefSelected;
@@ -44,82 +44,34 @@ public class Autonomous {
 	public void run() {
 		switch (posIndex) {
 		case Robot.RIGHT:
-			
+
 		case Robot.LEFT:
 			if (prefIndex == Robot.SWITCH) {
 				if (switchNear) {
-					if (blockIndex == Robot.ONEBLOCK) {
-						sameSideSwitch1Block();
-					} else if (blockIndex == Robot.TWOBLOCK) {
-						sameSideSwitch2Block();
-					} else if (blockIndex == Robot.THREEBLOCK) {
-						sameSideSwitch3Block();
-					}
+					sameSideSwitchBlock();
 				} else {
-					if (blockIndex == Robot.ONEBLOCK) {
-						farSideSwitch1Block();
-					} else if (blockIndex == Robot.TWOBLOCK) {
-						farSideSwitch2Block();
-					} else if (blockIndex == Robot.THREEBLOCK) {
-						farSideSwitch3Block();
-					}
+					farSideSwitchBlock();
 				}
 			} else if (prefIndex == Robot.SCALE) {
 				if (scaleNear) {
-					if (blockIndex == Robot.ONEBLOCK) {
-						sameSideScale1Block();
-					} else if (blockIndex == Robot.TWOBLOCK) {
-						sameSideScale2Block();
-					} else if (blockIndex == Robot.THREEBLOCK) {
-						sameSideScale3Block();
-					}
+					sameSideScaleBlock();
 				} else {
-					if (blockIndex == Robot.ONEBLOCK) {
-						farSideScale1Block();
-					} else if (blockIndex == Robot.TWOBLOCK) {
-						farSideScale2Block();
-					} else if (blockIndex == Robot.THREEBLOCK) {
-						farSideScale3Block();
-					}
+					farSideScaleBlock();
 				}
 			} else if (prefIndex == Robot.FURTHEST) {
 				if (targIndex == Robot.SWITCHORSCALESCALEPREF) {
 					if (!scaleNear) {
-						if (blockIndex == Robot.ONEBLOCK) {
-							farSideScale1Block();
-						} else if (blockIndex == Robot.TWOBLOCK) {
-							farSideScale2Block();
-						} else if (blockIndex == Robot.THREEBLOCK) {
-							farSideScale3Block();
-						}
+						farSideScaleBlock();
 					} else if (!switchNear) {
-						if (blockIndex == Robot.ONEBLOCK) {
-							farSideSwitch1Block();
-						} else if (blockIndex == Robot.TWOBLOCK) {
-							farSideSwitch2Block();
-						} else if (blockIndex == Robot.THREEBLOCK) {
-							farSideSwitch3Block();
-						}
+						farSideSwitchBlock();
 					} else {
 						driveForward();
 					}
 				} else if (targIndex == Robot.SWITCHORSCALESWITCHPREF) {
 					if (!switchNear) {
-						if (blockIndex == Robot.ONEBLOCK) {
-							farSideSwitch1Block();
-						} else if (blockIndex == Robot.TWOBLOCK) {
-							farSideSwitch2Block();
-						} else if (blockIndex == Robot.THREEBLOCK) {
-							farSideSwitch3Block();
-						}
+						farSideSwitchBlock();
 					} else if (!scaleNear) {
-						if (blockIndex == Robot.ONEBLOCK) {
-							farSideScale1Block();
-						} else if (blockIndex == Robot.TWOBLOCK) {
-							farSideScale2Block();
-						} else if (blockIndex == Robot.THREEBLOCK) {
-							farSideScale3Block();
-						}
+						farSideScaleBlock();
 					} else {
 						driveForward();
 					}
@@ -129,47 +81,23 @@ public class Autonomous {
 					} else {
 						driveForward();
 					}
-				} else {
+				} else if(targIndex == Robot.NONE) {
 					driveForward();
 				}
 			} else if (prefIndex == Robot.NEAREST) {
 				if (targIndex == Robot.SWITCHORSCALESCALEPREF) {
 					if (scaleNear) {
-						if (blockIndex == Robot.ONEBLOCK) {
-							sameSideScale1Block();
-						} else if (blockIndex == Robot.TWOBLOCK) {
-							sameSideScale2Block();
-						} else if (blockIndex == Robot.THREEBLOCK) {
-							sameSideScale3Block();
-						}
+						sameSideScaleBlock();
 					} else if (switchNear) {
-						if (blockIndex == Robot.ONEBLOCK) {
-							sameSideSwitch1Block();
-						} else if (blockIndex == Robot.TWOBLOCK) {
-							sameSideSwitch2Block();
-						} else if (blockIndex == Robot.THREEBLOCK) {
-							sameSideSwitch3Block();
-						}
+						sameSideSwitchBlock();
 					} else {
 						driveForward();
 					}
 				} else if (targIndex == Robot.SWITCHORSCALESWITCHPREF) {
 					if (switchNear) {
-						if (blockIndex == Robot.ONEBLOCK) {
-							sameSideSwitch1Block();
-						} else if (blockIndex == Robot.TWOBLOCK) {
-							sameSideSwitch2Block();
-						} else if (blockIndex == Robot.THREEBLOCK) {
-							sameSideSwitch3Block();
-						}
+						sameSideSwitchBlock();
 					} else if (scaleNear) {
-						if (blockIndex == Robot.ONEBLOCK) {
-							sameSideScale1Block();
-						} else if (blockIndex == Robot.TWOBLOCK) {
-							sameSideScale2Block();
-						} else if (blockIndex == Robot.THREEBLOCK) {
-							sameSideScale3Block();
-						}
+						sameSideScaleBlock();
 					} else {
 						driveForward();
 					}
@@ -179,13 +107,13 @@ public class Autonomous {
 					} else {
 						driveForward();
 					}
-				} else {
+				} else if(targIndex == Robot.NONE) {
 					driveForward();
 				}
 			}
-			
+
 		case Robot.CENTER:
-			if (targIndex == Robot.SWITCH) {
+			if (prefIndex == Robot.SWITCH) {
 				if (sideScale == Robot.RIGHT) {
 					turnDir = -1;
 					centerSwitch();
@@ -199,6 +127,46 @@ public class Autonomous {
 			}
 			break;
 
+		}
+	}
+
+	public void sameSideSwitchBlock() {
+		if (blockIndex == Robot.ONEBLOCK) {
+			sameSideSwitch1Block();
+		} else if (blockIndex == Robot.TWOBLOCK) {
+			sameSideSwitch2Block();
+		} else if (blockIndex == Robot.THREEBLOCK) {
+			sameSideSwitch3Block();
+		}
+	}
+
+	public void farSideSwitchBlock() {
+		if (blockIndex == Robot.ONEBLOCK) {
+			farSideSwitch1Block();
+		} else if (blockIndex == Robot.TWOBLOCK) {
+			farSideSwitch2Block();
+		} else if (blockIndex == Robot.THREEBLOCK) {
+			farSideSwitch3Block();
+		}
+	}
+
+	public void sameSideScaleBlock() {
+		if (blockIndex == Robot.ONEBLOCK) {
+			sameSideScale1Block();
+		} else if (blockIndex == Robot.TWOBLOCK) {
+			sameSideScale2Block();
+		} else if (blockIndex == Robot.THREEBLOCK) {
+			sameSideScale3Block();
+		}
+	}
+
+	public void farSideScaleBlock() {
+		if (blockIndex == Robot.ONEBLOCK) {
+			farSideScale1Block();
+		} else if (blockIndex == Robot.TWOBLOCK) {
+			farSideScale2Block();
+		} else if (blockIndex == Robot.THREEBLOCK) {
+			farSideScale3Block();
 		}
 	}
 
@@ -307,18 +275,18 @@ public class Autonomous {
 			step++;
 			break;
 		case 10:
-			if(!Robot.drive.isIdle())
+			if (!Robot.drive.isIdle())
 				break;
 			beginStep();
 			Robot.drive.autoDrive(-0.5, SWITCHSPEED / 2, 2);
-			Robot.elev.moveTo(28,100, 3);
+			Robot.elev.moveTo(28, 100, 3);
 			step++;
 			break;
 		case 11:
-			if(!Robot.elev.isIdle())
+			if (!Robot.elev.isIdle())
 				break;
 			beginStep();
-			Robot.grab.eject(0.7,0.7);
+			Robot.grab.eject(0.7, 0.7);
 			step++;
 			break;
 		case 12:
@@ -628,7 +596,7 @@ public class Autonomous {
 		// driveForward();
 	}
 
-	private void farSideScale3Block(/*needs work, honestly last priority*/) {
+	private void farSideScale3Block(/* needs work, honestly last priority */) {
 		// TODO Auto-generated method stub
 
 	}
@@ -720,8 +688,6 @@ public class Autonomous {
 		SmartDashboard.putString("Auto Program", "sameSideScale2Block");
 		switch (step) {
 		case 1:
-			if (!Robot.drive.isIdle())
-				break;
 			beginStep();
 			startingTime = Timer.getFPGATimestamp();
 			SmartDashboard.putNumber("Time Elapsed", 0);
@@ -756,12 +722,10 @@ public class Autonomous {
 			if (!Robot.drive.isIdle())
 				break;
 			beginStep();
-			Robot.grab.eject(0.6, 0.4);
+			Robot.grab.eject(0.6, 0.6);
 			step++;
 			break;
 		case 6:
-			if (!Robot.grab.isIdle())
-				break;
 			beginStep();
 			Robot.drive.autoDrive(-2, SCALESPEED / 2, 3);
 			step++;
@@ -846,7 +810,7 @@ public class Autonomous {
 		}
 	}
 
-	public void sameSideScale3Block(/*needs more work, more confident in it being possible*/) {// heh heh maybe
+	public void sameSideScale3Block(/* needs more work, more confident in it being possible */) {// heh heh maybe
 		SmartDashboard.putString("Auto Program", "sameSideScale3Block");
 		switch (step) {
 		case 1:
@@ -1113,7 +1077,7 @@ public class Autonomous {
 			step++;
 			break;
 		case 9:
-			if(!Robot.elev.isIdle())
+			if (!Robot.elev.isIdle())
 				break;
 			beginStep();
 			Robot.drive.autoDrive(1, SWITCHSPEED / 2, 2);
@@ -1121,7 +1085,7 @@ public class Autonomous {
 			step++;
 			break;
 		case 10:
-			if(!Robot.drive.isIdle())
+			if (!Robot.drive.isIdle())
 				break;
 			beginStep();
 			RobotData.armPositionTarget = Robot.arm.moveTo(0, 100, 2);
@@ -1130,7 +1094,7 @@ public class Autonomous {
 			step++;
 			break;
 		case 11:
-			if(!Robot.arm.isIdle())
+			if (!Robot.arm.isIdle())
 				break;
 			beginStep();
 			Robot.grab.eject(0.5, 1);
@@ -1141,7 +1105,7 @@ public class Autonomous {
 		}
 	}
 
-	private void farSideSwitch3Block(/*needs more work*/) {
+	private void farSideSwitch3Block(/* needs more work */) {
 		// TODO Auto-generated method stub
 
 	}
@@ -1206,7 +1170,7 @@ public class Autonomous {
 
 	}
 
-	private void sameSideSwitch2Block(/*needs more work*/) {
+	private void sameSideSwitch2Block(/* needs more work */) {
 		SmartDashboard.putString("Auto Program", "sameSideSwitch2Block");
 		switch (step) {
 		case 1:
@@ -1259,29 +1223,29 @@ public class Autonomous {
 			step++;
 			break;// maybe add some code to get the next block ready
 		case 7:
-			if(!Robot.drive.isIdle())
+			if (!Robot.drive.isIdle())
 				break;
 			beginStep();
 			Robot.drive.autoDrive(3, SWITCHSPEED, 2);
 			step++;
 			break;
 		case 8:
-			if(!Robot.drive.isIdle())
+			if (!Robot.drive.isIdle())
 				break;
 			beginStep();
 			Robot.drive.autoTurn(160 * turnDir, 0.5, 2);
 			step++;
 			break;
 		case 9:
-			if(!Robot.drive.isIdle())
+			if (!Robot.drive.isIdle())
 				break;
 			beginStep();
-			Robot.drive.autoDrive(3,SWITCHSPEED, 2);
+			Robot.drive.autoDrive(3, SWITCHSPEED, 2);
 			Robot.grab.intake(0.7, 0.6);
 			step++;
 			break;
 		case 10:
-			if(!Robot.drive.isIdle())
+			if (!Robot.drive.isIdle())
 				break;
 			beginStep();
 			Robot.drive.autoDrive(-0.5, SWITCHSPEED / 2, 2);
@@ -1290,7 +1254,7 @@ public class Autonomous {
 			step++;
 			break;
 		case 11:
-			if(!Robot.arm.isIdle())
+			if (!Robot.arm.isIdle())
 				break;
 			beginStep();
 			Robot.grab.eject(0.6, 1);
@@ -1306,7 +1270,7 @@ public class Autonomous {
 
 	}
 
-	private void sameSideSwitch3Block(/* needs more work*/) {
+	private void sameSideSwitch3Block(/* needs more work */) {
 		// TODO Auto-generated method stub
 
 	}
